@@ -1,9 +1,9 @@
 package main.java;
 
 public class Point {
-    double x, y;
+    float x, y;
 
-    public Point(double x, double y) {
+    public Point(float x, float y) {
         this.x = x;
         this.y = y;
     }

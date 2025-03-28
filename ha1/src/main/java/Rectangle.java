@@ -11,25 +11,25 @@ public class Rectangle {
 
     private Point topLeft;
 
-    public double getWidth() {
+    public float getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(float width) {
         this.width = width;
     }
 
-    private double width;
+    private float width;
 
-    public double getHeight() {
+    public float getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(float height) {
         this.height = height;
     }
 
-    private double height;
+    private float height;
 
     public Rectangle() {
         this.topLeft = new Point(0,0);
@@ -37,17 +37,17 @@ public class Rectangle {
         this.height = 1;
     }
 
-    public Rectangle(Point topLeft, double width, double height) {
+    public Rectangle(Point topLeft, float width, float height) {
         this.topLeft = topLeft;
         this.width = width;
         this.height = height;
     }
 
-    public static Rectangle fromArea(Point topLeft, double area, double length) {
+    public static Rectangle fromArea(Point topLeft, float area, float length) {
         return new Rectangle(topLeft, area / length, length);
     }
 
-    public double calculateArea() {
+    public float calculateArea() {
         return this.width * this.height;
     }
 

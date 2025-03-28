@@ -11,32 +11,32 @@ public class Circle {
 
     private Point center;
 
-    public double getRadius() {
+    public float getRadius() {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(float radius) {
         this.radius = radius;
     }
 
-    private double radius;
+    private float radius;
 
     public Circle() {
         this.center = new Point(0,0);
         this.radius = 1;
     }
 
-    public Circle(Point center, double radius) {
+    public Circle(Point center, float radius) {
         this.center = center;
         this.radius = radius;
     }
 
-    public static Circle fromArea(Point center, double area) {
-        return new Circle(center, Math.sqrt(area / Math.PI));
+    public static Circle fromArea(Point center, float area) {
+        return new Circle(center, (float)Math.sqrt(area / Math.PI));
     }
 
-    public double calculateArea() {
-        return Math.PI * this.radius * this.radius;
+    public float calculateArea() {
+        return (float)Math.PI * this.radius * this.radius;
     }
 
     public String toString() {
