@@ -1,57 +1,103 @@
 package main.java;
 
+/**
+ * Rectangle class that represents a rectangle in 2D space.
+ *
+ * @author Simon Wessel
+ * @version 1.0
+ * @since 1.0
+ */
 public class Rectangle {
+    /** @return returns the top left corner of the rectangle */
     public Point getTopLeft() {
         return topLeft;
     }
 
+    /** @param topLeft sets the top left corner of the rectangle */
     public void setTopLeft(Point topLeft) {
         this.topLeft = topLeft;
     }
 
+    /** Contains the top left corner location of the rectangle */
     private Point topLeft;
 
+    /** @return returns the width of the rectangle */
     public float getWidth() {
         return width;
     }
 
+    /** @param width sets the width of the rectangle */
     public void setWidth(float width) {
         this.width = width;
     }
 
+    /** Contains the width of the rectangle */
     private float width;
 
+    /** @return returns the height of the rectangle */
     public float getHeight() {
         return height;
     }
 
+    /** @param height sets the height of the rectangle */
     public void setHeight(float height) {
         this.height = height;
     }
 
+    /** Contains the height of the rectangle */
     private float height;
 
+    /**
+     * Default constructor for Rectangle.
+     * Initializes the top left corner to (0,0), width to 1, and height to 1.
+     */
     public Rectangle() {
         this.topLeft = new Point(0,0);
         this.width = 1;
         this.height = 1;
     }
 
+    /**
+     * Constructor for Rectangle with specified top left corner, width, and height.
+     *
+     * @param topLeft The top left corner of the rectangle.
+     * @param width The width of the rectangle.
+     * @param height The height of the rectangle.
+     */
     public Rectangle(Point topLeft, float width, float height) {
         this.topLeft = topLeft;
         this.width = width;
         this.height = height;
     }
 
+    /**
+     * Static method to create a Rectangle from a given area and length.
+     *
+     * @param topLeft The top left corner of the rectangle.
+     * @param area The area of the rectangle.
+     * @param length The length of one side of the rectangle.
+     * @return A new Rectangle object with the specified area and length.
+     */
     public static Rectangle fromArea(Point topLeft, float area, float length) {
         return new Rectangle(topLeft, area / length, length);
     }
 
-    public float calculateArea() {
+    /**
+     * Calculates the area of the rectangle.
+     *
+     * @return The area of the rectangle.
+     */
+    public float getArea() {
         return this.width * this.height;
     }
 
+    /**
+     * Returns a string representation of the rectangle.
+     *
+     * @return A string representation of the rectangle.
+     */
+    @Override
     public String toString() {
-        return "Rectangle { topLeft=" + topLeft + ", width=" + width + ", height=" + height + ", area=" + calculateArea() + " }";
+        return "Rectangle { topLeft=" + topLeft + ", width=" + width + ", height=" + height + ", area=" + this.getArea() + " }";
     }
 }
