@@ -4,23 +4,10 @@ package main.java;
  * Rectangle class that represents a rectangle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public class Rectangle {
-    /** @return returns the top left corner of the rectangle */
-    public Point getTopLeft() {
-        return topLeft;
-    }
-
-    /** @param topLeft sets the top left corner of the rectangle */
-    public void setTopLeft(Point topLeft) {
-        this.topLeft = topLeft;
-    }
-
-    /** Contains the top left corner location of the rectangle */
-    private Point topLeft;
-
+public class Rectangle extends Shape {
     /** @return returns the width of the rectangle */
     public float getWidth() {
         return width;
@@ -52,7 +39,7 @@ public class Rectangle {
      * Initializes the top left corner to (0,0), width to 1, and height to 1.
      */
     public Rectangle() {
-        this.topLeft = new Point(0,0);
+        super();
         this.width = 1;
         this.height = 1;
     }
@@ -65,7 +52,7 @@ public class Rectangle {
      * @param height The height of the rectangle.
      */
     public Rectangle(Point topLeft, float width, float height) {
-        this.topLeft = topLeft;
+        super();
         this.width = width;
         this.height = height;
     }
@@ -98,6 +85,6 @@ public class Rectangle {
      */
     @Override
     public String toString() {
-        return "Rectangle { topLeft=" + topLeft + ", width=" + width + ", height=" + height + ", area=" + this.getArea() + " }";
+        return "Rectangle { topLeft=" + this.getLocation() + ", width=" + this.width + ", height=" + this.height + ", area=" + this.getArea() + " }";
     }
 }

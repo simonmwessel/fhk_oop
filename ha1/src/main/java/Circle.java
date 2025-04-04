@@ -4,23 +4,10 @@ package main.java;
  * Circle class that represents a circle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  * */
-public class Circle {
-    /** @return returns the center of the circle */
-    public Point getCenter() {
-        return center;
-    }
-
-    /** @param center sets the center of the circle */
-    public void setCenter(Point center) {
-        this.center = center;
-    }
-
-    /** Contains the center location of the circle */
-    private Point center;
-
+public class Circle extends Shape {
     /** @return returns the radius of the circle */
     public float getRadius() {
         return radius;
@@ -39,7 +26,7 @@ public class Circle {
      * Initializes the center to (0,0) and radius to 1.
      */
     public Circle() {
-        this.center = new Point(0,0);
+        super();
         this.radius = 1;
     }
 
@@ -50,7 +37,7 @@ public class Circle {
      * @param radius The radius of the circle.
      */
     public Circle(Point center, float radius) {
-        this.center = center;
+        super(center);
         this.radius = radius;
     }
 
@@ -70,6 +57,7 @@ public class Circle {
      *
      * @return The area of the circle.
      */
+    @Override
     public float getArea() {
         return (float)Math.PI * this.radius * this.radius;
     }
@@ -81,6 +69,6 @@ public class Circle {
      */
     @Override
     public String toString() {
-        return "Circle { center=" + center + ", radius=" + radius + ", area=" + this.getArea() + " }";
+        return "Circle { center=" + this.getLocation() + ", radius=" + this.radius + ", area=" + this.getArea() + " }";
     }
 }

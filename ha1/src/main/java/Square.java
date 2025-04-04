@@ -4,23 +4,10 @@ package main.java;
  * Square class that represents a square in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
+ * @version 1.1
  * @since 1.0
  */
-public class Square {
-    /** @return returns the top left corner of the square */
-    public Point getTopLeft() {
-        return topLeft;
-    }
-
-    /** @param topLeft sets the top left corner of the square */
-    public void setTopLeft(Point topLeft) {
-        this.topLeft = topLeft;
-    }
-
-    /** Contains the top left corner location of the square */
-    private Point topLeft;
-
+public class Square extends Shape {
     /** @return returns the side length of the square */
     public float getSideLength() {
         return sideLength;
@@ -39,7 +26,7 @@ public class Square {
      * Initializes the top left corner to (0,0) and side length to 1.
      */
     public Square() {
-        this.topLeft = new Point(0,0);
+        super();
         this.sideLength = 1;
     }
 
@@ -50,7 +37,7 @@ public class Square {
      * @param side The side length of the square.
      */
     public Square(Point topLeft, float side) {
-        this.topLeft = topLeft;
+        super(topLeft);
         this.sideLength = side;
     }
 
@@ -81,6 +68,6 @@ public class Square {
      */
     @Override
     public String toString() {
-        return "Square { topLeft=" + topLeft + ", side=" + sideLength + ", area=" + this.getArea() + " }";
+        return "Square { topLeft=" + this.getLocation() + ", side=" + this.sideLength + ", area=" + this.getArea() + " }";
     }
 }
