@@ -1,13 +1,19 @@
 package main.java;
 
+import java.util.Random;
+
 /**
  * Square class that represents a square in 2D space.
  *
  * @author Simon Wessel
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class Square extends Shape {
+
+    /** Contains the side length of the square */
+    private float sideLength;
+
     /** @return returns the side length of the square */
     public float getSideLength() {
         return sideLength;
@@ -18,16 +24,14 @@ public class Square extends Shape {
         this.sideLength = sideLength;
     }
 
-    /** Contains the side length of the square */
-    private float sideLength;
-
     /**
      * Default constructor for Square.
-     * Initializes the top left corner to (0,0) and side length to 1.
+     * Initializes the top left corner with a random point and side length with a random value between 0 and 10.
      */
     public Square() {
-        super();
-        this.sideLength = 1;
+        super(new Point());
+        Random random = new Random();
+        this.sideLength = random.nextFloat() * 10;
     }
 
     /**

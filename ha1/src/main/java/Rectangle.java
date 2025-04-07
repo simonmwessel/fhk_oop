@@ -1,13 +1,19 @@
 package main.java;
 
+import java.util.Random;
+
 /**
  * Rectangle class that represents a rectangle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  */
 public class Rectangle extends Shape {
+
+    /** Contains the width of the rectangle */
+    private float width;
+
     /** @return returns the width of the rectangle */
     public float getWidth() {
         return width;
@@ -18,8 +24,8 @@ public class Rectangle extends Shape {
         this.width = width;
     }
 
-    /** Contains the width of the rectangle */
-    private float width;
+    /** Contains the height of the rectangle */
+    private float height;
 
     /** @return returns the height of the rectangle */
     public float getHeight() {
@@ -31,17 +37,15 @@ public class Rectangle extends Shape {
         this.height = height;
     }
 
-    /** Contains the height of the rectangle */
-    private float height;
-
     /**
      * Default constructor for Rectangle.
-     * Initializes the top left corner to (0,0), width to 1, and height to 1.
+     * Initializes the top left corner with a random point and sets width and height with random values.
      */
     public Rectangle() {
-        super();
-        this.width = 1;
-        this.height = 1;
+        super(new Point());
+        Random random = new Random();
+        this.width = random.nextFloat() * 20;
+        this.height = random.nextFloat() * 20;
     }
 
     /**
@@ -52,7 +56,7 @@ public class Rectangle extends Shape {
      * @param height The height of the rectangle.
      */
     public Rectangle(Point topLeft, float width, float height) {
-        super();
+        super(topLeft);
         this.width = width;
         this.height = height;
     }

@@ -1,10 +1,12 @@
 package main.java;
 
+import java.util.Random;
+
 /**
  * Point class that represents a point in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
+ * @version 1.2
  * @since 1.0
  */
 public class Point {
@@ -36,11 +38,12 @@ public class Point {
 
     /**
      * Default constructor for Point.
-     * Initializes the point to (0,0).
+     * Initializes the point with random x and y coordinates between 0 and 100.
      */
     public Point() {
-        this.x = 0;
-        this.y = 0;
+        Random random = new Random();
+        this.x = random.nextFloat() * 100;
+        this.y = random.nextFloat() * 100;
     }
 
     /**

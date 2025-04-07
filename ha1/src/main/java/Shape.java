@@ -9,6 +9,9 @@ package main.java;
  */
 public abstract class Shape {
 
+    /** Contains the location of the shape */
+    private Point location;
+
     /** @return returns the location of the shape */
     public Point getLocation() {
         return location;
@@ -19,15 +22,12 @@ public abstract class Shape {
         this.location = point;
     }
 
-    /** Contains the location of the shape */
-    private Point location;
-
     /**
      * Default constructor for Shape.
-     * Initializes the location to (0,0).
+     * Initializes the location with a random point.
      */
     public Shape() {
-        this.location = new Point(0, 0);
+        this.location = new Point();
     }
 
     /**

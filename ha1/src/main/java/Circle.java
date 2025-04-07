@@ -1,13 +1,19 @@
 package main.java;
 
+import java.util.Random;
+
 /**
  * Circle class that represents a circle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.1
+ * @version 1.2
  * @since 1.0
  * */
 public class Circle extends Shape {
+
+    /** Contains the radius of the circle */
+    private float radius;
+
     /** @return returns the radius of the circle */
     public float getRadius() {
         return radius;
@@ -18,16 +24,14 @@ public class Circle extends Shape {
         this.radius = radius;
     }
 
-    /** Contains the radius of the circle */
-    private float radius;
-
     /**
      * Default constructor for Circle.
-     * Initializes the center to (0,0) and radius to 1.
+     * Initializes the center with a random point and radius with a random value between 0 and 10.
      */
     public Circle() {
-        super();
-        this.radius = 1;
+        super(new Point());
+        Random random = new Random();
+        this.radius = random.nextFloat() * 10;
     }
 
     /**

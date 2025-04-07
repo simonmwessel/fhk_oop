@@ -1,6 +1,18 @@
 package main.java;
 
+/**
+ * Main class to demonstrate the functionality of the Circle, Rectangle, and Square classes.
+ *
+ * @author Simon Wessel
+ * @version 1.2
+ * @since 1.0
+ */
 public class Main {
+    /**
+     * Main method to demonstrate the functionality of the classes.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         // Circles
         Circle circle1 = new Circle();
