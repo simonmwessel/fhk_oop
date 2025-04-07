@@ -6,7 +6,7 @@ import java.util.Random;
  * Square class that represents a square in 2D space.
  *
  * @author Simon Wessel
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class Square extends Shape {
@@ -66,12 +66,16 @@ public class Square extends Shape {
     }
 
     /**
-     * Returns a string representation of the square.
+     * Returns a string representation of the square in the following format:
+     * "Type       |      X |      Y |     Side   |            |     Area"
      *
      * @return A string representation of the square.
      */
     @Override
     public String toString() {
-        return "Square { topLeft=" + this.getLocation() + ", side=" + this.sideLength + ", area=" + this.getArea() + " }";
+        return String.format(
+                "{ %-15s | x: %8.2f | y: %8.2f | Side: %12.2f | Area: %10.2f }",
+                "Type: Square", getLocation().getX(), getLocation().getY(), sideLength, getArea()
+        );
     }
 }

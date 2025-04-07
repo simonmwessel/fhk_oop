@@ -6,7 +6,7 @@ import java.util.Random;
  * Point class that represents a point in 2D space.
  *
  * @author Simon Wessel
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class Point {
@@ -60,10 +60,10 @@ public class Point {
     /**
      * Returns a string representation of the point.
      *
-     * @return a string representation of the point in the format "(x|y)".
+     * @return a string representation of the point in the format "(   x.xx |   y.yy)".
      */
     @Override
     public String toString() {
-        return "(" + x + "|" + y + ")";
+        return String.format("x: %6.2f, y: %6.2f", x, y);
     }
 }

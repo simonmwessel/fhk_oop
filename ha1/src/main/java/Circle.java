@@ -6,7 +6,7 @@ import java.util.Random;
  * Circle class that represents a circle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  * */
 public class Circle extends Shape {
@@ -67,12 +67,16 @@ public class Circle extends Shape {
     }
 
     /**
-     * Returns a string representation of the Circle object.
+     * Returns a string representation of the Circle object in the following
+     * format: "Type       |      X |      Y |     Radius |            |     Area"
      *
      * @return A string representation of the Circle.
      */
     @Override
     public String toString() {
-        return "Circle { center=" + this.getLocation() + ", radius=" + this.radius + ", area=" + this.getArea() + " }";
+        return String.format(
+                "{ %-15s | x: %8.2f | y: %8.2f | Radius: %10.2f | Area: %10.2f }",
+                "Type: Circle", getLocation().getX(), getLocation().getY(), radius, getArea()
+        );
     }
 }

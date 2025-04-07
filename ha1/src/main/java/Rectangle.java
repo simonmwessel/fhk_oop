@@ -6,7 +6,7 @@ import java.util.Random;
  * Rectangle class that represents a rectangle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.2
+ * @version 1.3
  * @since 1.0
  */
 public class Rectangle extends Shape {
@@ -83,12 +83,16 @@ public class Rectangle extends Shape {
     }
 
     /**
-     * Returns a string representation of the rectangle.
+     * Returns a string representation of the rectangle in the following format:
+     * "Type       |      X |      Y |     Width  |      Height |     Area"
      *
      * @return A string representation of the rectangle.
      */
     @Override
     public String toString() {
-        return "Rectangle { topLeft=" + this.getLocation() + ", width=" + this.width + ", height=" + this.height + ", area=" + this.getArea() + " }";
+        return String.format(
+                "{ %-15s | x: %8.2f | y: %8.2f | Width: %11.2f | Area: %10.2f | Height: %10.2f }",
+                "Type: Rectangle", getLocation().getX(), getLocation().getY(), width, getArea(), height
+        );
     }
 }
