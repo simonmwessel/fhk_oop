@@ -1,50 +1,49 @@
-package main.java;
+package main.kotlin
 
-import java.util.Random;
+import kotlin.random.Random
 
 /**
  * Point class that represents a point in 2D space.
  *
- * @author Simon Wessel
- * @version 1.3
+ * @author
+ * @version 1.0
  * @since 1.0
  */
-public class Point {
+class Point {
 
     /** Contains the x coordinate of the point */
-    private float x;
+    private var x: Float = 0.0f
 
     /** @return returns the x coordinate of the point */
-    public float getX() {
-        return x;
+    fun getX(): Float {
+        return x
     }
 
     /** @param x sets the x coordinate of the point */
-    public void setX(float x) {
-        this.x = x;
+    fun setX(x: Float) {
+        this.x = x
     }
 
     /** Contains the y coordinate of the point */
-    private float y;
+    private var y: Float = 0.0f
 
     /** @return returns the y coordinate of the point */
-    public float getY() {
-        return y;
+    fun getY(): Float {
+        return y
     }
 
     /** @param y sets the y coordinate of the point */
-    public void setY(float y) {
-        this.y = y;
+    fun setY(y: Float) {
+        this.y = y
     }
 
     /**
      * Default constructor for Point.
      * Initializes the point with random x and y coordinates between 0 and 100.
      */
-    public Point() {
-        Random random = new Random();
-        this.x = random.nextFloat() * 100;
-        this.y = random.nextFloat() * 100;
+    constructor() {
+        this.x = Random.nextFloat() * 100
+        this.y = Random.nextFloat() * 100
     }
 
     /**
@@ -53,9 +52,9 @@ public class Point {
      * @param x The x coordinate of the point.
      * @param y The y coordinate of the point.
      */
-    public Point(float x, float y) {
-        this.x = x;
-        this.y = y;
+    constructor(x: Float, y: Float) {
+        this.x = x
+        this.y = y
     }
 
     /**
@@ -63,8 +62,7 @@ public class Point {
      *
      * @return a string representation of the point in the format "(   x.xx |   y.yy)".
      */
-    @Override
-    public String toString() {
-        return String.format("x: %6.2f, y: %6.2f", x, y);
+    override fun toString(): String {
+        return String.format("x: %6.2f, y: %6.2f", x, y)
     }
 }

@@ -8,12 +8,16 @@ package main.java;
  * @since 1.0
  */
 public class Main {
+
     /**
      * Main method to demonstrate the functionality of the classes.
      *
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
+
+        System.out.println("--- Shapes with kotlin ---");
+
         // Circles
         Circle circle1 = new Circle();
         Circle circle2 = new Circle(new Point(0,0), 5);
