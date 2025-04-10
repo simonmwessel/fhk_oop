@@ -6,6 +6,9 @@ import kotlin.random.Random
 /**
  * Square class that represents a square in 2D space.
  *
+ * @author Simon Wessel
+ * @version 2.0
+ * @since 1.0
  */
 class Square : Shape {
 
@@ -27,7 +30,7 @@ class Square : Shape {
      * Initializes the top left corner with a random point and side length with a random value between 0 and 10.
      */
     constructor() : super(Point()) {
-        this.sideLength = Random.nextFloat() * 10
+        sideLength = Random.nextFloat() * 10
     }
 
     /**
@@ -37,7 +40,7 @@ class Square : Shape {
      * @param side The side length of the square.
      */
     constructor(topLeft: Point, side: Float) : super(topLeft) {
-        this.sideLength = side
+        sideLength = side
     }
 
     companion object {

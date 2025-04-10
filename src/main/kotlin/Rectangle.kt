@@ -6,7 +6,7 @@ import kotlin.random.Random
  * Rectangle class that represents a rectangle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
+ * @version 2.0
  * @since 1.0
  */
 class Rectangle : Shape {
@@ -42,8 +42,8 @@ class Rectangle : Shape {
      * Initializes the top left corner with a random point and sets width and height with random values.
      */
     constructor() : super(Point()) {
-        this.width = Random.nextFloat() * 20
-        this.height = Random.nextFloat() * 20
+        width = Random.nextFloat() * 20
+        height = Random.nextFloat() * 20
     }
 
     /**

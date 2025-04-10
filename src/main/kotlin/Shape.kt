@@ -4,8 +4,8 @@ package main.kotlin
  * Shape class that represents a generic shape in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
- * @since 1.1
+ * @version 2.0
+ * @since 1.5
  */
 abstract class Shape {
 
@@ -19,7 +19,7 @@ abstract class Shape {
 
     /** @param point sets the location of the shape */
     fun setLocation(point: Point) {
-        this.location = point
+        location = point
     }
 
     /**
@@ -27,7 +27,7 @@ abstract class Shape {
      * Initializes the location with a random point.
      */
     constructor() {
-        this.location = Point()
+        location = Point()
     }
 
     /**
@@ -36,7 +36,7 @@ abstract class Shape {
      * @param point The location of the shape.
      */
     constructor(point: Point) {
-        this.location = point
+        location = point
     }
 
     /**

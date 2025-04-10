@@ -6,7 +6,7 @@ import kotlin.random.Random
  * Point class that represents a point in 2D space.
  *
  * @author
- * @version 1.0
+ * @version 2.0
  * @since 1.0
  */
 class Point {
@@ -42,8 +42,8 @@ class Point {
      * Initializes the point with random x and y coordinates between 0 and 100.
      */
     constructor() {
-        this.x = Random.nextFloat() * 100
-        this.y = Random.nextFloat() * 100
+        x = Random.nextFloat() * 100
+        y = Random.nextFloat() * 100
     }
 
     /**

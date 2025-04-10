@@ -4,8 +4,8 @@ package main.kotlin
  * FormFactory class that creates an array of random shapes.
  *
  * @author Simon Wessel
- * @version 1.0
- * @since 1.0
+ * @version 2.0
+ * @since 1.7
  */
 class FormFactory {
 

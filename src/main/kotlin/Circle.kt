@@ -7,7 +7,7 @@ import kotlin.math.sqrt
  * Circle class that represents a circle in 2D space.
  *
  * @author Simon Wessel
- * @version 1.0
+ * @version 2.0
  * @since 1.0
  * */
 class Circle : Shape {
@@ -34,7 +34,7 @@ class Circle : Shape {
      * Initializes the center with a random point and radius with a random value between 0 and 10.
      */
     constructor() : super(Point()) {
-        this.radius = Random.nextFloat() * 10
+        radius = Random.nextFloat() * 10
     }
 
     /**
