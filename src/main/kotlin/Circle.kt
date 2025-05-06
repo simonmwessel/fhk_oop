@@ -5,47 +5,33 @@ import kotlin.math.sqrt
 
 /**
  * Circle class that represents a circle in 2D space.
+ * This class extends the Shape class.
+ *
+ * @property center The center of the circle.
+ * @property radius The radius of the circle.
+ *
+ * @constructor Creates a circle with the specified center and radius.
  *
  * @author Simon Wessel
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  * */
-class Circle : Shape {
-
-    /** Contains the radius of the circle */
-    private var radius: Float = 0.0f
+class Circle(center: Point, radius: Float) : Shape {
 
     /**
-     * @return returns the radius of the circle
+     * Contains the radius of the circle
      */
-    fun getRadius(): Float {
-        return radius
-    }
-
-    /**
-     * @param radius sets the radius of the circle
-     */
-    fun setRadius(radius: Float) {
-        this.radius = radius
-    }
+    var radius: Float = 0.0f
+        get() = field
+        set(value) {
+            field = value
+        }
 
     /**
      * Default constructor for Circle.
      * Initializes the center with a random point and radius with a random value between 0 and 10.
      */
-    constructor() : super(Point()) {
-        radius = Random.nextFloat() * 10
-    }
-
-    /**
-     * Constructor for Circle with specified center and radius.
-     *
-     * @param center The center of the circle.
-     * @param radius The radius of the circle.
-     */
-    constructor(center: Point, radius: Float) : super(center) {
-        this.radius = radius
-    }
+    constructor() : this(Point(), Random.nextFloat() * 10)
 
     companion object {
         /**
@@ -53,6 +39,7 @@ class Circle : Shape {
          *
          * @param center The center of the circle.
          * @param area The area of the circle.
+         *
          * @return A new Circle object with the specified area.
          */
         fun fromArea(center: Point, area: Float): Circle {

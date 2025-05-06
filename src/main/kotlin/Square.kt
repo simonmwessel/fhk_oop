@@ -5,43 +5,31 @@ import kotlin.random.Random
 
 /**
  * Square class that represents a square in 2D space.
+ * This class extends the Shape class.
+ *
+ * @property topLeft The top left corner of the square.
+ * @property sideLength The length of one side of the square.
+ *
+ * @constructor Creates a square with the specified top left corner and side length.
  *
  * @author Simon Wessel
  * @version 2.0
  * @since 1.0
  */
-class Square : Shape {
+class Square(topLeft: Point, side: Float) : Shape {
 
     /** Contains the side length of the square */
     private var sideLength: Float = 0.0f
-
-    /** @return returns the side length of the square */
-    fun getSideLength(): Float {
-        return sideLength
-    }
-
-    /** @param sideLength sets the side length of the square */
-    fun setSideLength(sideLength: Float) {
-        this.sideLength = sideLength
-    }
+        get() = field
+        set(value) {
+            field = value
+        }
 
     /**
-     * Default constructor for Square.
+     * Secondary constructor for Square without parameters.
      * Initializes the top left corner with a random point and side length with a random value between 0 and 10.
      */
-    constructor() : super(Point()) {
-        sideLength = Random.nextFloat() * 10
-    }
-
-    /**
-     * Constructor for Square with specified top left corner and side length.
-     *
-     * @param topLeft The top left corner of the square.
-     * @param side The side length of the square.
-     */
-    constructor(topLeft: Point, side: Float) : super(topLeft) {
-        sideLength = side
-    }
+    constructor() : this(Point(), Random.nextFloat() * 10)
 
     companion object {
         /**
@@ -49,6 +37,7 @@ class Square : Shape {
          *
          * @param topLeft The top left corner of the square.
          * @param area The area of the square.
+         *
          * @return A new Square object with the specified area.
          */
         fun fromArea(topLeft: Point, area: Float): Square {
