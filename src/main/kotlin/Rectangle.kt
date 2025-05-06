@@ -14,9 +14,6 @@ class Rectangle : Shape {
     /** Contains the width of the rectangle */
     private var width: Float = 0.0f
 
-    /** Contains the height of the rectangle */
-    private var height: Float = 0.0f
-
     /** @return returns the width of the rectangle */
     fun getWidth(): Float {
         return width
@@ -26,6 +23,9 @@ class Rectangle : Shape {
     fun setWidth(width: Float) {
         this.width = width
     }
+
+    /** Contains the height of the rectangle */
+    private var height: Float = 0.0f
 
     /** @return returns the height of the rectangle */
     fun getHeight(): Float {
