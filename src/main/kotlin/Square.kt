@@ -13,17 +13,24 @@ import kotlin.random.Random
  * @constructor Creates a square with the specified top left corner and side length.
  *
  * @author Simon Wessel
- * @version 2.0
+ * @version 2.1
  * @since 1.0
  */
-class Square(topLeft: Point, side: Float) : Shape {
+class Square(topLeft: Point, sideParam: Float) : Shape(topLeft) {
 
-    /** Contains the side length of the square */
-    private var sideLength: Float = 0.0f
-        get() = field
-        set(value) {
-            field = value
-        }
+    /** Backing field for side length */
+    private var _sideLength: Float = sideParam
+
+    /**
+     * The side length of the square.
+     *
+     * @return the side length.
+     */
+    var sideLength: Float
+        /** Returns the side length of the square. */
+        get() = _sideLength
+        /** Sets the side length of the square. */
+        set(v) { _sideLength = v }
 
     /**
      * Secondary constructor for Square without parameters.
@@ -40,9 +47,8 @@ class Square(topLeft: Point, side: Float) : Shape {
          *
          * @return A new Square object with the specified area.
          */
-        fun fromArea(topLeft: Point, area: Float): Square {
-            return Square(topLeft, sqrt(area.toDouble()).toFloat())
-        }
+        fun fromArea(topLeft: Point, area: Float): Square =
+            Square(topLeft, sqrt(area.toDouble()).toFloat())
     }
 
     /**
@@ -50,9 +56,7 @@ class Square(topLeft: Point, side: Float) : Shape {
      *
      * @return The area of the square.
      */
-    override fun getArea(): Float {
-        return sideLength * sideLength
-    }
+    override fun getArea(): Float = sideLength * sideLength
 
     /**
      * Returns a string representation of the square in the following format:
@@ -60,10 +64,9 @@ class Square(topLeft: Point, side: Float) : Shape {
      *
      * @return A string representation of the square.
      */
-    override fun toString(): String {
-        return String.format(
+    override fun toString(): String =
+        String.format(
             "{ %-15s | x: %8.2f | y: %8.2f | Side: %12.2f | Area: %10.2f }",
-            "Type: Square", getLocation().getX(), getLocation().getY(), sideLength, getArea()
+            "Type: Square", location.x, location.y, sideLength, getArea()
         )
-    }
 }

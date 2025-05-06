@@ -15,16 +15,23 @@ import kotlin.math.sqrt
  * @author Simon Wessel
  * @version 2.1
  * @since 1.0
- * */
-class Circle(center: Point, radius: Float) : Shape {
+ */
+class Circle(center: Point, radiusParam: Float) : Shape(center) {
+
+    /** Backing field for radius */
+    private var _radius: Float = radiusParam
 
     /**
-     * Contains the radius of the circle
+     * The radius of the circle.
+     *
+     * @return the radius.
      */
-    var radius: Float = 0.0f
-        get() = field
-        set(value) {
-            field = value
+    var radius: Float
+        /** Returns the radius of the circle. */
+        get() = _radius
+        /** Sets the radius of the circle. */
+        set(v) {
+            _radius = v
         }
 
     /**
@@ -42,9 +49,8 @@ class Circle(center: Point, radius: Float) : Shape {
          *
          * @return A new Circle object with the specified area.
          */
-        fun fromArea(center: Point, area: Float): Circle {
-            return Circle(center, sqrt((area / Math.PI)).toFloat())
-        }
+        fun fromArea(center: Point, area: Float): Circle =
+            Circle(center, sqrt((area / Math.PI)).toFloat())
     }
 
     /**
@@ -52,9 +58,7 @@ class Circle(center: Point, radius: Float) : Shape {
      *
      * @return The area of the circle.
      */
-    override fun getArea(): Float {
-        return (Math.PI * radius * radius).toFloat()
-    }
+    override fun getArea(): Float = (Math.PI * radius * radius).toFloat()
 
     /**
      * Returns a string representation of the Circle object in the following
@@ -62,10 +66,9 @@ class Circle(center: Point, radius: Float) : Shape {
      *
      * @return A string representation of the Circle.
      */
-    override fun toString(): String {
-        return String.format(
+    override fun toString(): String =
+        String.format(
             "{ %-15s | x: %8.2f | y: %8.2f | Radius: %10.2f | Area: %10.2f }",
-            "Type: Circle", getLocation().getX(), getLocation().getY(), radius, getArea()
+            "Type: Circle", location.x, location.y, radius, getArea()
         )
-    }
 }

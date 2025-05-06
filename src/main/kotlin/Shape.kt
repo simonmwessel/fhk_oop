@@ -4,22 +4,27 @@ package main.kotlin
  * Shape class that represents a generic shape in 2D space.
  * This class serves as a base class for specific shapes like Circle, Rectangle, and Square.
  *
- * @property point The location of the shape.
- *
- * @constructor Creates a shape with the specified point.
+ * @property location The location of the shape.
  *
  * @author Simon Wessel
- * @version 2.0
+ * @version 2.1
  * @since 1.5
  */
-abstract class Shape(point: Point) {
+abstract class Shape(locationParam: Point) {
 
-    /** Contains the location of the shape */
-    private var location: Point
-        get() = field
-        set(value) {
-            field = value
-        }
+    /** Backing field for location */
+    private var _location: Point = locationParam
+
+    /**
+     * The location of the shape.
+     *
+     * @return the location point.
+     */
+    var location: Point
+        /** Returns the location of the shape. */
+        get() = _location
+        /** Sets the location of the shape. */
+        set(v) { _location = v }
 
     /**
      * Secondary constructor for Shape without parameters.

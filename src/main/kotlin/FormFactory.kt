@@ -1,10 +1,12 @@
 package main.kotlin
 
+import kotlin.random.Random
+
 /**
  * FormFactory class that creates an array of random shapes.
  *
  * @author Simon Wessel
- * @version 2.0
+ * @version 2.1
  * @since 1.7
  */
 class FormFactory {
@@ -15,18 +17,11 @@ class FormFactory {
      * @param count the number of shapes to produce
      * @return an array of random shapes
      */
-    fun produce(count: Int): Array<Shape> {
-        val shapes = Array<Shape>(count) { Circle() }
-        for (i in 0 until count) {
-            val rand = Math.random()
-            if (rand < 0.33) {
-                shapes[i] = Circle()
-            } else if (rand < 0.66) {
-                shapes[i] = Rectangle()
-            } else {
-                shapes[i] = Square()
-            }
+    fun produce(count: Int): List<Shape> = List(count) {
+        when (Random.nextDouble()) {
+            in 0.0..0.33  -> Circle()
+            in 0.33..0.66 -> Rectangle()
+            else          -> Square()
         }
-        return shapes
     }
 }
