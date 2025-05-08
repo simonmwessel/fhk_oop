@@ -5,9 +5,9 @@ import kotlin.random.Random
 /**
  * FormFactory class that creates an array of random shapes.
  *
- * @author Simon Wessel
+ * @author  Simon Wessel
  * @version 2.1
- * @since 1.7
+ * @since   1.7
  */
 class FormFactory {
 

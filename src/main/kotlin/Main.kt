@@ -1,11 +1,11 @@
 package main.kotlin
 
-/**
+/**C
  * Main class to demonstrate the functionality of the Circle, Rectangle, and Square classes.
  *
- * @author Simon Wessel
- * @version 2.0
- * @since 1.0
+ * @author  Simon Wessel
+ * @version 2.1
+ * @since   1.0
  */
 object Main {
 

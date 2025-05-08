@@ -1,13 +1,17 @@
 package main.kotlin
 
+import utils.FloatExtensions.formatAreaValue
+import utils.FloatExtensions.formatAttribute1Value
+import utils.FloatExtensions.formatAttribute2Value
+import utils.FloatExtensions.formatCoordinateValue
 import kotlin.random.Random
 
 /**
  * Rectangle class that represents a rectangle in 2D space.
  *
- * @author Simon Wessel
- * @version 2.1
- * @since 1.0
+ * @author  Simon Wessel
+ * @version 2.2
+ * @since   1.0
  */
 class Rectangle(topLeft: Point, widthParam: Float, heightParam: Float) : Shape(topLeft) {
 
@@ -23,7 +27,9 @@ class Rectangle(topLeft: Point, widthParam: Float, heightParam: Float) : Shape(t
         /** Returns the width of the rectangle. */
         get() = _width
         /** Sets the width of the rectangle. */
-        set(v) { _width = v }
+        set(v) {
+            _width = v
+        }
 
     /** Backing field for height */
     private var _height: Float = heightParam
@@ -37,7 +43,9 @@ class Rectangle(topLeft: Point, widthParam: Float, heightParam: Float) : Shape(t
         /** Returns the height of the rectangle. */
         get() = _height
         /** Sets the height of the rectangle. */
-        set(v) { _height = v }
+        set(v) {
+            _height = v
+        }
 
     /**
      * Default constructor for Rectangle.
@@ -54,8 +62,9 @@ class Rectangle(topLeft: Point, widthParam: Float, heightParam: Float) : Shape(t
          * Static method to create a Rectangle from a given area and length.
          *
          * @param topLeft The top left corner of the rectangle.
-         * @param area The area of the rectangle.
-         * @param length The length of one side of the rectangle.
+         * @param area    The area of the rectangle.
+         * @param length  The length of one side of the rectangle.
+         *
          * @return A new Rectangle object with the specified area and length.
          */
         fun fromArea(topLeft: Point, area: Float, length: Float): Rectangle =
@@ -70,14 +79,18 @@ class Rectangle(topLeft: Point, widthParam: Float, heightParam: Float) : Shape(t
     override fun getArea(): Float = width * height
 
     /**
-     * Returns a string representation of the rectangle in the following format:
-     * "Type       |      X |      Y |     Width  |      Height |     Area"
+     * Returns a string representation of the rectangle
      *
      * @return A string representation of the rectangle.
      */
     override fun toString(): String =
-        String.format(
-            "{ %-15s | x: %8.2f | y: %8.2f | Width: %11.2f | Area: %10.2f | Height: %10.2f }",
-            "Type: Rectangle", location.x, location.y, width, getArea(), height
-        )
+        buildString(
+            listOf(
+                Triple("Type",   this::class.simpleName!!,           Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
+                Triple("X",      location.x.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple("Y",      location.y.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple("Width",  width.formatAttribute1Value(),      Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
+                Triple("Height", height.formatAttribute2Value(),     Config.PAD_ATTR_2 to Config.PAD_ATTR_2_VAL),
+                Triple("Area",   getArea().formatAreaValue(),        Config.PAD_AREA   to Config.PAD_AREA_VAL)
+            ))
 }

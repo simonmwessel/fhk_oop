@@ -1,5 +1,6 @@
 package main.kotlin
 
+import utils.FloatExtensions.formatCoordinateValue
 import kotlin.random.Random
 
 /**
@@ -10,17 +11,14 @@ import kotlin.random.Random
  *
  * @constructor Creates a point with the specified x and y coordinates.
  *
- * @author
- * @version 2.2
- * @since 1.0
+ * @author  Simon Wessel
+ * @version 2.1
+ * @since   1.0
  */
 class Point(xParam: Float, yParam: Float) {
 
     /** Backing field for x coordinate */
     private var _x: Float = xParam
-
-    /** Backing field for y coordinate */
-    private var _y: Float = yParam
 
     /**
      * The x coordinate of the point.
@@ -31,7 +29,10 @@ class Point(xParam: Float, yParam: Float) {
         /** Returns the x coordinate of the point. */
         get() = _x
         /** Sets the x coordinate of the point. */
-        set(value) { _x = value }
+        set(v) { _x = v }
+
+    /** Backing field for y coordinate */
+    private var _y: Float = yParam
 
     /**
      * The y coordinate of the point.
@@ -42,7 +43,7 @@ class Point(xParam: Float, yParam: Float) {
         /** Returns the y coordinate of the point. */
         get() = _y
         /** Sets the y coordinate of the point. */
-        set(value) { _y = value }
+        set(v) { _y = v }
 
     /**
      * Secondary constructor for Point without parameters.
@@ -50,14 +51,22 @@ class Point(xParam: Float, yParam: Float) {
      * Initializes the point with random x and y coordinates between 0 and 100.
      */
     constructor() : this(
-        Random.nextFloat() * 100f,
-        Random.nextFloat() * 100f
+        Random.nextFloat() * Config.MAX_X,
+        Random.nextFloat() * Config.MAX_Y
     )
 
     /**
      * Returns a string representation of the point.
      *
-     * @return a string representation of the point in the format "(   x.xx |   y.yy)".
+     * @return a string representation of the point in the format "{ X:  x.xx | Y:  y.yy }".
      */
-    override fun toString(): String = String.format("x: %6.2f, y: %6.2f", x, y)
+    override fun toString(): String =
+        Config.PREFIX +
+        listOf(
+            "X" to x.formatCoordinateValue(),
+            "Y" to y.formatCoordinateValue()
+        ).joinToString(Config.SEPARATOR) { (k, v) ->
+            k + Config.SEPARATOR_KEY_VALUE + v
+        } +
+        Config.SUFFIX
 }

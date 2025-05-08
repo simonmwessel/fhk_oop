@@ -1,5 +1,8 @@
 package main.kotlin
 
+import utils.FloatExtensions.formatAreaValue
+import utils.FloatExtensions.formatAttribute1Value
+import utils.FloatExtensions.formatCoordinateValue
 import kotlin.random.Random
 import kotlin.math.sqrt
 
@@ -12,9 +15,9 @@ import kotlin.math.sqrt
  *
  * @constructor Creates a circle with the specified center and radius.
  *
- * @author Simon Wessel
- * @version 2.1
- * @since 1.0
+ * @author  Simon Wessel
+ * @version 2.2
+ * @since   1.0
  */
 class Circle(center: Point, radiusParam: Float) : Shape(center) {
 
@@ -45,7 +48,7 @@ class Circle(center: Point, radiusParam: Float) : Shape(center) {
          * Static method to create a Circle from a given area.
          *
          * @param center The center of the circle.
-         * @param area The area of the circle.
+         * @param area   The area of the circle.
          *
          * @return A new Circle object with the specified area.
          */
@@ -61,14 +64,18 @@ class Circle(center: Point, radiusParam: Float) : Shape(center) {
     override fun getArea(): Float = (Math.PI * radius * radius).toFloat()
 
     /**
-     * Returns a string representation of the Circle object in the following
-     * format: "Type       |      X |      Y |     Radius |            |     Area"
+     * Returns a string representation of the Circle
      *
      * @return A string representation of the Circle.
      */
     override fun toString(): String =
-        String.format(
-            "{ %-15s | x: %8.2f | y: %8.2f | Radius: %10.2f | Area: %10.2f }",
-            "Type: Circle", location.x, location.y, radius, getArea()
-        )
+        buildString(
+            listOf(
+                Triple(  "Type",   this::class.simpleName!!,           Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
+                Triple(  "X",      location.x.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple(  "Y",      location.y.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple(  "Radius", radius.formatAttribute1Value(),     Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
+                Triple(  "",       "",                                 (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
+                Triple(  "Area",   getArea().formatAreaValue(),        Config.PAD_AREA   to Config.PAD_AREA_VAL)
+            ))
 }
