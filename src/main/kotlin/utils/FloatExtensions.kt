@@ -1,6 +1,6 @@
-package utils
+package de.fhkiel.oop.utils
 
-import main.kotlin.Config
+import de.fhkiel.oop.config.Config
 import java.util.Locale
 import kotlin.math.absoluteValue
 

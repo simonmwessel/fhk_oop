@@ -1,6 +1,7 @@
-package main.kotlin
+package de.fhkiel.oop.model
 
-import utils.FloatExtensions.formatCoordinateValue
+import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import kotlin.random.Random
 
 /**
@@ -51,8 +52,8 @@ class Point(xParam: Float, yParam: Float) {
      * Initializes the point with random x and y coordinates between 0 and 100.
      */
     constructor() : this(
-        Random.nextFloat() * Config.MAX_X,
-        Random.nextFloat() * Config.MAX_Y
+        Random.Default.nextFloat() * Config.MAX_X,
+        Random.Default.nextFloat() * Config.MAX_Y
     )
 
     /**

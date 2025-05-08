@@ -21,7 +21,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("main.kotlin.Main")
+    mainClass.set("de.fhkiel.oop.Main")
 }
 
 tasks.test {

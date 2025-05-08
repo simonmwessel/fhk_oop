@@ -1,4 +1,10 @@
-package main.kotlin
+package de.fhkiel.oop
+
+import de.fhkiel.oop.factory.FormFactory
+import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.shapes.Circle
+import de.fhkiel.oop.shapes.Rectangle
+import de.fhkiel.oop.shapes.Square
 
 /**C
  * Main class to demonstrate the functionality of the Circle, Rectangle, and Square classes.

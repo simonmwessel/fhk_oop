@@ -1,8 +1,8 @@
-package main.kotlin
+package de.fhkiel.oop.config
 
-import utils.FloatExtensions.decimalPlaces
-import kotlin.math.pow
+import de.fhkiel.oop.utils.FloatExtensions.decimalPlaces
 import java.util.Locale
+import kotlin.math.pow
 
 /**
  * Global configuration for all Shape classes.
@@ -55,7 +55,7 @@ object Config {
     // Constants for padding when building toString output
 
     /** Locale for formatting numbers */
-    val LOCALE:                     Locale = Locale.GERMANY
+    val LOCALE: Locale = Locale.GERMANY
 
     /** Separator for different attributes */
     const val SEPARATOR:            String = " | "

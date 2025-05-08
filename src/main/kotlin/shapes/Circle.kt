@@ -1,8 +1,11 @@
-package main.kotlin
+package de.fhkiel.oop.shapes
 
-import utils.FloatExtensions.formatAreaValue
-import utils.FloatExtensions.formatAttribute1Value
-import utils.FloatExtensions.formatCoordinateValue
+import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Shape
+import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
+import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
+import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import kotlin.random.Random
 import kotlin.math.sqrt
 

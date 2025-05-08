@@ -1,5 +1,9 @@
-package main.kotlin
+package de.fhkiel.oop.factory
 
+import de.fhkiel.oop.model.Shape
+import de.fhkiel.oop.shapes.Circle
+import de.fhkiel.oop.shapes.Rectangle
+import de.fhkiel.oop.shapes.Square
 import kotlin.random.Random
 
 /**
@@ -18,7 +22,7 @@ class FormFactory {
      * @return an array of random shapes
      */
     fun produce(count: Int): List<Shape> = List(count) {
-        when (Random.nextDouble()) {
+        when (Random.Default.nextDouble()) {
             in 0.0..0.33  -> Circle()
             in 0.33..0.66 -> Rectangle()
             else          -> Square()

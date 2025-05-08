@@ -1,5 +1,6 @@
-package main.kotlin
+package de.fhkiel.oop.model
 
+import de.fhkiel.oop.config.Config
 import kotlin.random.Random
 
 /**
@@ -88,7 +89,7 @@ abstract class Shape(locationParam: Point) {
     constructor() : this(Point()) {
         strokeColor  = (0x000000..0xFFFFFF).random() or (0xFF shl 24)
         fillColor    = (0x000000..0xFFFFFF).random() or (0xFF shl 24)
-        strokeWeight = Random.nextFloat() * 4.5f + 0.5f
+        strokeWeight = Random.Default.nextFloat() * 4.5f + 0.5f
     }
 
     /**
