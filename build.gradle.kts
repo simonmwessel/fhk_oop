@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.20"
+    id("application")
 }
 
 group = "org.example"
@@ -17,6 +18,10 @@ val processingCoreJar = fileTree("/usr/share/processing/lib/app/resources/core/l
 dependencies {
     testImplementation(kotlin("test"))
     implementation(files(processingCoreJar))
+}
+
+application {
+    mainClass.set("main.kotlin.Main")
 }
 
 tasks.test {
