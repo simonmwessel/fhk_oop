@@ -28,11 +28,10 @@ value class Color(val rgba: Int) {
         ((b and 0xFF) shl  8) or
         (a and 0xFF)
     )
-
-    /** Red channel (0–255). */   val red:   Int get() = (rgba ushr 24) and 0xFF
-    /** Green channel (0–255). */ val green: Int get() = (rgba ushr 16) and 0xFF
-    /** Blue channel (0–255). */  val blue:  Int get() = (rgba ushr  8) and 0xFF
-    /** Alpha channel (0–255).*/  val alpha: Int get() =  rgba          and 0xFF
+    /** Red channel (0–255). */   val red:   Float get() = ((rgba ushr 24) and 0xFF).toFloat()
+    /** Green channel (0–255). */ val green: Float get() = ((rgba ushr 16) and 0xFF).toFloat()
+    /** Blue channel (0–255). */  val blue:  Float get() = ((rgba ushr  8) and 0xFF).toFloat()
+    /** Alpha channel (0–255).*/  val alpha: Float get() = ( rgba          and 0xFF).toFloat()
 
     /** 24-bit RGB value (0xRRGGBB). */
     val rgb: Int
@@ -40,7 +39,7 @@ value class Color(val rgba: Int) {
 
     /** 24-bit RGBA value as a hex string in the format #RRGGBBAA. */
     override fun toString(): String =
-        "#%02X%02X%02X%02X".format(red, green, blue, alpha)
+        "#%02X%02X%02X%02X".format(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt())
 
     companion object {
         /** Parses "#RRGGBB" or "#RRGGBBAA". */
