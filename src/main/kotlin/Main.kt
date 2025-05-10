@@ -6,11 +6,11 @@ import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
 import de.fhkiel.oop.shapes.Square
 
-/**C
+/**
  * Main class to demonstrate the functionality of the Circle, Rectangle, and Square classes.
  *
  * @author  Simon Wessel
- * @version 2.1
+ * @version 2.3
  * @since   1.0
  */
 object Main {

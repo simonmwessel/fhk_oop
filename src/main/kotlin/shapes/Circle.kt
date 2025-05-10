@@ -6,23 +6,32 @@ import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
-import kotlin.random.Random
+import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
+import de.fhkiel.oop.utils.RandomUtils.random
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
  * Circle class that represents a circle in 2D space.
  * This class extends the Shape class.
  *
- * @property center The center of the circle.
+ * @property originParam the center point of the circle (default = random Point within [[0, MAX_X]]x[[0, MAX_Y]])
+ * @property radiusParam the radius of the circle (default = random ∈ [[0, MAX_CIRCLE_RADIUS]])
+ *
+ * @property origin The center of the circle.
  * @property radius The radius of the circle.
  *
- * @constructor Creates a circle with the specified center and radius.
+ * @constructor Creates a circle with the specified origin and radius.
+ *              If either is omitted, a random value in the respective Config range is used.
  *
  * @author  Simon Wessel
- * @version 2.2
+ * @version 2.3
  * @since   1.0
  */
-class Circle(center: Point, radiusParam: Float) : Shape(center) {
+class Circle(
+    originParam: Point = Point(),
+    radiusParam: Float = (0f..Config.MAX_CIRCLE_RADIUS).random()
+)  : Shape(originParam) {
 
     /** Backing field for radius */
     private var _radius: Float = radiusParam
@@ -39,12 +48,6 @@ class Circle(center: Point, radiusParam: Float) : Shape(center) {
         set(v) {
             _radius = v
         }
-
-    /**
-     * Default constructor for Circle.
-     * Initializes the center with a random point and radius with a random value between 0 and 10.
-     */
-    constructor() : this(Point(), Random.nextFloat() * 10)
 
     companion object {
         /**
@@ -64,7 +67,7 @@ class Circle(center: Point, radiusParam: Float) : Shape(center) {
      *
      * @return The area of the circle.
      */
-    override fun getArea(): Float = (Math.PI * radius * radius).toFloat()
+    override fun getArea(): Float = (Math.PI * radius.pow(2)).toFloat()
 
     /**
      * Returns a string representation of the Circle
@@ -74,11 +77,18 @@ class Circle(center: Point, radiusParam: Float) : Shape(center) {
     override fun toString(): String =
         buildString(
             listOf(
-                Triple(  "Type",   this::class.simpleName!!,           Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
-                Triple(  "X",      location.x.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
-                Triple(  "Y",      location.y.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
-                Triple(  "Radius", radius.formatAttribute1Value(),     Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
-                Triple(  "",       "",                                 (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
-                Triple(  "Area",   getArea().formatAreaValue(),        Config.PAD_AREA   to Config.PAD_AREA_VAL)
+                Triple("Type",   this::class.simpleName!!,         Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
+                Triple("X",      origin.x.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple("Y",      origin.y.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple("Radius", radius.formatAttribute1Value(),   Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
+                Triple("",       "",                               (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
+                Triple("Area",   getArea().formatAreaValue(),      Config.PAD_AREA   to Config.PAD_AREA_VAL),
+
+                Triple("Fill Color",    fillColor.toString(),
+                    Config.PAD_FILL_COLR to Config.PAD_FILL_COLR_VAL),
+                Triple("Stroke Color",  strokeColor.toString(),
+                    Config.PAD_STRK_COLR to Config.PAD_STRK_COLR_VAL),
+                Triple("Stroke Weight", strokeWeight.formatStrokeWeightValue(),
+                    Config.PAD_STRK_WGHT to Config.PAD_STRK_WGHT_VAL)
             ))
 }

@@ -1,64 +1,62 @@
 package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.Config
-import kotlin.random.Random
+import de.fhkiel.oop.utils.Color
+import de.fhkiel.oop.utils.RandomUtils.random
+import de.fhkiel.oop.utils.RandomUtils.randomColor
 
 /**
  * Shape class that represents a generic shape in 2D space.
- * This class serves as a base class for specific shapes like Circle, Rectangle, and Square.
+ * This class serves as a base for specific shapes like Circle, Rectangle, and Square.
  *
- * @property location     Position of the shape.
- * @property strokeColor  ARGB color used for the border.
- * @property fillColor    ARGB color used for filling the shape.
- * @property strokeWeight Thickness of the border line.
+ * Specified parameters are used as given; all others (location, colors, stroke weight)
+ * default to random values within the ranges defined in Config.
+ *
+ * @property originParam       the position of the shape (default = random Point)
+ * @property fillColorParam    the fill color (default = random ARGB Color)
+ * @property strokeColorParam  the stroke (border) color (default = random ARGB Color)
+ * @property strokeWeightParam the stroke weight (default = random ∈ [[MIN_STRK_WEIGHT, MAX_STRK_WEIGHT]])
+ *
+ * @constructor Creates a shape with the specified position, fill/stroke colors,
+ *              and stroke weight. Any omitted parameters are randomly initialized
+ *              within their respective Config ranges.
  *
  * @author  Simon Wessel
- * @version 2.2
+ * @version 2.3
  * @since   1.5
  */
-abstract class Shape(locationParam: Point) {
+abstract class Shape(
+    originParam:       Point = Point(),
+    fillColorParam:    Color = randomColor(),
+    strokeColorParam:  Color = randomColor(),
+    strokeWeightParam: Float = (Config.MIN_STRK_WEIGHT..Config.MAX_STRK_WEIGHT).random()
+) {
 
     /** Backing field for location */
-    private var _location: Point = locationParam
+    private var _origin: Point = originParam
 
     /**
      * The location of the shape.
      *
      * @return the location point.
      */
-    var location: Point
+    var origin: Point
         /** Returns the location of the shape. */
-        get() = _location
+        get() = _origin
         /** Sets the location of the shape. */
         set(v) {
-            _location = v
-        }
-
-    /** Backing field for stroke color */
-    private var _strokeColor: Int = 0xFF000000.toInt()
-
-    /**
-     * The stroke (border) color of the shape.
-     *
-     * @return the stroke color as ARGB int.
-     */
-    var strokeColor: Int
-        /** Returns the stroke (border) color. */
-        get() = _strokeColor
-        /** Sets the stroke (border) color. */
-        set(v) {
-            _strokeColor = v
+            _origin = v
         }
 
     /** Backing field for fill color */
-    private var _fillColor: Int = 0xFFFFFFFF.toInt()
+    private var _fillColor: Color = fillColorParam
 
     /**
      * The fill color of the shape.
      *
      * @return the fill color as ARGB int.
      */
-    var fillColor: Int
+    var fillColor: Color
         /** Returns the fill color. */
         get() = _fillColor
         /** Sets the fill color. */
@@ -66,8 +64,24 @@ abstract class Shape(locationParam: Point) {
             _fillColor = v
         }
 
+    /** Backing field for stroke color */
+    private var _strokeColor: Color = strokeColorParam
+
+    /**
+     * The stroke (border) color of the shape.
+     *
+     * @return the stroke color as ARGB int.
+     */
+    var strokeColor: Color
+        /** Returns the stroke (border) color. */
+        get() = _strokeColor
+        /** Sets the stroke (border) color. */
+        set(v) {
+            _strokeColor = v
+        }
+
     /** Backing field for stroke weight */
-    private var _strokeWeight: Float = 1.0f
+    private var _strokeWeight: Float = strokeWeightParam
 
     /**
      * The stroke weight (border thickness) of the shape.
@@ -81,16 +95,6 @@ abstract class Shape(locationParam: Point) {
         set(v) {
             _strokeWeight = v
         }
-
-    /**
-     * Secondary constructor for Shape without parameters.
-     * Initializes the location, stroke-, and fill color and stroke weight with a random value.
-     */
-    constructor() : this(Point()) {
-        strokeColor  = (0x000000..0xFFFFFF).random() or (0xFF shl 24)
-        fillColor    = (0x000000..0xFFFFFF).random() or (0xFF shl 24)
-        strokeWeight = Random.Default.nextFloat() * 4.5f + 0.5f
-    }
 
     /**
      * Abstract method to calculate the area of the shape.
@@ -114,8 +118,8 @@ abstract class Shape(locationParam: Point) {
      *  - key:   the column heading (empty String for blank placeholders)
      *  - value: the column content as a String
      *  - pad:   a Pair of two Ints (padKeyWidth, padValueWidth) defining:
-     *      - padKeyWidth:   number of characters to pad the key using padEnd()
-     *      - padValueWidth: number of characters to pad the value using padStart()
+     *              - padKeyWidth:   number of characters to pad the key using padEnd()
+     *              - padValueWidth: number of characters to pad the value using padStart()
      *
      * The final output is constructed as:
      *  1. Config.PREFIX

@@ -8,7 +8,7 @@ import kotlin.math.absoluteValue
  * Utility functions for formatting Float values.
  *
  * @author  Simon Wessel
- * @version 1.0
+ * @version 1.1
  * @since   2.1
  */
 object FloatExtensions {
@@ -81,6 +81,18 @@ object FloatExtensions {
         format(
             width     = Config.PAD_AREA_VAL,
             precision = Config.PAD_AREA_PRECISION,
+            locale    = Config.LOCALE
+        )
+
+    /**
+     * Formats this Float as the stroke weight value using Config.PAD_STRK_WGHT_VAL
+     * and Config.PAD_STRK_WGHT_PRECISION as precision.
+     */
+    @JvmStatic
+    fun Float.formatStrokeWeightValue(): String =
+        format(
+            width     = Config.PAD_STRK_WGHT_VAL,
+            precision = Config.PAD_STRK_WGHT_PRECISION,
             locale    = Config.LOCALE
         )
 }

@@ -6,26 +6,34 @@ import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
+import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
+import de.fhkiel.oop.utils.RandomUtils.random
 import kotlin.math.sqrt
-import kotlin.random.Random
 
 /**
  * Square class that represents a square in 2D space.
  * This class extends the Shape class.
  *
- * @property topLeft    The top left corner of the square.
- * @property sideLength The length of one side of the square.
+ * Specified parameters are used as given; all others (origin, side length)
+ * default to random values within the ranges defined in Config.
  *
- * @constructor Creates a square with the specified top left corner and side length.
+ * @property originParam     the top-left corner of the square (default = random Point within [[0, MAX_X]]x[[0, MAX_Y]])
+ * @property sideLengthParam the length of each side (default = random ∈ [[0, MAX_SQUARE_SIDE]])
+ *
+ * @constructor Creates a square with the specified origin and side length.
+ *              If either parameter is omitted, a random value in the respective Config range is used.
  *
  * @author  Simon Wessel
- * @version 2.2
+ * @version 2.3
  * @since   1.0
  */
-class Square(topLeft: Point, sideParam: Float) : Shape(topLeft) {
+class Square(
+    originParam:     Point = Point(),
+    sideLengthParam: Float = (0f..Config.MAX_SQUARE_SIDE).random(),
+) : Shape(originParam) {
 
     /** Backing field for side length */
-    private var _sideLength: Float = sideParam
+    private var _sideLength: Float = sideLengthParam
 
     /**
      * The side length of the square.
@@ -39,12 +47,6 @@ class Square(topLeft: Point, sideParam: Float) : Shape(topLeft) {
         set(v) {
             _sideLength = v
         }
-
-    /**
-     * Secondary constructor for Square without parameters.
-     * Initializes the top left corner with a random point and side length with a random value between 0 and 10.
-     */
-    constructor() : this(Point(), Random.nextFloat() * 10)
 
     companion object {
         /**
@@ -74,11 +76,18 @@ class Square(topLeft: Point, sideParam: Float) : Shape(topLeft) {
     override fun toString(): String =
         buildString(
             listOf(
-                Triple(  "Type", this::class.simpleName!!,           Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
-                Triple(  "X",    location.x.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
-                Triple(  "Y",    location.y.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
-                Triple(  "Side", sideLength.formatAttribute1Value(), Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
-                Triple(  "",     "",                                 (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
-                Triple(  "Area", getArea().formatAreaValue(),        Config.PAD_AREA   to Config.PAD_AREA_VAL)
+                Triple("Type", this::class.simpleName!!,           Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
+                Triple("X",    origin.x.formatCoordinateValue(),   Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple("Y",    origin.y.formatCoordinateValue(),   Config.PAD_CORD   to Config.PAD_CORD_VAL),
+                Triple("Side", sideLength.formatAttribute1Value(), Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
+                Triple("",     "",                                 (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
+                Triple("Area", getArea().formatAreaValue(),        Config.PAD_AREA   to Config.PAD_AREA_VAL),
+
+                Triple("Fill Color",    fillColor.toString(),
+                    Config.PAD_FILL_COLR to Config.PAD_FILL_COLR_VAL),
+                Triple("Stroke Color",  strokeColor.toString(),
+                    Config.PAD_STRK_COLR to Config.PAD_STRK_COLR_VAL),
+                Triple("Stroke Weight", strokeWeight.formatStrokeWeightValue(),
+                    Config.PAD_STRK_WGHT to Config.PAD_STRK_WGHT_VAL)
             ))
 }
