@@ -52,10 +52,10 @@ import java.util.Locale
 object Config {
 
     /** Maximum X value for random coordinate generation. */
-    const val MAX_X:           Float = 100f
+    const val MAX_X:           Float = 1000f
 
     /** Maximum Y value for random coordinate generation. */
-    const val MAX_Y:           Float = 100f
+    const val MAX_Y:           Float = 1000f
 
     /** Maximum circle radius value for random generation. */
     val MAX_CIRCLE_RADIUS:     Float = minOf(MAX_X, MAX_Y) / 2

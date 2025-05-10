@@ -5,6 +5,7 @@ import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
 import de.fhkiel.oop.shapes.Square
+import processing.core.PApplet
 
 /**
  * Main class to demonstrate the functionality of the Circle, Rectangle, and Square classes.
@@ -42,5 +43,7 @@ object Main {
 
         // FormFactory
         for (shape in FormFactory().produce(10)) println(shape)
+
+        PApplet.main("de.fhkiel.oop.Sketch")
     }
 }
