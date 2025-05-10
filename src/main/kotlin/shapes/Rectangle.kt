@@ -11,17 +11,18 @@ import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
 import de.fhkiel.oop.utils.RandomUtils.random
 
 /**
- * Rectangle class that represents a rectangle in 2D space.
+ * A rectangle defined by its top-left corner, width and height.
  *
- * Specified parameters are used as given; all others (origin, width, height)
- * default to random values within the ranges defined in Config.
+ * @property origin The top-left corner of the rectangle.
+ * @property width  Width in units ∈ [0f..Config.MAX_RECT_WIDTH].
+ * @property height Height in units ∈ [0f..Config.MAX_RECT_HEIGHT].
  *
- * @property originParam the top-left corner of the rectangle (default = random Point within [[0, MAX_X]]x[[0, MAX_Y]])
- * @property widthParam  the width of the rectangle (default = random ∈ [[0, MAX_RECT_WIDTH]])
- * @property heightParam the height of the rectangle (default = random ∈ [[0, MAX_RECT_HEIGHT]])
+ * @constructor Creates a [Rectangle] with given parameters.
+ *             Missing values default to random via [ClosedFloatingPointRange.random].
  *
- * @constructor Creates a rectangle with the specified origin, width, and height.
- *              If any parameter is omitted, a random value in the respective Config range is used.
+ * @param originParam top-left point or random if omitted
+ * @param widthParam  width or random ∈ [0f..Config.MAX_RECT_WIDTH] if omitted
+ * @param heightParam height or random ∈ [0f..Config.MAX_RECT_HEIGHT] if omitted
  *
  * @author  Simon Wessel
  * @version 2.3

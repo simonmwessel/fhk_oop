@@ -1,11 +1,20 @@
 package de.fhkiel.oop.utils
 
 /**
- * Wraps a 32-bit ARGB Int as a proper Color type.
+ * Wraps a 32-bit ARGB integer as a proper [Color] value object.
  *
- * @property rgba Packed 0xAARRGGBB value.
+ * The color is stored as a single `Int` in the format `0xAARRGGBB`.
  *
- * @constructor Constructs a Color from an ARGB Int.
+ * @property rgba Packed 32-bit ARGB value (0xAARRGGBB).
+ *
+ * @constructor Constructs a [Color] from a packed ARGB integer.
+ * @param rgba Packed 32-bit ARGB value (0xAARRGGBB).
+ *
+ * @constructor Constructs a [Color] from individual channels.
+ * @param r Red component (0–255).
+ * @param g Green component (0–255).
+ * @param b Blue component (0–255).
+ * @param a Alpha component (0–255), default 255 = opaque.
  *
  * @author  Simon Wessel
  * @version 1.0
@@ -42,7 +51,15 @@ value class Color(val rgba: Int) {
         "#%02X%02X%02X%02X".format(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt())
 
     companion object {
-        /** Parses "#RRGGBB" or "#RRGGBBAA". */
+        /**
+         * Parses a hex color string in the form `#RRGGBB` or `#RRGGBBAA` into a [Color].
+         *
+         * @param hex String in `"#RRGGBB"` or `"#RRGGBBAA"` format.
+         *
+         * @return Parsed [Color] instance.
+         *
+         * @throws IllegalArgumentException if the string is not 6 or 8 hex digits.
+         */
         fun fromHex(hex: String): Color {
             val clean = hex.removePrefix("#")
             val v = clean.toLong(16)

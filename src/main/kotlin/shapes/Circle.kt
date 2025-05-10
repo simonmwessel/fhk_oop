@@ -12,17 +12,16 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
- * Circle class that represents a circle in 2D space.
- * This class extends the Shape class.
- *
- * @property originParam the center point of the circle (default = random Point within [[0, MAX_X]]x[[0, MAX_Y]])
- * @property radiusParam the radius of the circle (default = random ∈ [[0, MAX_CIRCLE_RADIUS]])
+ * A circle defined by a center point and a radius.
  *
  * @property origin The center of the circle.
- * @property radius The radius of the circle.
+ * @property radius Radius length in units ∈ [0f..Config.MAX_CIRCLE_RADIUS].
  *
- * @constructor Creates a circle with the specified origin and radius.
- *              If either is omitted, a random value in the respective Config range is used.
+ * @constructor Creates a [Circle] with given parameters.
+ *              Missing values default to random via [ClosedFloatingPointRange.random].
+ *
+ * @param originParam center point or random if omitted
+ * @param radiusParam radius or random ∈ [0f..Config.MAX_CIRCLE_RADIUS] if omitted
  *
  * @author  Simon Wessel
  * @version 2.3

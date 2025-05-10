@@ -11,18 +11,27 @@ import de.fhkiel.oop.utils.RandomUtils.Distribution
 import kotlin.random.Random
 
 /**
- * Creates random {@link Shape} instances ( {@link Circle}, {@link Rectangle}, {@link Square} ).
+ * Factory for creating random [Shape] instances: [Circle], [Rectangle], [Square].
  *
- * The class can operate in two different modes:
- * * **Safe mode** (`safe = true`, default) – every generated shape is guaranteed to be fully
- *   contained inside the virtual canvas defined by {@link Config}.
- * * **Legacy mode** (`safe = false`) – reproduces the former behaviour with purely random
- *   coordinates, possibly outside the canvas.
+ * Two configuration axes:
+ * 1. **Bounds handling**
+ *    - `safe = true` (default): every shape is fully contained within the canvas defined by [Config].
+ *    - `safe = false`: falls back to legacy behaviour with unrestricted random coordinates.
  *
- * Example:
+ * 2. **Probability distributions**
+ *    - `sizeDist` governs distribution of size parameters (e.g. radius, width, side length).
+ *    - `originDist` governs distribution of origin coordinates.
+ *    Both default to `NORMAL` (sizes) and `UNIFORM` (origins) and use [ClosedFloatingPointRange.random].
+ *
+ * ### Example
  * ```kotlin
- * val shapes = FormFactory().produce(count = 50)          // safe shapes
- * val debug  = FormFactory().produce(count = 10, safe = false)
+ * val factory = FormFactory()
+ * val shapes  = factory.produce(
+ *     count      = 50,
+ *     safe       = true,
+ *     sizeDist   = Distribution.NORMAL,
+ *     originDist = Distribution.UNIFORM
+ * )
  * ```
  *
  * @author  Simon Wessel
@@ -32,13 +41,14 @@ import kotlin.random.Random
 class FormFactory {
 
     /**
-     * Creates a list of random shapes.
+     * Produces a list of random shapes.
      *
-     * @param count the number of shapes to create
-     * @param safe  if `true` (all default) restricts every shape to the canvas; if `false`
-     *              falls back to the former unrestricted behaviour
+     * @param count      Number of shapes to create.
+     * @param safe       If `true`, restricts shapes to the canvas; if `false`, uses legacy mode.
+     * @param sizeDist   Distribution for size parameters.
+     * @param originDist Distribution for origin coordinates.
      *
-     * @return immutable list of random shapes
+     * @return Immutable [List] of freshly generated [Shape]s.
      */
     fun produce(
         count: Int,
@@ -96,7 +106,11 @@ class FormFactory {
         }
     }
 
-    /** Legacy variant – recreates the former “anything goes” behaviour. */
+    /**
+     * Internal helper for legacy mode (`safe = false`).
+     *
+     * @param count Number of shapes.
+     */
     private fun produceLegacy(count: Int): List<Shape> = List(count) {
         when (Random.nextDouble()) {
             in 0.0..0.33  -> Circle()

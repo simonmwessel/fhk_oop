@@ -6,20 +6,26 @@ import de.fhkiel.oop.utils.RandomUtils.random
 import de.fhkiel.oop.utils.RandomUtils.randomColor
 
 /**
- * Shape class that represents a generic shape in 2D space.
- * This class serves as a base for specific shapes like Circle, Rectangle, and Square.
+ * Abstract base for all 2D shapes.
  *
- * Specified parameters are used as given; all others (location, colors, stroke weight)
- * default to random values within the ranges defined in Config.
+ * Provides common properties and random defaults:
+ * - [origin]:       position in the canvas
+ * - [fillColor]:    ARGB fill color
+ * - [strokeColor]:  ARGB stroke color
+ * - [strokeWeight]: border thickness
  *
- * @property originParam       the position of the shape (default = random Point)
- * @property fillColorParam    the fill color (default = random ARGB Color)
- * @property strokeColorParam  the stroke (border) color (default = random ARGB Color)
- * @property strokeWeightParam the stroke weight (default = random ∈ [[MIN_STRK_WEIGHT, MAX_STRK_WEIGHT]])
+ * @property origin       top-left or center point of the shape
+ * @property fillColor    interior color as [Color]
+ * @property strokeColor  border color as [Color]
+ * @property strokeWeight border thickness ∈ ([Config.MIN_STRK_WEIGHT]..[Config.MAX_STRK_WEIGHT])
  *
- * @constructor Creates a shape with the specified position, fill/stroke colors,
- *              and stroke weight. Any omitted parameters are randomly initialized
- *              within their respective Config ranges.
+ * @constructor Creates a [Shape] with the specified properties.
+ *             Omitted params are randomized.
+ *
+ * @param originParam       initial [Point] or random if omitted
+ * @param fillColorParam    initial fill [Color] or random if omitted
+ * @param strokeColorParam  initial stroke [Color] or random if omitted
+ * @param strokeWeightParam initial stroke weight or random ∈ ([Config.MIN_STRK_WEIGHT]..[Config.MAX_STRK_WEIGHT])
  *
  * @author  Simon Wessel
  * @version 2.3
@@ -123,7 +129,7 @@ abstract class Shape(
      *
      * The final output is constructed as:
      *  1. Config.PREFIX
-     *  2. columns.joinToString(Config.SEPARATOR) { … }  // each column formatted and joined
+     *  2. ```columns.joinToString(Config.SEPARATOR) { ... }  // each column formatted and joined```
      *  3. Config.SUFFIX
      *
      * @param columns List of Triple(key, value, Pair(padKeyWidth, padValueWidth)) defining

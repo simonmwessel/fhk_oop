@@ -11,17 +11,16 @@ import de.fhkiel.oop.utils.RandomUtils.random
 import kotlin.math.sqrt
 
 /**
- * Square class that represents a square in 2D space.
- * This class extends the Shape class.
+ * A square defined by its top-left corner and side length.
  *
- * Specified parameters are used as given; all others (origin, side length)
- * default to random values within the ranges defined in Config.
+ * @property origin     The top-left corner of the square.
+ * @property sideLength Length of each side ∈ [0f..Config.MAX_SQUARE_SIDE].
  *
- * @property originParam     the top-left corner of the square (default = random Point within [[0, MAX_X]]x[[0, MAX_Y]])
- * @property sideLengthParam the length of each side (default = random ∈ [[0, MAX_SQUARE_SIDE]])
+ * @constructor Creates a [Square] with given parameters.
+ *              Missing values default to random via [ClosedFloatingPointRange.random].
  *
- * @constructor Creates a square with the specified origin and side length.
- *              If either parameter is omitted, a random value in the respective Config range is used.
+ * @param originParam     top-left point or random if omitted
+ * @param sideLengthParam side length or random ∈ [0f..Config.MAX_SQUARE_SIDE] if omitted
  *
  * @author  Simon Wessel
  * @version 2.3

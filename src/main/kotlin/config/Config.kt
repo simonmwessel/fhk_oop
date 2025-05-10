@@ -4,10 +4,17 @@ import de.fhkiel.oop.utils.FloatExtensions.decimalPlaces
 import java.util.Locale
 
 /**
- * Global configuration for all Shape classes.
+ * Global configuration for all shapes and formatting routines.
  *
- * Holds maximum values for coordinate and size generation,
- * as well as formatting options for string output.
+ * Defines canvas size limits, maximum shape dimensions, stroke weight bounds,
+ * locale for numeric formatting, and padding/precision constants for
+ * string output.
+ *
+ *  * All numeric ranges and padding values feed into:
+ *  * - [de.fhkiel.oop.model.Point]
+ *  * - [de.fhkiel.oop.model.Shape]
+ *  * - [de.fhkiel.oop.shapes.Circle], [de.fhkiel.oop.shapes.Rectangle], [de.fhkiel.oop.shapes.Square]
+ *  * - [de.fhkiel.oop.utils.FloatExtensions] methods
  *
  * @property MAX_X                   Maximum X value for random coordinate generation.
  * @property MAX_Y                   Maximum Y value for random coordinate generation.

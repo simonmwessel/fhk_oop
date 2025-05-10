@@ -5,16 +5,19 @@ import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.RandomUtils.random
 
 /**
- * Point class that represents a point in 2D space.
+ * Represents a point in 2D space.
  *
- * Specified coordinates are used as given; if omitted, x and/or y
- * default to random values within the ranges defined in Config.
+ * Both coordinates default to random values within the canvas bounds
+ * defined by [Config.MAX_X] and [Config.MAX_Y].
  *
- * @property xParam the x coordinate (default = random ∈ [[0, MAX_X]])
- * @property yParam the y coordinate (default = random ∈ [[0, MAX_Y]])
+ * @property x X-coordinate of the point (0f..Config.MAX_X).
+ * @property y Y-coordinate of the point (0f..Config.MAX_Y).
  *
- * @constructor Creates a point with the specified x and y coordinates.
- *              If either coordinate is omitted, a random value in the respective Config range is used.
+ * @constructor Creates a [Point] at the specified coordinates.
+ *             If omitted, each coordinate is drawn via [ClosedFloatingPointRange.random].
+ *
+ * @param xParam initial X-coordinate or random ∈ [0f, Config.MAX_X].
+ * @param yParam initial Y-coordinate or random ∈ [0f, Config.MAX_Y].
  *
  * @author  Simon Wessel
  * @version 2.2

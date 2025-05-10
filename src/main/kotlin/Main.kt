@@ -8,7 +8,13 @@ import de.fhkiel.oop.shapes.Square
 import processing.core.PApplet
 
 /**
- * Main class to demonstrate the functionality of the Circle, Rectangle, and Square classes.
+ * Demonstrates usage of the shape classes and launches the [Sketch].
+ *
+ * Prints examples of:
+ * 1. Default random instances ([Circle], [Rectangle], [Square])
+ * 2. Parameterized constructors and factory methods (e.g. [Circle.fromArea])
+ * 3. Batch generation via [FormFactory.produce]
+ * Finally, starts the Processing sketch by invoking [PApplet.main] on [Sketch].
  *
  * @author  Simon Wessel
  * @version 2.3
@@ -17,9 +23,15 @@ import processing.core.PApplet
 object Main {
 
     /**
-     * Main method to demonstrate the functionality of the classes.
+     * Application entry point.
      *
-     * @param args Command line arguments (not used).
+     * @param args command-line arguments (ignored)
+     *
+     * @see Circle
+     * @see Rectangle
+     * @see Square
+     * @see FormFactory
+     * @see Sketch
      */
     @JvmStatic
     fun main(args: Array<String>) {

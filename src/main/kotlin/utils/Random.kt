@@ -2,16 +2,17 @@ package de.fhkiel.oop.utils
 
 import kotlin.random.Random
 
+
 /**
- * Utility object providing random helpers for numbers and colours.
+ * Utility object providing random helpers for numeric ranges and colours.
  *
- * ### Numeric distributions
- * **Uniform** – every value in the range is equally likely.
- * **Normal (Gaussian)** – bell-curve; implementation uses a truncated
- *   normal distribution and clips outliers to the range borders.
+ * ### Distributions
+ * - **Uniform**: every value in the range is equally likely.
+ * - **Normal**: truncated Gaussian; mean defaults to midpoint, σ = (range / 6),
+ *   clipping outliers at the bounds.
  *
- * The global default is **uniform**, but every call can override the distribution
- * explicitly (see [ClosedFloatingPointRange.random]).
+ * By default, all range-based calls use the global [defaultDistribution], but
+ * each call can override via an explicit parameter.
  *
  * @author  Simon Wessel
  * @version 1.0
@@ -22,24 +23,33 @@ object RandomUtils {
     /** Probability distributions supported by this utility. */
     enum class Distribution { UNIFORM, NORMAL }
 
-    /** Globally active distribution for [ClosedFloatingPointRange.random] (default UNIFORM). */
+    /**
+     * Global default distribution for range-based random calls.
+     *
+     * @see ClosedFloatingPointRange.random
+     */
     @JvmStatic
     var defaultDistribution: Distribution = Distribution.UNIFORM
 
-    /** Uniformly distributed random value in this closed range. */
+    /**
+     * Returns a uniformly distributed random [Float] in this range.
+     *
+     * @receiver Closed range of [Float].
+     * @return Uniform random value between `start` and `endInclusive`.
+     */
     @JvmStatic
     fun ClosedFloatingPointRange<Float>.randomUniform(): Float =
         Random.nextFloat() * (endInclusive - start) + start
 
     /**
-     * Random value in this range, drawn from a **truncated normal distribution**.
+     * Returns a random [Float] drawn from a truncated normal distribution.
      *
-     * The mean (μ) defaults to the mid-point of the interval, the standard deviation (σ)
-     * to `range / 6`, so that ± 3 σ equals the full width.
-     * Values outside the interval are clipped to the nearest border.
+     * @receiver Closed range of [Float].
      *
-     * @param mean  the mean (μ) of the distribution (default = mid-point of range)
-     * @param sigma the standard deviation (σ) of the distribution (default = range / 6)
+     * @param mean  Mean μ (default = midpoint of the range).
+     * @param sigma Standard deviation σ (default = range / 6 ⇒ ±3σ covers the range).
+     *
+     * @return Truncated normal random value, clipped to the range.
      */
     @JvmStatic
     fun ClosedFloatingPointRange<Float>.randomNormal(
@@ -51,10 +61,13 @@ object RandomUtils {
     }
 
     /**
-     * Random value in this range using either the global default or the
-     * caller-specified [Distribution].
+     * Returns a random [Float] using the specified distribution.
      *
-     * @param dist distribution to use (falls back to [defaultDistribution] if omitted)
+     * @receiver Closed range of [Float].
+     *
+     * @param dist Distribution to use (defaults to [defaultDistribution]).
+     *
+     * @return Random value following the chosen distribution.
      */
     @JvmStatic
     fun ClosedFloatingPointRange<Float>.random(
@@ -65,8 +78,13 @@ object RandomUtils {
     }
 
     /**
-     * Convenience dispatcher that chooses `randomUniform()` or `randomNormal()` depending on
-     * the globally configured {@link #defaultDistribution}.
+     * Convenience overload that uses the global [defaultDistribution].
+     *
+     * @receiver Closed range of [Float].
+     *
+     * @return Random value following the global distribution.
+     *
+     * @see ClosedFloatingPointRange.random
      */
     @JvmStatic
     fun ClosedFloatingPointRange<Float>.random(): Float =
@@ -76,9 +94,11 @@ object RandomUtils {
         }
 
     /**
-     * Builds a random opaque ARGB‐Color.
+     * Builds a random opaque ARGB [Color].
      *
-     * @param alpha optional alpha channel (0–255), default 255 = opaque
+     * @param alpha Alpha channel (0–255), default = 255 (opaque).
+     *
+     * @return Random [Color] with specified alpha.
      */
     @JvmStatic
     fun randomColor(alpha: Int = 0xFF): Color =
