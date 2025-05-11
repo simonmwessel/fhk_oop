@@ -15,13 +15,13 @@ import kotlin.math.sqrt
  * A circle defined by a center point and a radius.
  *
  * @property origin The center of the circle.
- * @property radius Radius length in units ∈ [0f..Config.MAX_CIRCLE_RADIUS].
+ * @property radius Radius length in units ∈ (0f..[Config.MAX_CIRCLE_RADIUS]).
  *
  * @constructor Creates a [Circle] with given parameters.
- *              Missing values default to random via [ClosedFloatingPointRange.random].
+ * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam center point or random if omitted
- * @param radiusParam radius or random ∈ [0f..Config.MAX_CIRCLE_RADIUS] if omitted
+ * @param radiusParam radius or random ∈ (0f..[Config.MAX_CIRCLE_RADIUS]) if omitted
  *
  * @author  Simon Wessel
  * @version 2.3

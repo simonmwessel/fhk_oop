@@ -12,8 +12,8 @@ import kotlin.math.absoluteValue
  * 1. Determine integer digit count via [decimalPlaces].
  * 2. Format any value with custom width/precision via [format].
  * 3. Format common shape attributes ([formatCoordinateValue], [formatAttribute1Value],
- *    [formatAttribute2Value], [formatAreaValue], [formatStrokeWeightValue]) using
- *    corresponding [Config] constants.
+ * [formatAttribute2Value], [formatAreaValue], [formatStrokeWeightValue])
+ * using corresponding [Config] constants.
  *
  * ### Example
  * ```kotlin
@@ -47,9 +47,9 @@ object FloatExtensions {
      *
      * @receiver   the float to format
      *
-     * @param width total minimum width (including dot and decimals)
+     * @param width     total minimum width (including dot and decimals)
      * @param precision number of digits after the decimal point
-     * @param locale locale for decimal separator (default = [Config.LOCALE])
+     * @param locale    locale for decimal separator (default = [Config.LOCALE])
      *
      * @return formatted string, e.g. `"%6.2f"` style
      */

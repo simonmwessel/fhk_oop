@@ -14,16 +14,16 @@ import processing.core.PApplet
  *
  * This sketch ties together several components:
  *
- *  * Canvas sizing based on [Config.MAX_X] and [Config.MAX_Y].
- *  * Shape generation via [FormFactory], producing instances of [Circle], [Rectangle], and [Square].
- *  * Distribution control for sizes and origins using [Distribution].
- *  * Rendering of shapes using Processing's drawing primitives provided by [PApplet].
+ * Canvas sizing based on [Config.MAX_X] and [Config.MAX_Y].
+ * Shape generation via [FormFactory], producing instances of [Circle], [Rectangle], and [Square].
+ * Distribution control for sizes and origins using [Distribution].
+ * Rendering of shapes using Processing's drawing primitives provided by [PApplet].
  *
  * ## Workflow
  * 1. [settings] configures the sketch window size.
  * 2. [setup]    initializes color mode, background, resizability, and populates the [shapes] list.
  * 3. [draw]     clears the canvas each frame and renders each shape with its graphic attributes.
- *
+ *s
  * @author  Simon Wessel
  * @version 1.1
  * @since   2.3
@@ -49,10 +49,10 @@ class Sketch : PApplet() {
     /**
      * Initializes the sketch:
      *
-     *  * Configures the color mode to RGB.
-     *  * Clears the background to white.
-     *  * Enables window resizability.
-     *  * Generates a list of random shapes via [FormFactory.produce], using
+     * Configures the color mode to RGB.
+     * Clears the background to white.
+     * Enables window resizability.
+     * Generates a list of random shapes via [FormFactory.produce], using
      *    [Distribution.NORMAL] for sizes and [Distribution.UNIFORM] for origins.
      *
      * Called once by Processing after [settings].
@@ -86,7 +86,7 @@ class Sketch : PApplet() {
      *
      * For each [Shape] in [shapes]:
      *  1. Applies fill and stroke colors via [fill] and [stroke].
-     *  2. Sets stroke weight from [shape.strokeWeight].
+     *  2. Sets stroke weight from [strokeWeight].
      *  3. Draws the shape using the appropriate Processing primitive:
      *     * [Circle] via [ellipse], using `radius * 2` for width/height.
      *     * [Rectangle] via [rect], using `width` and `height`.

@@ -112,22 +112,22 @@ class FormFactory {
         originSigma:        Float?       = null
     ): Circle {
         val r = (0f..Config.MAX_CIRCLE_RADIUS).random(
-            dist = sizeDist,
+            dist         = sizeDist,
             peakFraction = sizePeakFraction,
-            mean = sizeMean,
-            sigma = sizeSigma
+            mean         = sizeMean,
+            sigma        = sizeSigma
         )
         val x = (r..Config.MAX_X - r).random(
-            dist = originDist,
+            dist         = originDist,
             peakFraction = originPeakFraction,
-            mean = originMean,
-            sigma = originSigma
+            mean         = originMean,
+            sigma        = originSigma
         )
         val y = (r..Config.MAX_Y - r).random(
-            dist = originDist,
+            dist         = originDist,
             peakFraction = originPeakFraction,
-            mean = originMean,
-            sigma = originSigma
+            mean         = originMean,
+            sigma        = originSigma
         )
         return Circle(Point(x, y), r)
     }
@@ -159,28 +159,28 @@ class FormFactory {
         originSigma:        Float?       = null
     ): Rectangle {
         val w = (0f..Config.MAX_RECT_WIDTH).random(
-            dist = sizeDist,
+            dist         = sizeDist,
             peakFraction = sizePeakFraction,
-            mean = sizeMean,
-            sigma = sizeSigma
+            mean         = sizeMean,
+            sigma        = sizeSigma
         )
         val h = (0f..Config.MAX_RECT_HEIGHT).random(
-            dist = sizeDist,
+            dist         = sizeDist,
             peakFraction = sizePeakFraction,
-            mean = sizeMean,
-            sigma = sizeSigma
+            mean         = sizeMean,
+            sigma        = sizeSigma
         )
         val x = (0f..Config.MAX_X - w).random(
-            dist = originDist,
+            dist         = originDist,
             peakFraction = originPeakFraction,
-            mean = originMean,
-            sigma = originSigma
+            mean         = originMean,
+            sigma        = originSigma
         )
         val y = (0f..Config.MAX_Y - h).random(
-            dist = originDist,
+            dist         = originDist,
             peakFraction = originPeakFraction,
-            mean = originMean,
-            sigma = originSigma
+            mean         = originMean,
+            sigma        = originSigma
         )
         return Rectangle(Point(x, y), w, h)
     }
@@ -212,22 +212,22 @@ class FormFactory {
         originSigma:        Float?       = null
     ): Square {
         val s = (0f..Config.MAX_SQUARE_SIDE).random(
-            dist = sizeDist,
+            dist         = sizeDist,
             peakFraction = sizePeakFraction,
-            mean = sizeMean,
-            sigma = sizeSigma
+            mean         = sizeMean,
+            sigma        = sizeSigma
         )
         val x = (0f..Config.MAX_X - s).random(
-            dist = originDist,
+            dist         = originDist,
             peakFraction = originPeakFraction,
-            mean = originMean,
-            sigma = originSigma
+            mean         = originMean,
+            sigma        = originSigma
         )
         val y = (0f..Config.MAX_Y - s).random(
-            dist = originDist,
+            dist         = originDist,
             peakFraction = originPeakFraction,
-            mean = originMean,
-            sigma = originSigma
+            mean         = originMean,
+            sigma        = originSigma
         )
         return Square(Point(x, y), s)
     }

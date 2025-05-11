@@ -10,14 +10,14 @@ import de.fhkiel.oop.utils.RandomUtils.random
  * Both coordinates default to random values within the canvas bounds
  * defined by [Config.MAX_X] and [Config.MAX_Y].
  *
- * @property x X-coordinate of the point (0f..Config.MAX_X).
- * @property y Y-coordinate of the point (0f..Config.MAX_Y).
+ * @property x X-coordinate of the point (0f..[Config.MAX_X]).
+ * @property y Y-coordinate of the point (0f..[Config.MAX_Y]).
  *
  * @constructor Creates a [Point] at the specified coordinates.
- *             If omitted, each coordinate is drawn via [ClosedFloatingPointRange.random].
+ * If omitted, each coordinate is drawn via [ClosedFloatingPointRange.random].
  *
- * @param xParam initial X-coordinate or random ∈ [0f, Config.MAX_X].
- * @param yParam initial Y-coordinate or random ∈ [0f, Config.MAX_Y].
+ * @param xParam initial X-coordinate or random ∈ (0f, [Config.MAX_X]).
+ * @param yParam initial Y-coordinate or random ∈ (0f, [Config.MAX_Y]).
  *
  * @author  Simon Wessel
  * @version 2.2

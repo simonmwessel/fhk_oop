@@ -11,11 +11,11 @@ import java.util.Locale
  * locale for numeric formatting, and padding/precision constants for
  * string output.
  *
- *  * All numeric ranges and padding values feed into:
- *  * - [de.fhkiel.oop.model.Point]
- *  * - [de.fhkiel.oop.model.Shape]
- *  * - [de.fhkiel.oop.shapes.Circle], [de.fhkiel.oop.shapes.Rectangle], [de.fhkiel.oop.shapes.Square]
- *  * - [de.fhkiel.oop.utils.FloatExtensions] methods
+ * All numeric ranges and padding values feed into:
+ * - [de.fhkiel.oop.model.Point]
+ * - [de.fhkiel.oop.model.Shape]
+ * - [de.fhkiel.oop.shapes.Circle], [de.fhkiel.oop.shapes.Rectangle], [de.fhkiel.oop.shapes.Square]
+ * - [de.fhkiel.oop.utils.FloatExtensions] methods
  *
  * @property MAX_X                   Maximum X value for random coordinate generation.
  * @property MAX_Y                   Maximum Y value for random coordinate generation.

@@ -20,7 +20,7 @@ import de.fhkiel.oop.utils.RandomUtils.randomColor
  * @property strokeWeight border thickness ∈ ([Config.MIN_STRK_WEIGHT]..[Config.MAX_STRK_WEIGHT])
  *
  * @constructor Creates a [Shape] with the specified properties.
- *             Omitted params are randomized.
+ * Omitted params are randomized.
  *
  * @param originParam       initial [Point] or random if omitted
  * @param fillColorParam    initial fill [Color] or random if omitted

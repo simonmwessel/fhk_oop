@@ -35,6 +35,8 @@ object Main {
      */
     @JvmStatic
     fun main(args: Array<String>) {
+        println("Hardcoded test shapes:")
+
         // Circles
         println(Circle())
         println(Circle(Point(0f, 0f), 5f))
@@ -54,8 +56,10 @@ object Main {
         println()
 
         // FormFactory
+        println("Testing FormFactory:")
         for (shape in FormFactory().produce(10)) println(shape)
 
+        // Start Processing sketch
         PApplet.main("de.fhkiel.oop.Sketch")
     }
 }

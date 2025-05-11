@@ -14,13 +14,13 @@ import kotlin.math.sqrt
  * A square defined by its top-left corner and side length.
  *
  * @property origin     The top-left corner of the square.
- * @property sideLength Length of each side ∈ [0f..Config.MAX_SQUARE_SIDE].
+ * @property sideLength Length of each side ∈ (0f..[Config.MAX_SQUARE_SIDE]).
  *
  * @constructor Creates a [Square] with given parameters.
- *              Missing values default to random via [ClosedFloatingPointRange.random].
+ * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam     top-left point or random if omitted
- * @param sideLengthParam side length or random ∈ [0f..Config.MAX_SQUARE_SIDE] if omitted
+ * @param sideLengthParam side length or random ∈ (0f..[Config.MAX_SQUARE_SIDE]) if omitted
  *
  * @author  Simon Wessel
  * @version 2.3

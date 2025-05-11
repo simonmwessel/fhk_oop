@@ -1,20 +1,16 @@
 package de.fhkiel.oop.utils
 
 /**
- * Wraps a 32-bit ARGB integer as a proper [Color] value object.
+ * Immutable value class representing a 32-bit ARGB color with proper channel accessors.
  *
- * The color is stored as a single `Int` in the format `0xAARRGGBB`.
+ * The color is stored as a single `Int` in the format `0xAARRGGBB` and provides:
+ * - Type-safe color operations
+ * - Channel accessors with normalized values
+ * - Hex string conversion
  *
- * @property rgba Packed 32-bit ARGB value (0xAARRGGBB).
+ * @property rgba Packed 32-bit ARGB value in `0xAARRGGBB` format.
  *
- * @constructor Constructs a [Color] from a packed ARGB integer.
- * @param rgba Packed 32-bit ARGB value (0xAARRGGBB).
- *
- * @constructor Constructs a [Color] from individual channels.
- * @param r Red component (0–255).
- * @param g Green component (0–255).
- * @param b Blue component (0–255).
- * @param a Alpha component (0–255), default 255 = opaque.
+ * @constructor Creates from packed 32-bit integer.
  *
  * @author  Simon Wessel
  * @version 1.0
@@ -24,12 +20,12 @@ package de.fhkiel.oop.utils
 value class Color(val rgba: Int) {
 
     /**
-     * Constructs a Color from individual channels.
+     * Creates a Color from individual 8-bit channels.
      *
-     * @param r red   (0–255)
-     * @param g green (0–255)
-     * @param b blue  (0–255)
-     * @param a alpha (0–255, default 255 = opaque)
+     * @param r Red channel (0–255) - values outside range are clamped
+     * @param g Green channel (0–255)
+     * @param b Blue channel (0–255)
+     * @param a Alpha channel (0–255, default = 255 = fully opaque)
      */
     constructor(r: Int, g: Int, b: Int, a: Int = 0xFF) : this(
         ((r and 0xFF) shl 24) or
@@ -42,23 +38,33 @@ value class Color(val rgba: Int) {
     /** Blue channel (0–255). */  val blue:  Float get() = ((rgba ushr  8) and 0xFF).toFloat()
     /** Alpha channel (0–255).*/  val alpha: Float get() = ( rgba          and 0xFF).toFloat()
 
-    /** 24-bit RGB value (0xRRGGBB). */
+    /**
+     * 24-bit RGB representation without alpha (0xRRGGBB).
+     */
     val rgb: Int
         get() = rgba and 0x00FFFFFF
 
-    /** 24-bit RGBA value as a hex string in the format #RRGGBBAA. */
+    /**
+     * Returns the color as a hex string in `#RRGGBBAA` format.
+     *
+     * @return Non-premultiplied ARGB representation like "#FF00FF80"
+     */
     override fun toString(): String =
         "#%02X%02X%02X%02X".format(red.toInt(), green.toInt(), blue.toInt(), alpha.toInt())
 
     companion object {
         /**
-         * Parses a hex color string in the form `#RRGGBB` or `#RRGGBBAA` into a [Color].
+         * Parses a hexadecimal color string to a [Color] instance.
          *
-         * @param hex String in `"#RRGGBB"` or `"#RRGGBBAA"` format.
+         * Supported formats:
+         * - `#RRGGBB` (alpha defaults to 0xFF)
+         * - `#RRGGBBAA`
          *
-         * @return Parsed [Color] instance.
+         * @param hex Color string starting with '#' followed by 6 or 8 hex digits
          *
-         * @throws IllegalArgumentException if the string is not 6 or 8 hex digits.
+         * @return Non-null [Color] instance
+         *
+         * @throws IllegalArgumentException for invalid formats
          */
         fun fromHex(hex: String): Color {
             val clean = hex.removePrefix("#")

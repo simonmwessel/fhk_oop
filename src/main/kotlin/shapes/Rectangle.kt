@@ -14,15 +14,15 @@ import de.fhkiel.oop.utils.RandomUtils.random
  * A rectangle defined by its top-left corner, width and height.
  *
  * @property origin The top-left corner of the rectangle.
- * @property width  Width in units ∈ [0f..Config.MAX_RECT_WIDTH].
- * @property height Height in units ∈ [0f..Config.MAX_RECT_HEIGHT].
+ * @property width  Width in units ∈ (0f..[Config.MAX_RECT_WIDTH]).
+ * @property height Height in units ∈ (0f..[Config.MAX_RECT_HEIGHT]).
  *
  * @constructor Creates a [Rectangle] with given parameters.
- *             Missing values default to random via [ClosedFloatingPointRange.random].
+ * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam top-left point or random if omitted
- * @param widthParam  width or random ∈ [0f..Config.MAX_RECT_WIDTH] if omitted
- * @param heightParam height or random ∈ [0f..Config.MAX_RECT_HEIGHT] if omitted
+ * @param widthParam  width or random ∈ (0f..[Config.MAX_RECT_WIDTH]) if omitted
+ * @param heightParam height or random ∈ (0f..[Config.MAX_RECT_HEIGHT]) if omitted
  *
  * @author  Simon Wessel
  * @version 2.3

@@ -8,7 +8,7 @@ import kotlin.random.Random
  * ### Distributions
  * - **[Distribution.UNIFORM]**: Every value in the range is equally likely.
  * - **[Distribution.NORMAL]**: Truncated Gaussian distribution. The peak (mean) can be
- *   controlled via [peakFraction] or [mean], and the spread via [sigma].
+ *   controlled via `peakFraction` or `mean`, and the spread via `sigma`.
  *
  * ### Global Defaults (for [Distribution.NORMAL])
  * - [defaultPeakFraction]: Relative peak position (0.0–1.0, overrides [defaultMean]).
