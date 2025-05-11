@@ -1,5 +1,6 @@
 package de.fhkiel.oop.config
 
+import de.fhkiel.oop.utils.Color
 import de.fhkiel.oop.utils.FloatExtensions.decimalPlaces
 import java.util.Locale
 
@@ -25,6 +26,7 @@ import java.util.Locale
  * @property MAX_SQUARE_SIDE         Maximum square side length value for random generation.
  * @property MIN_STRK_WEIGHT         Minimum stroke weight value for random generation.
  * @property MAX_STRK_WEIGHT         Maximum stroke weight value for random generation.
+ * @property SKETCH_BACKGROUND_COLOR Background color for sketch canvas.
  * @property LOCALE                  Locale for formatting numbers.
  * @property SEPARATOR               Separator for different attributes.
  * @property SEPARATOR_KEY_VALUE     Separator for key-value pairs.
@@ -59,28 +61,31 @@ import java.util.Locale
 object Config {
 
     /** Maximum X value for random coordinate generation. */
-    const val MAX_X:           Float = 1000f
+    const val MAX_X:             Float = 1000f
 
     /** Maximum Y value for random coordinate generation. */
-    const val MAX_Y:           Float = 1000f
+    const val MAX_Y:             Float = 1000f
 
     /** Maximum circle radius value for random generation. */
-    val MAX_CIRCLE_RADIUS:     Float = minOf(MAX_X, MAX_Y) / 2
+    val MAX_CIRCLE_RADIUS:       Float = minOf(MAX_X, MAX_Y) / 2
 
     /** Maximum rectangle width value for random generation. */
-    const val MAX_RECT_WIDTH:  Float = MAX_X
+    const val MAX_RECT_WIDTH:    Float = MAX_X
 
     /** Maximum rectangle width value for random generation. */
-    const val MAX_RECT_HEIGHT: Float = MAX_Y
+    const val MAX_RECT_HEIGHT:   Float = MAX_Y
 
     /** Maximum square side length value for random generation. */
-    val MAX_SQUARE_SIDE:       Float = minOf(MAX_X, MAX_Y)
+    val MAX_SQUARE_SIDE:         Float = minOf(MAX_X, MAX_Y)
 
     /** Minimum stroke weight value for random generation */
-    const val MIN_STRK_WEIGHT: Float = .5f
+    const val MIN_STRK_WEIGHT:   Float = .5f
 
     /** Maximum stroke weight value for random generation */
-    const val MAX_STRK_WEIGHT: Float = 10f
+    const val MAX_STRK_WEIGHT:   Float = 10f
+
+    /** Background color for sketch canvas */
+    val SKETCH_BACKGROUND_COLOR: Color = Color(0x2B, 0x2B, 0x2B)
 
     // Constants for padding when building toString output
 

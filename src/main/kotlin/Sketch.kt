@@ -25,7 +25,7 @@ import processing.core.PApplet
  * 3. [draw]     clears the canvas each frame and renders each shape with its graphic attributes.
  *
  * @author  Simon Wessel
- * @version 2.0
+ * @version 1.1
  * @since   2.3
  *
  * @see [Config]
@@ -62,14 +62,23 @@ class Sketch : PApplet() {
      */
     override fun setup() {
         colorMode(RGB, 255f)
-        background(255)
+        background(
+            Config.SKETCH_BACKGROUND_COLOR.red,
+            Config.SKETCH_BACKGROUND_COLOR.green,
+            Config.SKETCH_BACKGROUND_COLOR.blue
+        )
         surface.setResizable(true)
 
         shapes = FormFactory().produce(
-            count      = 20,
-            sizeDist   = Distribution.NORMAL,
-            originDist = Distribution.UNIFORM
+            count            = 40,
+            safe             = true,
+            sizeDist         = Distribution.NORMAL,
+            sizePeakFraction = .2f,
+            originDist       = Distribution.UNIFORM
         )
+
+        println("\nFollowing shapes were sketched:")
+        for (shape in shapes) println(shape)
     }
 
     /**
@@ -90,9 +99,7 @@ class Sketch : PApplet() {
      * @see Square
      */
     override fun draw() {
-        background(255)
         for (shape in shapes) {
-            // set fill and stroke from your Color-wrapper
             fill(
                 shape.fillColor.red,
                 shape.fillColor.green,
@@ -107,7 +114,6 @@ class Sketch : PApplet() {
             )
             strokeWeight(shape.strokeWeight)
 
-            // draw according to shape type
             when (shape) {
                 is Circle ->
                     ellipse(
