@@ -16,6 +16,10 @@ import de.fhkiel.oop.utils.RandomUtils.random
  * Using a data class makes it trivial to create altered copies
  * (`style.copy(fill = newColour)`), which keeps the public API ergonomic.
  *
+ * @see Color
+ * @see de.fhkiel.oop.utils.RandomUtils.randomColor
+ * @see Config
+ *
  * @author  Simon Wessel
  * @version 1.0
  * @since   2.5

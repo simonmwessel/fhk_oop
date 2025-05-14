@@ -26,6 +26,11 @@ import kotlin.math.sqrt
  * @param radiusParam radius or random ∈ (0f..[Config.MAX_CIRCLE_RADIUS]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
+ * @see Style
+ * @see Shape
+ * @see Point
+ * @see Config
+ *
  * @author  Simon Wessel
  * @version 2.4
  * @since   1.0

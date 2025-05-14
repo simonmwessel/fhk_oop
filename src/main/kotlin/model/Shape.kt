@@ -1,7 +1,6 @@
 package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.Config
-import de.fhkiel.oop.utils.Color
 import processing.core.PApplet
 
 /**
@@ -20,6 +19,9 @@ import processing.core.PApplet
  *
  * @param originParam Initial origin of the shape (defaults to random point).
  * @param styleParam  Initial style (random colours & weight by default).
+ *
+ * @see Style
+ * @see Point
  *
  * @author  Your Name
  * @version 2.3
