@@ -44,26 +44,105 @@ import processing.core.PApplet
  * @see Shape
  */
 class Sketch(
-    private var resizeMode: ResizeMode = ResizeMode.RELATIVE
+    initialResizeMode: ResizeMode = ResizeMode.RELATIVE
 ) : PApplet() {
 
-    /** All shapes to be drawn this frame. */
-    private lateinit var shapes: List<Shape>
+    /**
+     * The current resize mode used by the sketch.
+     * Can be toggled between [ResizeMode.UNIFORM_SCALE] and [ResizeMode.RELATIVE].
+     */
+    private var _resizeMode: ResizeMode = initialResizeMode
+    var resizeMode: ResizeMode
+        /** Returns the current resize mode. */
+        get() = _resizeMode
+        /** Sets the resize mode. */
+        set(v) {
+            _resizeMode = v
+        }
 
-    /** Base width of the sketch window, used as reference for scaling. */
-    private val baseW = Config.MAX_X
+    /**
+     * The list of shapes to draw each frame.
+     * Must not be empty.
+     */
+    private var _shapes: List<Shape> = emptyList()
+    var shapes: List<Shape>
+        /** Returns the list of shapes. */
+        get() = _shapes
+        /** Sets the list of shapes. */
+        set(v) {
+            require(v.isNotEmpty()) { "Shapes list must not be empty" }
+            _shapes = v
+        }
 
-    /** Base height of the sketch window, used as reference for scaling. */
-    private val baseH = Config.MAX_Y
+    /**
+     * Reference width for scaling calculations.
+     * Must be > 0.
+     */
+    private var _baseW: Float = Config.MAX_X
+    var baseW: Float
+        /** Returns the base width for scaling calculations. */
+        get() = _baseW
+        /** Sets the base width for scaling calculations. */
+        set(v) {
+            require(v > 0f) { "Base width must be > 0" }
+            _baseW = v
+        }
 
-    /** Minimum of [baseW] and [baseH], used for circle/square uniform scaling. */
-    private val baseMin = min(baseW, baseH)
+    /**
+     * Reference height for scaling calculations.
+     * Must be > 0.
+     */
+    private var _baseH: Float = Config.MAX_Y
+    var baseH: Float
+        /** Returns the base height for scaling calculations. */
+        get() = _baseH
+        /** Sets the base height for scaling calculations. */
+        set(v) {
+            require(v > 0f) { "Base height must be > 0" }
+            _baseH = v
+        }
 
-    /** Duration (in milliseconds) that the hint text remains visible. */
-    private val hintDuration: Int = 3_000
+    /**
+     * Minimum of [baseW] and [baseH], used for uniform scaling of circles and squares.
+     * Must be > 0.
+     */
+    private var _baseMin: Float = min(_baseW, _baseH)
+    var baseMin: Float
+        /** Returns the base minimum for scaling calculations. */
+        get() = _baseMin
+        /** Sets the base minimum for scaling calculations. */
+        set(v) {
+            require(v > 0f) { "Base minimum must be > 0" }
+            _baseMin = v
+        }
 
-    /** Timestamp (in milliseconds) when the hint was last shown. */
-    private var hintStartTime: Int = 0
+    /**
+     * Duration (in milliseconds) that the hint box remains visible.
+     * Must be >= 0.
+     */
+    private var _hintDuration: Int = 3_000
+    var hintDuration: Int
+        /** Returns the hint duration. */
+        get() = _hintDuration
+        /** Sets the hint duration. */
+        set(v) {
+            require(v >= 0) { "Hint duration must be >= 0" }
+            _hintDuration = v
+        }
+
+    /**
+     * Timestamp (in milliseconds) when the hint was last shown.
+     * Must be >= 0.
+     */
+    private var _hintStartTime: Int = 0
+    var hintStartTime: Int
+        /** Returns the hint start time. */
+        get() = _hintStartTime
+        /** Sets the hint start time. */
+        set(v) {
+            require(v >= 0) { "Hint start time must be >= 0" }
+            _hintStartTime = v
+        }
 
     /**
      * Defines strategies for handling window resizing:
@@ -81,7 +160,6 @@ class Sketch(
         /** Map shapes to relative window coords, preserving individual aspect constraints. */
         RELATIVE
     }
-
 
     /**
      * Configures the initial size of the sketch window based on [baseW] and [baseH].

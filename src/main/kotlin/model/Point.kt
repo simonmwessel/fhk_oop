@@ -40,7 +40,11 @@ class Point(
         /** Returns the x coordinate of the point. */
         get() = _x
         /** Sets the x coordinate of the point. */
-        set(v) { _x = v }
+        set(v) {
+            require(v >= 0f) { "X coordinate must be >= 0" }
+            require(v <= Config.MAX_X) { "X coordinate must be <= ${Config.MAX_X}" }
+            _x = v
+        }
 
     /** Backing field for y coordinate */
     private var _y: Float = yParam
@@ -54,7 +58,11 @@ class Point(
         /** Returns the y coordinate of the point. */
         get() = _y
         /** Sets the y coordinate of the point. */
-        set(v) { _y = v }
+        set(v) {
+            require(v >= 0f) { "Y coordinate must be >= 0" }
+            require(v <= Config.MAX_Y) { "Y coordinate must be <= ${Config.MAX_Y}" }
+            _y = v
+        }
 
     /**
      * Returns a string representation of the point.

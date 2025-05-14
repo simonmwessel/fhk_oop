@@ -56,6 +56,8 @@ class Rectangle(
         get() = _width
         /** Sets the width of the rectangle. */
         set(v) {
+            require(v > 0f) { "Width must be > 0" }
+            require(v <= Config.MAX_RECT_WIDTH) { "Width must be <= ${Config.MAX_RECT_WIDTH}" }
             _width = v
         }
 
@@ -72,6 +74,9 @@ class Rectangle(
         get() = _height
         /** Sets the height of the rectangle. */
         set(v) {
+            require(v > 0f) { "Height must be > 0" }
+            require(v <= Config.MAX_RECT_HEIGHT) { "Height must be <= ${Config.MAX_RECT_HEIGHT}" }
+
             _height = v
         }
 

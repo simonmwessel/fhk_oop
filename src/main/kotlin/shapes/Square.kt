@@ -53,6 +53,9 @@ class Square(
         get() = _sideLength
         /** Sets the side length of the square. */
         set(v) {
+            require(v > 0f) { "Side length must be > 0" }
+            require(v <= Config.MAX_SQUARE_SIDE) { "Side length must be <= ${Config.MAX_SQUARE_SIDE}" }
+
             _sideLength = v
         }
 

@@ -45,6 +45,12 @@ abstract class Shape(
         get() = _origin
         /** Sets the location of the shape. */
         set(v) {
+            require(v.x >= 0f) { "X coordinate must be >= 0" }
+            require(v.y >= 0f) { "Y coordinate must be >= 0" }
+
+            require(v.x <= Config.MAX_X) { "X coordinate must be <= ${Config.MAX_X}" }
+            require(v.y <= Config.MAX_Y) { "Y coordinate must be <= ${Config.MAX_Y}" }
+
             _origin = v
         }
 
@@ -60,7 +66,18 @@ abstract class Shape(
         /** Returns the style of the shape. */
         get() = _style
         /** Sets the style of the shape. */
-        set(v) { _style = v }
+        set(v) {
+            require(v.fill.alpha >= 0f) { "Alpha must be >= 0" }
+            require(v.fill.alpha <= 255f) { "Alpha must be <= 255" }
+
+            require(v.stroke.alpha >= 0f) { "Alpha must be >= 0" }
+            require(v.stroke.alpha <= 255f) { "Alpha must be <= 255" }
+
+            require(v.weight >= 0f) { "Weight must be >= 0" }
+            require(v.weight <= Config.MAX_STRK_WEIGHT) { "Weight must be <= ${Config.MAX_STRK_WEIGHT}" }
+
+            _style = v
+        }
 
     /**
      * Abstract method to calculate the area of the shape.

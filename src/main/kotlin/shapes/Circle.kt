@@ -54,6 +54,9 @@ class Circle(
         get() = _radius
         /** Sets the radius of the circle. */
         set(v) {
+            require(v > 0f) { "Radius must be > 0" }
+            require(v <= Config.MAX_CIRCLE_RADIUS) { "Radius must be <= ${Config.MAX_CIRCLE_RADIUS}" }
+
             _radius = v
         }
 
