@@ -24,7 +24,7 @@ import processing.core.PApplet
  * @see Point
  *
  * @author  Simon Wessel
- * @version 2.4
+ * @version 2.5
  * @since   1.5
  */
 abstract class BaseShape (
@@ -95,6 +95,26 @@ abstract class BaseShape (
         scaleY: Float,
         uniformScale: Float
     )
+
+    /**
+     * Executes the provided drawing block on the given PApplet instance with the current style applied.
+     *
+     * This helper method wraps the pushStyle/popStyle pattern and allows direct use of drawing
+     * functions (`ellipse`, `rect`, `line`, etc.) within the `block` on the PApplet.
+     *
+     * @param g     The PApplet instance to draw on
+     * @param block A block of drawing operations in the context of `g`
+     */
+    protected inline fun withStyle(g: PApplet, block: PApplet.() -> Unit) {
+        g.run {
+            pushStyle()
+            fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
+            stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+            strokeWeight(style.weight)
+            block()
+            popStyle()
+        }
+    }
 
     /**
      * Abstract method to calculate the perimeter of the shape.

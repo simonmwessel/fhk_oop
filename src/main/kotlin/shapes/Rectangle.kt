@@ -36,7 +36,7 @@ import kotlin.Float
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.6
+ * @version 2.7
  * @since   1.0
  */
 class Rectangle(
@@ -139,13 +139,8 @@ class Rectangle(
      *
      * @see Shape.drawUniform
      */
-    override fun drawUniform(g: PApplet) {
-        g.pushStyle()
-        g.fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
-        g.stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
-        g.strokeWeight(style.weight)
-        g.rect(origin.x, origin.y, width, height)
-        g.popStyle()
+    override fun drawUniform(g: PApplet) = withStyle(g) {
+        g.rect(origin.x, origin.y, this@Rectangle.width, this@Rectangle.height)
     }
 
     /**
@@ -164,18 +159,13 @@ class Rectangle(
         scaleX: Float,
         scaleY: Float,
         uniformScale: Float
-    ) {
+    ) = withStyle(g) {
         val x = origin.x * scaleX
         val y = origin.y * scaleY
-        val w = width  * uniformScale
-        val h = height * uniformScale
+        val w = this@Rectangle.width  * uniformScale
+        val h = this@Rectangle.height * uniformScale
 
-        g.pushStyle()
-        g.fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
-        g.stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
-        g.strokeWeight(style.weight)
-        g.rect(x, y, w, h)
-        g.popStyle()
+        rect(x, y, w, h)
     }
 
     /**

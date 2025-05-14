@@ -35,7 +35,7 @@ import kotlin.math.sqrt
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.6
+ * @version 2.7
  * @since   1.0
  */
 class Circle(
@@ -104,13 +104,8 @@ class Circle(
      *
      * @see Shape.drawUniform
      */
-    override fun drawUniform(g: PApplet) = g.run {
-        pushStyle()
-        fill(style.fill.red,   style.fill.green,   style.fill.blue,   style.fill.alpha)
-        stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
-        strokeWeight(style.weight)
+    override fun drawUniform(g: PApplet) = withStyle(g) {
         ellipse(origin.x, origin.y, radius * 2, radius * 2)
-        popStyle()
     }
 
     /**
@@ -129,17 +124,12 @@ class Circle(
         scaleX: Float,
         scaleY: Float,
         uniformScale: Float
-    ) = g.run {
+    ) = withStyle(g) {
         val cx = origin.x * scaleX
         val cy = origin.y * scaleY
         val r  = radius     * uniformScale
 
-        pushStyle()
-        fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
-        stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
-        strokeWeight(style.weight)
         ellipse(cx, cy, r * 2, r * 2)
-        popStyle()
     }
 
     /**
