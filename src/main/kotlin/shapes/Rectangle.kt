@@ -3,6 +3,7 @@ package de.fhkiel.oop.shapes
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
+import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute2Value
@@ -24,16 +25,18 @@ import processing.core.PApplet
  * @param originParam top-left point or random if omitted
  * @param widthParam  width or random ∈ (0f..[Config.MAX_RECT_WIDTH]) if omitted
  * @param heightParam height or random ∈ (0f..[Config.MAX_RECT_HEIGHT]) if omitted
+ * @param styleParam  Initial style (random colours & weight by default).
  *
  * @author  Simon Wessel
- * @version 2.3
+ * @version 2.4
  * @since   1.0
  */
 class Rectangle(
     originParam: Point = Point(),
     widthParam:  Float = (0f..Config.MAX_RECT_WIDTH).random(),
-    heightParam: Float = (0f..Config.MAX_RECT_HEIGHT).random()
-) : Shape(originParam) {
+    heightParam: Float = (0f..Config.MAX_RECT_HEIGHT).random(),
+    styleParam:  Style = Style()
+) : Shape(originParam, styleParam) {
 
     /** Backing field for width */
     private var _width: Float = widthParam
@@ -98,9 +101,9 @@ class Rectangle(
      */
     override fun drawUniform(g: PApplet) {
         g.pushStyle()
-        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
-        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
-        g.strokeWeight(strokeWeight)
+        g.fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
+        g.stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+        g.strokeWeight(style.weight)
         g.rect(origin.x, origin.y, width, height)
         g.popStyle()
     }
@@ -112,7 +115,7 @@ class Rectangle(
      * @param g            Processing graphics context
      * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
      * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
-     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
+     * @param uniformScale Ignored for rectangles, but required for interface compatibility.
      *
      * @see Shape.drawRelative
      */
@@ -128,9 +131,9 @@ class Rectangle(
         val h = height * uniformScale
 
         g.pushStyle()
-        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
-        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
-        g.strokeWeight(strokeWeight)
+        g.fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
+        g.stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+        g.strokeWeight(style.weight)
         g.rect(x, y, w, h)
         g.popStyle()
     }
@@ -150,11 +153,11 @@ class Rectangle(
                 Triple("Height", height.formatAttribute2Value(),   Config.PAD_ATTR_2 to Config.PAD_ATTR_2_VAL),
                 Triple("Area",   getArea().formatAreaValue(),      Config.PAD_AREA   to Config.PAD_AREA_VAL),
 
-                Triple("Fill Color",    fillColor.toString(),
+                Triple("Fill Color",    style.fill.toString(),
                     Config.PAD_FILL_COLR to Config.PAD_FILL_COLR_VAL),
-                Triple("Stroke Color",  strokeColor.toString(),
+                Triple("Stroke Color",  style.stroke.toString(),
                     Config.PAD_STRK_COLR to Config.PAD_STRK_COLR_VAL),
-                Triple("Stroke Weight", strokeWeight.formatStrokeWeightValue(),
+                Triple("Stroke Weight", style.weight.formatStrokeWeightValue(),
                     Config.PAD_STRK_WGHT to Config.PAD_STRK_WGHT_VAL)
             ))
 }

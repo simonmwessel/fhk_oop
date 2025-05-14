@@ -3,6 +3,7 @@ package de.fhkiel.oop.shapes
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
+import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
@@ -23,15 +24,17 @@ import kotlin.math.sqrt
  *
  * @param originParam center point or random if omitted
  * @param radiusParam radius or random ∈ (0f..[Config.MAX_CIRCLE_RADIUS]) if omitted
+ * @param styleParam  Initial style (random colours & weight by default).
  *
  * @author  Simon Wessel
- * @version 2.3
+ * @version 2.4
  * @since   1.0
  */
 class Circle(
     originParam: Point = Point(),
-    radiusParam: Float = (0f..Config.MAX_CIRCLE_RADIUS).random()
-)  : Shape(originParam) {
+    radiusParam: Float = (0f..Config.MAX_CIRCLE_RADIUS).random(),
+    styleParam:  Style = Style()
+)  : Shape(originParam, styleParam) {
 
     /** Backing field for radius */
     private var _radius: Float = radiusParam
@@ -70,26 +73,6 @@ class Circle(
     override fun getArea(): Float = (Math.PI * radius.pow(2)).toFloat()
 
     /**
-     * Renders the circle on the Processing canvas with configured visual attributes.
-     *
-     * 1. Saves current drawing style with [PApplet.pushStyle]
-     * 2. Applies:
-     *    - Fill color from [fillColor]
-     *    - Stroke color from [strokeColor]
-     *    - Stroke weight from [strokeWeight]
-     * 3. Draws circle using Processing's [PApplet.circle] with:
-     *    - Center at [origin.x], [origin.y]
-     *    - Diameter = `2 * radius` (Processing expects diameter)
-     * 4. Restores original style with [PApplet.popStyle]
-     *
-     * @param g Processing graphics context to draw on
-     *
-     * @see PApplet.pushStyle
-     * @see PApplet.popStyle
-     * @see PApplet.circle
-     */
-
-    /**
      * Draws the circle with uniform scaling - maintains perfect roundness
      * while centering the entire composition.
      *
@@ -97,13 +80,13 @@ class Circle(
      *
      * @see Shape.drawUniform
      */
-    override fun drawUniform(g: PApplet) {
-        g.pushStyle()
-        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
-        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
-        g.strokeWeight(strokeWeight)
-        g.ellipse(origin.x, origin.y, radius * 2, radius * 2)
-        g.popStyle()
+    override fun drawUniform(g: PApplet) = g.run {
+        pushStyle()
+        fill(style.fill.red,   style.fill.green,   style.fill.blue,   style.fill.alpha)
+        stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+        strokeWeight(style.weight)
+        ellipse(origin.x, origin.y, radius * 2, radius * 2)
+        popStyle()
     }
 
     /**
@@ -122,17 +105,17 @@ class Circle(
         scaleX: Float,
         scaleY: Float,
         uniformScale: Float
-    ) {
+    ) = g.run {
         val cx = origin.x * scaleX
         val cy = origin.y * scaleY
         val r  = radius     * uniformScale
 
-        g.pushStyle()
-        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
-        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
-        g.strokeWeight(strokeWeight)
-        g.ellipse(cx, cy, r * 2, r * 2)
-        g.popStyle()
+        pushStyle()
+        fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
+        stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+        strokeWeight(style.weight)
+        ellipse(cx, cy, r * 2, r * 2)
+        popStyle()
     }
 
     /**
@@ -150,11 +133,11 @@ class Circle(
                 Triple("",       "",                               (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
                 Triple("Area",   getArea().formatAreaValue(),      Config.PAD_AREA   to Config.PAD_AREA_VAL),
 
-                Triple("Fill Color",    fillColor.toString(),
+                Triple("Fill Color",    style.fill.toString(),
                     Config.PAD_FILL_COLR to Config.PAD_FILL_COLR_VAL),
-                Triple("Stroke Color",  strokeColor.toString(),
+                Triple("Stroke Color",  style.stroke.toString(),
                     Config.PAD_STRK_COLR to Config.PAD_STRK_COLR_VAL),
-                Triple("Stroke Weight", strokeWeight.formatStrokeWeightValue(),
+                Triple("Stroke Weight", style.weight.formatStrokeWeightValue(),
                     Config.PAD_STRK_WGHT to Config.PAD_STRK_WGHT_VAL)
             ))
 }

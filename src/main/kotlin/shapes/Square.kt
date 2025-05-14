@@ -3,6 +3,7 @@ package de.fhkiel.oop.shapes
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
+import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
@@ -22,15 +23,17 @@ import kotlin.math.sqrt
  *
  * @param originParam     top-left point or random if omitted
  * @param sideLengthParam side length or random ∈ (0f..[Config.MAX_SQUARE_SIDE]) if omitted
+ * @param styleParam      Initial style (random colours & weight by default).
  *
  * @author  Simon Wessel
- * @version 2.3
+ * @version 2.4
  * @since   1.0
  */
 class Square(
     originParam:     Point = Point(),
     sideLengthParam: Float = (0f..Config.MAX_SQUARE_SIDE).random(),
-) : Shape(originParam) {
+    styleParam:      Style = Style()
+) : Shape(originParam, styleParam) {
 
     /** Backing field for side length */
     private var _sideLength: Float = sideLengthParam
@@ -76,13 +79,13 @@ class Square(
      *
      * @see Shape.drawUniform
      */
-    override fun drawUniform(g: PApplet) {
-        g.pushStyle()
-        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
-        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
-        g.strokeWeight(strokeWeight)
-        g.rect(origin.x, origin.y, sideLength, sideLength)
-        g.popStyle()
+    override fun drawUniform(g: PApplet) = g.run {
+        pushStyle()
+        fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
+        stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+        strokeWeight(style.weight)
+        rect(origin.x, origin.y, sideLength, sideLength)
+        popStyle()
     }
 
     /**
@@ -101,17 +104,17 @@ class Square(
         scaleX: Float,
         scaleY: Float,
         uniformScale: Float
-    ) {
+    ) = g.run {
         val x    = origin.x   * scaleX
         val y    = origin.y   * scaleY
         val side = sideLength * uniformScale
 
-        g.pushStyle()
-        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
-        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
-        g.strokeWeight(strokeWeight)
-        g.rect(x, y, side, side)
-        g.popStyle()
+        pushStyle()
+        fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
+        stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
+        strokeWeight(style.weight)
+        rect(x, y, side, side)
+        popStyle()
     }
 
     /**
@@ -129,11 +132,11 @@ class Square(
                 Triple("",     "",                                 (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
                 Triple("Area", getArea().formatAreaValue(),        Config.PAD_AREA   to Config.PAD_AREA_VAL),
 
-                Triple("Fill Color",    fillColor.toString(),
+                Triple("Fill Color",    style.fill.toString(),
                     Config.PAD_FILL_COLR to Config.PAD_FILL_COLR_VAL),
-                Triple("Stroke Color",  strokeColor.toString(),
+                Triple("Stroke Color",  style.stroke.toString(),
                     Config.PAD_STRK_COLR to Config.PAD_STRK_COLR_VAL),
-                Triple("Stroke Weight", strokeWeight.formatStrokeWeightValue(),
+                Triple("Stroke Weight", style.weight.formatStrokeWeightValue(),
                     Config.PAD_STRK_WGHT to Config.PAD_STRK_WGHT_VAL)
             ))
 }

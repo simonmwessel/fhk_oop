@@ -2,48 +2,39 @@ package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.utils.Color
-import de.fhkiel.oop.utils.RandomUtils.random
-import de.fhkiel.oop.utils.RandomUtils.randomColor
 import processing.core.PApplet
 
 /**
- * Abstract base for all 2D shapes.
+ * Base class for all 2-D forms.
  *
- * Provides common properties and random defaults:
- * - [origin]:       position in the canvas
- * - [fillColor]:    ARGB fill color
- * - [strokeColor]:  ARGB stroke color
- * - [strokeWeight]: border thickness
+ * It now stores **exactly two** mutable properties:
  *
- * @property origin       top-left or center point of the shape
- * @property fillColor    interior color as [Color]
- * @property strokeColor  border color as [Color]
- * @property strokeWeight border thickness ∈ ([Config.MIN_STRK_WEIGHT]..[Config.MAX_STRK_WEIGHT])
+ * * [origin] – geometric anchor point (semantics defined by subclasses)
+ * * [style]  – visual appearance, grouped in a single [Style] value object
  *
- * @constructor Creates a [Shape] with the specified properties.
- * Omitted params are randomized.
+ * There are **no** proxy getters such as `fillColor`.
+ * Every caller must access `shape.style.fill`, `shape.style.weight`, … directly.
  *
- * @param originParam       initial [Point] or random if omitted
- * @param fillColorParam    initial fill [Color] or random if omitted
- * @param strokeColorParam  initial stroke [Color] or random if omitted
- * @param strokeWeightParam initial stroke weight or random ∈ ([Config.MIN_STRK_WEIGHT]..[Config.MAX_STRK_WEIGHT])
+ * @constructor The primary constructor allows callers to override both origin
+ *              and style; omitting either parameter falls back to defaults.
  *
- * @author  Simon Wessel
+ * @param originParam Initial origin of the shape (defaults to random point).
+ * @param styleParam  Initial style (random colours & weight by default).
+ *
+ * @author  Your Name
  * @version 2.3
  * @since   1.5
  */
 abstract class Shape(
-    originParam:       Point = Point(),
-    fillColorParam:    Color = randomColor(),
-    strokeColorParam:  Color = randomColor(),
-    strokeWeightParam: Float = (Config.MIN_STRK_WEIGHT..Config.MAX_STRK_WEIGHT).random()
+    originParam: Point = Point(),
+    styleParam:  Style  = Style()
 ) {
 
     /** Backing field for location */
     private var _origin: Point = originParam
 
     /**
-     * The location of the shape.
+     * Geometric anchor of the shape (centre for circles, top-left for rectangles and squares).
      *
      * @return the location point.
      */
@@ -55,53 +46,19 @@ abstract class Shape(
             _origin = v
         }
 
-    /** Backing field for fill color */
-    private var _fillColor: Color = fillColorParam
+    /** Backing field for the style */
+    private var _style: Style = styleParam
 
     /**
-     * The fill color of the shape.
+     * The style of the shape.
      *
-     * @return the fill color as ARGB int.
+     * @return the style as [Style].
      */
-    var fillColor: Color
-        /** Returns the fill color. */
-        get() = _fillColor
-        /** Sets the fill color. */
-        set(v) {
-            _fillColor = v
-        }
-
-    /** Backing field for stroke color */
-    private var _strokeColor: Color = strokeColorParam
-
-    /**
-     * The stroke (border) color of the shape.
-     *
-     * @return the stroke color as ARGB int.
-     */
-    var strokeColor: Color
-        /** Returns the stroke (border) color. */
-        get() = _strokeColor
-        /** Sets the stroke (border) color. */
-        set(v) {
-            _strokeColor = v
-        }
-
-    /** Backing field for stroke weight */
-    private var _strokeWeight: Float = strokeWeightParam
-
-    /**
-     * The stroke weight (border thickness) of the shape.
-     *
-     * @return the stroke weight.
-     */
-    var strokeWeight: Float
-        /** Returns the stroke weight. */
-        get() = _strokeWeight
-        /** Sets the stroke weight. */
-        set(v) {
-            _strokeWeight = v
-        }
+    var style: Style
+        /** Returns the style of the shape. */
+        get() = _style
+        /** Sets the style of the shape. */
+        set(v) { _style = v }
 
     /**
      * Abstract method to calculate the area of the shape.
