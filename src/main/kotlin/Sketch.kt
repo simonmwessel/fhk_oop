@@ -2,6 +2,7 @@ package de.fhkiel.oop
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.factory.FormFactory
+import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
@@ -64,8 +65,8 @@ class Sketch(
      * The list of shapes to draw each frame.
      * Must not be empty.
      */
-    private var _shapes: List<Shape> = emptyList()
-    var shapes: List<Shape>
+    private var _shapes: List<BaseShape> = emptyList()
+    var shapes: List<BaseShape>
         /** Returns the list of shapes. */
         get() = _shapes
         /** Sets the list of shapes. */

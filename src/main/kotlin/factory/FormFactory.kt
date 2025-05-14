@@ -1,6 +1,7 @@
 package de.fhkiel.oop.factory
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
@@ -77,7 +78,7 @@ class FormFactory {
         originPeakFraction: Float?       = null,
         originMean:         Float?       = null,
         originSigma:        Float?       = null
-    ): List<Shape> =
+    ): List<BaseShape> =
         if (safe) produceInBounds(
             count,
             sizeDist, sizePeakFraction, sizeMean, sizeSigma,
@@ -261,7 +262,7 @@ class FormFactory {
         originPeakFraction: Float?       = null,
         originMean:         Float?       = null,
         originSigma:        Float?       = null
-    ): List<Shape> = List(count) {
+    ): List<BaseShape> = List(count) {
         when (Random.nextDouble()) {
             in 0.0..0.33 -> circle(
                 sizeDist, sizePeakFraction, sizeMean, sizeSigma,
@@ -285,7 +286,7 @@ class FormFactory {
      *
      * @return List of shapes with random parameters (may exceed canvas bounds).
      */
-    private fun produceLegacy(count: Int): List<Shape> = List(count) {
+    private fun produceLegacy(count: Int): List<BaseShape> = List(count) {
         when (Random.nextDouble()) {
             in 0.0..0.33  -> Circle()
             in 0.33..0.66 -> Rectangle()

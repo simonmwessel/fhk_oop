@@ -1,6 +1,7 @@
 package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -31,14 +32,14 @@ import kotlin.math.sqrt
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.4
+ * @version 2.5
  * @since   1.0
  */
 class Square(
     originParam:     Point = Point(),
     sideLengthParam: Float = (0f..Config.MAX_SQUARE_SIDE).random(),
     styleParam:      Style = Style()
-) : Shape(originParam, styleParam) {
+) : BaseShape(originParam, styleParam) {
 
     /** Backing field for side length */
     private var _sideLength: Float = sideLengthParam
