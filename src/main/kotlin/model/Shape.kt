@@ -111,10 +111,33 @@ abstract class Shape(
     abstract fun getArea(): Float
 
     /**
-     * Draws this shape on the given Processing sketch.
-     * Every concrete shape overrides this to call the matching primitive.
+     * Renders the shape using uniform scaling to preserve aspect ratio.
+     * The entire scene is scaled around the center of the window.
+     *
+     * @param g Processing graphics context
+     *
+     * @see de.fhkiel.oop.Sketch.ResizeMode.UNIFORM_SCALE
      */
-    abstract fun draw(g: PApplet)
+    abstract fun drawUniform(g: PApplet)
+
+    /**
+     * Renders the shape with relative positioning while preserving shape integrity.
+     * Positions are scaled relative to window size, while circles/squares maintain
+     * their aspect ratio via [uniformScale].
+     *
+     * @param g            Processing graphics context
+     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
+     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
+     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
+     *
+     * @see de.fhkiel.oop.Sketch.ResizeMode.RELATIVE
+     */
+    abstract fun drawRelative(
+        g: PApplet,
+        scaleX: Float,
+        scaleY: Float,
+        uniformScale: Float
+    )
 
     /**
      * Abstract method to calculate the perimeter of the shape.

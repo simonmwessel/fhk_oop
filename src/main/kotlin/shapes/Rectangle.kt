@@ -89,29 +89,49 @@ class Rectangle(
     override fun getArea(): Float = width * height
 
     /**
-     * Renders the rectangle on the Processing canvas with configured visual attributes.
+     * Draws the rectangle with uniform scaling - entire scene grows/shrinks
+     * equally while keeping center position.
      *
-     * 1. Saves current drawing style with [PApplet.pushStyle]
-     * 2. Applies:
-     *    - Fill color from [fillColor]
-     *    - Stroke color from [strokeColor]
-     *    - Stroke weight from [strokeWeight]
-     * 3. Draws rectangle using Processing's [PApplet.rect] with:
-     *    - Top-left corner at [origin.x], [origin.y]
-     *    - Dimensions [width] x [height]
-     * 4. Restores original style with [PApplet.popStyle]
+     * @param g Processing graphics context
      *
-     * @param g Processing graphics context to draw on
-     *
-     * @see PApplet.rect
-     * @see PApplet.pushStyle
+     * @see Shape.drawUniform
      */
-    override fun draw(g: PApplet) {
+    override fun drawUniform(g: PApplet) {
         g.pushStyle()
         g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
         g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
         g.strokeWeight(strokeWeight)
         g.rect(origin.x, origin.y, width, height)
+        g.popStyle()
+    }
+
+    /**
+     * Draws the rectangle with relative positioning - scales position and
+     * dimensions independently to fill available space.
+     *
+     * @param g            Processing graphics context
+     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
+     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
+     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
+     *
+     * @see Shape.drawRelative
+     */
+    override fun drawRelative(
+        g: PApplet,
+        scaleX: Float,
+        scaleY: Float,
+        uniformScale: Float
+    ) {
+        val x = origin.x * scaleX
+        val y = origin.y * scaleY
+        val w = width  * uniformScale
+        val h = height * uniformScale
+
+        g.pushStyle()
+        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
+        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
+        g.strokeWeight(strokeWeight)
+        g.rect(x, y, w, h)
         g.popStyle()
     }
 

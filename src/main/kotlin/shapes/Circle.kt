@@ -88,12 +88,50 @@ class Circle(
      * @see PApplet.popStyle
      * @see PApplet.circle
      */
-    override fun draw(g: PApplet) {
+
+    /**
+     * Draws the circle with uniform scaling - maintains perfect roundness
+     * while centering the entire composition.
+     *
+     * @param g Processing graphics context
+     *
+     * @see Shape.drawUniform
+     */
+    override fun drawUniform(g: PApplet) {
         g.pushStyle()
         g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
         g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
         g.strokeWeight(strokeWeight)
-        g.circle(origin.x, origin.y, radius * 2)
+        g.ellipse(origin.x, origin.y, radius * 2, radius * 2)
+        g.popStyle()
+    }
+
+    /**
+     * Draws the circle with relative positioning - scales position coordinates
+     * while maintaining perfect roundness through [uniformScale].
+     *
+     * @param g            Processing graphics context
+     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
+     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
+     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
+     *
+     * @see Shape.drawRelative
+     */
+    override fun drawRelative(
+        g: PApplet,
+        scaleX: Float,
+        scaleY: Float,
+        uniformScale: Float
+    ) {
+        val cx = origin.x * scaleX
+        val cy = origin.y * scaleY
+        val r  = radius     * uniformScale
+
+        g.pushStyle()
+        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
+        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
+        g.strokeWeight(strokeWeight)
+        g.ellipse(cx, cy, r * 2, r * 2)
         g.popStyle()
     }
 
