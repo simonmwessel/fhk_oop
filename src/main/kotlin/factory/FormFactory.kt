@@ -112,7 +112,7 @@ class FormFactory {
         originMean:         Float?       = null,
         originSigma:        Float?       = null
     ): Circle {
-        val r = (0f..Config.MAX_CIRCLE_RADIUS).random(
+        val r = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(
             dist         = sizeDist,
             peakFraction = sizePeakFraction,
             mean         = sizeMean,
@@ -159,25 +159,25 @@ class FormFactory {
         originMean:         Float?       = null,
         originSigma:        Float?       = null
     ): Rectangle {
-        val w = (0f..Config.MAX_RECT_WIDTH).random(
+        val w = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(
             dist         = sizeDist,
             peakFraction = sizePeakFraction,
             mean         = sizeMean,
             sigma        = sizeSigma
         )
-        val h = (0f..Config.MAX_RECT_HEIGHT).random(
+        val h = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(
             dist         = sizeDist,
             peakFraction = sizePeakFraction,
             mean         = sizeMean,
             sigma        = sizeSigma
         )
-        val x = (0f..Config.MAX_X - w).random(
+        val x = (Float.MIN_VALUE..Config.MAX_X - w).random(
             dist         = originDist,
             peakFraction = originPeakFraction,
             mean         = originMean,
             sigma        = originSigma
         )
-        val y = (0f..Config.MAX_Y - h).random(
+        val y = (Float.MIN_VALUE..Config.MAX_Y - h).random(
             dist         = originDist,
             peakFraction = originPeakFraction,
             mean         = originMean,
@@ -212,19 +212,19 @@ class FormFactory {
         originMean:         Float?       = null,
         originSigma:        Float?       = null
     ): Square {
-        val s = (0f..Config.MAX_SQUARE_SIDE).random(
+        val s = (Float.MIN_VALUE..Config.MAX_SQUARE_SIDE).random(
             dist         = sizeDist,
             peakFraction = sizePeakFraction,
             mean         = sizeMean,
             sigma        = sizeSigma
         )
-        val x = (0f..Config.MAX_X - s).random(
+        val x = (Float.MIN_VALUE..Config.MAX_X - s).random(
             dist         = originDist,
             peakFraction = originPeakFraction,
             mean         = originMean,
             sigma        = originSigma
         )
-        val y = (0f..Config.MAX_Y - s).random(
+        val y = (Float.MIN_VALUE..Config.MAX_Y - s).random(
             dist         = originDist,
             peakFraction = originPeakFraction,
             mean         = originMean,

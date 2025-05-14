@@ -10,22 +10,24 @@ import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute2Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
+import de.fhkiel.oop.utils.FloatExtensions.validateInRange
 import de.fhkiel.oop.utils.RandomUtils.random
 import processing.core.PApplet
+import kotlin.Float
 
 /**
  * A rectangle defined by its top-left corner, width and height.
  *
  * @property origin The top-left corner of the rectangle.
- * @property width  Width in units ∈ (0f..[Config.MAX_RECT_WIDTH]).
- * @property height Height in units ∈ (0f..[Config.MAX_RECT_HEIGHT]).
+ * @property width  Width in units ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_WIDTH]).
+ * @property height Height in units ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_HEIGHT]).
  *
  * @constructor Creates a [Rectangle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam top-left point or random if omitted
- * @param widthParam  width or random ∈ (0f..[Config.MAX_RECT_WIDTH]) if omitted
- * @param heightParam height or random ∈ (0f..[Config.MAX_RECT_HEIGHT]) if omitted
+ * @param widthParam  width or random ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_WIDTH]) if omitted
+ * @param heightParam height or random ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_HEIGHT]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
@@ -34,18 +36,26 @@ import processing.core.PApplet
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.5
+ * @version 2.6
  * @since   1.0
  */
 class Rectangle(
     originParam: Point = Point(),
-    widthParam:  Float = (0f..Config.MAX_RECT_WIDTH).random(),
-    heightParam: Float = (0f..Config.MAX_RECT_HEIGHT).random(),
+    widthParam:  Float = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(),
+    heightParam: Float = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(),
     styleParam:  Style = Style()
 ) : BaseShape(originParam, styleParam) {
 
-    /** Backing field for width */
-    private var _width: Float = widthParam
+    /**
+     * Backing field for width
+     *
+     * @throws IllegalArgumentException if outside the allowed range.
+     */
+    private var _width: Float = widthParam.validateInRange(
+        "width",
+        Float.MIN_VALUE,
+        Config.MAX_RECT_WIDTH
+    )
 
     /**
      * The width of the rectangle.
@@ -55,15 +65,29 @@ class Rectangle(
     var width: Float
         /** Returns the width of the rectangle. */
         get() = _width
-        /** Sets the width of the rectangle. */
+        /**
+         * Sets the width of the rectangle.
+         *
+         * @throws IllegalArgumentException if outside the allowed range.
+         */
         set(v) {
-            require(v > 0f) { "Width must be > 0" }
-            require(v <= Config.MAX_RECT_WIDTH) { "Width must be <= ${Config.MAX_RECT_WIDTH}" }
-            _width = v
+            _width = v.validateInRange(
+                "width",
+                Float.MIN_VALUE,
+                Config.MAX_RECT_WIDTH
+            )
         }
 
-    /** Backing field for height */
-    private var _height: Float = heightParam
+    /**
+     * Backing field for height
+     *
+     * @throws IllegalArgumentException if outside the allowed range.
+     */
+    private var _height: Float = heightParam.validateInRange(
+        "height",
+        Float.MIN_VALUE,
+        Config.MAX_RECT_HEIGHT
+    )
 
     /**
      * The height of the rectangle.
@@ -73,12 +97,17 @@ class Rectangle(
     var height: Float
         /** Returns the height of the rectangle. */
         get() = _height
-        /** Sets the height of the rectangle. */
+        /**
+         * Sets the height of the rectangle.
+         *
+         * @throws IllegalArgumentException if outside the allowed range.
+         */
         set(v) {
-            require(v > 0f) { "Height must be > 0" }
-            require(v <= Config.MAX_RECT_HEIGHT) { "Height must be <= ${Config.MAX_RECT_HEIGHT}" }
-
-            _height = v
+            _height = v.validateInRange(
+                "height",
+                Float.MIN_VALUE,
+                Config.MAX_RECT_HEIGHT
+            )
         }
 
     companion object {

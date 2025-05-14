@@ -9,21 +9,23 @@ import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
+import de.fhkiel.oop.utils.FloatExtensions.validateInRange
 import de.fhkiel.oop.utils.RandomUtils.random
 import processing.core.PApplet
+import kotlin.Float
 import kotlin.math.sqrt
 
 /**
  * A square defined by its top-left corner and side length.
  *
  * @property origin     The top-left corner of the square.
- * @property sideLength Length of each side ∈ (0f..[Config.MAX_SQUARE_SIDE]).
+ * @property sideLength Length of each side ∈ ([Float.MIN_VALUE]..[Config.MAX_SQUARE_SIDE]).
  *
  * @constructor Creates a [Square] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam     top-left point or random if omitted
- * @param sideLengthParam side length or random ∈ (0f..[Config.MAX_SQUARE_SIDE]) if omitted
+ * @param sideLengthParam side length or random ∈ ([Float.MIN_VALUE]..[Config.MAX_SQUARE_SIDE]) if omitted
  * @param styleParam      Initial style (random colours & weight by default).
  *
  * @see Style
@@ -32,17 +34,25 @@ import kotlin.math.sqrt
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.5
+ * @version 2.6
  * @since   1.0
  */
 class Square(
     originParam:     Point = Point(),
-    sideLengthParam: Float = (0f..Config.MAX_SQUARE_SIDE).random(),
+    sideLengthParam: Float = (Float.MIN_VALUE..Config.MAX_SQUARE_SIDE).random(),
     styleParam:      Style = Style()
 ) : BaseShape(originParam, styleParam) {
 
-    /** Backing field for side length */
-    private var _sideLength: Float = sideLengthParam
+    /**
+     * Backing field for side length
+     *
+     * @throws IllegalArgumentException if outside the allowed range.
+     */
+    private var _sideLength: Float = sideLengthParam.validateInRange(
+        "sideLength",
+        Float.MIN_VALUE,
+        Config.MAX_SQUARE_SIDE
+    )
 
     /**
      * The side length of the square.
@@ -52,12 +62,17 @@ class Square(
     var sideLength: Float
         /** Returns the side length of the square. */
         get() = _sideLength
-        /** Sets the side length of the square. */
+        /**
+         * Sets the side length of the square.
+         *
+         * @throws IllegalArgumentException if outside the allowed range.
+         */
         set(v) {
-            require(v > 0f) { "Side length must be > 0" }
-            require(v <= Config.MAX_SQUARE_SIDE) { "Side length must be <= ${Config.MAX_SQUARE_SIDE}" }
-
-            _sideLength = v
+            _sideLength = v.validateInRange(
+                "sideLength",
+                Float.MIN_VALUE,
+                Config.MAX_SQUARE_SIDE
+            )
         }
 
     companion object {

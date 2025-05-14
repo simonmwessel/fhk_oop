@@ -2,6 +2,7 @@ package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
+import de.fhkiel.oop.utils.FloatExtensions.validateInRange
 import de.fhkiel.oop.utils.RandomUtils.random
 
 /**
@@ -10,58 +11,45 @@ import de.fhkiel.oop.utils.RandomUtils.random
  * Both coordinates default to random values within the canvas bounds
  * defined by [Config.MAX_X] and [Config.MAX_Y].
  *
- * @property x X-coordinate of the point (0f..[Config.MAX_X]).
- * @property y Y-coordinate of the point (0f..[Config.MAX_Y]).
- *
- * @constructor Creates a [Point] at the specified coordinates.
- * If omitted, each coordinate is drawn via [ClosedFloatingPointRange.random].
- *
- * @param xParam initial X-coordinate or random ∈ (0f, [Config.MAX_X]).
- * @param yParam initial Y-coordinate or random ∈ (0f, [Config.MAX_Y]).
+ * @property _x backing field for the X-coordinate
+ * @property _y backing field for the Y-coordinate
  *
  * @author  Simon Wessel
- * @version 2.2
+ * @version 2.3
  * @since   1.0
  */
-class Point(
-    xParam: Float = (0f..Config.MAX_X).random(),
-    yParam: Float = (0f..Config.MAX_Y).random()
+data class Point(
+    private var _x: Float = 0f,
+    private var _y: Float = 0f
 ) {
 
-    /** Backing field for x coordinate */
-    private var _x: Float = xParam
+    init {
+        _x = _x.validateInRange("x", 0f, Config.MAX_X)
+        _y = _y.validateInRange("y", 0f, Config.MAX_Y)
+    }
 
     /**
-     * The x coordinate of the point.
-     *
-     * @return the x coordinate.
+     * X-coordinate, always within (0f..[de.fhkiel.oop.config.Config.MAX_X]).
+     * @throws IllegalArgumentException if outside the allowed range.
      */
     var x: Float
-        /** Returns the x coordinate of the point. */
+        /** Returns the X-coordinate of the point. */
         get() = _x
-        /** Sets the x coordinate of the point. */
-        set(v) {
-            require(v >= 0f) { "X coordinate must be >= 0" }
-            require(v <= Config.MAX_X) { "X coordinate must be <= ${Config.MAX_X}" }
-            _x = v
+        /** Sets the X-coordinate of the point. */
+        set(value) {
+            _x = value.validateInRange("x", 0f, Config.MAX_X)
         }
 
-    /** Backing field for y coordinate */
-    private var _y: Float = yParam
-
     /**
-     * The y coordinate of the point.
-     *
-     * @return the y coordinate.
+     * Y-coordinate, always within (0f..[de.fhkiel.oop.config.Config.MAX_Y]).
+     * @throws IllegalArgumentException if outside the allowed range.
      */
     var y: Float
-        /** Returns the y coordinate of the point. */
+        /** Returns the Y-coordinate of the point. */
         get() = _y
-        /** Sets the y coordinate of the point. */
-        set(v) {
-            require(v >= 0f) { "Y coordinate must be >= 0" }
-            require(v <= Config.MAX_Y) { "Y coordinate must be <= ${Config.MAX_Y}" }
-            _y = v
+        /** Sets the Y-coordinate of the point. */
+        set(value) {
+            _y = value.validateInRange("y", 0f, Config.MAX_Y)
         }
 
     /**

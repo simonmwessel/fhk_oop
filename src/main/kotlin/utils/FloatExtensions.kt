@@ -23,10 +23,24 @@ import kotlin.math.absoluteValue
  * ```
  *
  * @author  Simon Wessel
- * @version 1.1
+ * @version 1.2
  * @since   2.1
  */
 object FloatExtensions {
+
+    /**
+     * Extension for Float to enforce an inclusive range check.
+     *
+     * @param name  Name of the variable for error message.
+     * @param lo    Lower bound of the range.
+     * @param hi    Upper bound of the range.
+     * @return      the validated float value for chaining.
+     * @throws IllegalArgumentException if `this` is not in [lo]..[hi].
+     */
+    fun Float.validateInRange(name: String, lo: Float, hi: Float): Float {
+        require(this in lo..hi) { "$name must be in $lo..$hi but was $this" }
+        return this
+    }
 
     /**
      * Returns the number of digits in the integer part of this [Float].

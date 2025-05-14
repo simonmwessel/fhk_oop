@@ -9,8 +9,10 @@ import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
+import de.fhkiel.oop.utils.FloatExtensions.validateInRange
 import de.fhkiel.oop.utils.RandomUtils.random
 import processing.core.PApplet
+import kotlin.Float
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -18,13 +20,13 @@ import kotlin.math.sqrt
  * A circle defined by a center point and a radius.
  *
  * @property origin The center of the circle.
- * @property radius Radius length in units ∈ (0f..[Config.MAX_CIRCLE_RADIUS]).
+ * @property radius Radius length in units ∈ ([Float.MIN_VALUE]..[Config.MAX_CIRCLE_RADIUS]).
  *
  * @constructor Creates a [Circle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam center point or random if omitted
- * @param radiusParam radius or random ∈ (0f..[Config.MAX_CIRCLE_RADIUS]) if omitted
+ * @param radiusParam radius or random ∈ ([Float.MIN_VALUE]..[Config.MAX_CIRCLE_RADIUS]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
@@ -33,17 +35,25 @@ import kotlin.math.sqrt
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.5
+ * @version 2.6
  * @since   1.0
  */
 class Circle(
     originParam: Point = Point(),
-    radiusParam: Float = (0f..Config.MAX_CIRCLE_RADIUS).random(),
+    radiusParam: Float = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(),
     styleParam:  Style = Style()
 )  : BaseShape(originParam, styleParam) {
 
-    /** Backing field for radius */
-    private var _radius: Float = radiusParam
+    /**
+     * Backing field for radius
+     *
+     * @throws IllegalArgumentException if outside the allowed range.
+     */
+    private var _radius: Float = radiusParam.validateInRange(
+        "radius",
+        Float.MIN_VALUE,
+        Config.MAX_CIRCLE_RADIUS
+    )
 
     /**
      * The radius of the circle.
@@ -53,12 +63,17 @@ class Circle(
     var radius: Float
         /** Returns the radius of the circle. */
         get() = _radius
-        /** Sets the radius of the circle. */
+        /**
+         * Sets the radius of the circle.
+         *
+         * @throws IllegalArgumentException if outside the allowed range.
+         */
         set(v) {
-            require(v > 0f) { "Radius must be > 0" }
-            require(v <= Config.MAX_CIRCLE_RADIUS) { "Radius must be <= ${Config.MAX_CIRCLE_RADIUS}" }
-
-            _radius = v
+            _radius = v.validateInRange(
+                "radius",
+                Float.MIN_VALUE,
+                Config.MAX_CIRCLE_RADIUS
+            )
         }
 
     companion object {
