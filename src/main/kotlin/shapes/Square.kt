@@ -8,6 +8,7 @@ import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
 import de.fhkiel.oop.utils.RandomUtils.random
+import processing.core.PApplet
 import kotlin.math.sqrt
 
 /**
@@ -66,6 +67,33 @@ class Square(
      * @return The area of the square.
      */
     override fun getArea(): Float = sideLength * sideLength
+
+    /**
+     * Renders the square on the Processing canvas with configured visual attributes.
+     *
+     * 1. Saves current drawing style with [PApplet.pushStyle]
+     * 2. Applies:
+     *    - Fill color from [fillColor]
+     *    - Stroke color from [strokeColor]
+     *    - Stroke weight from [strokeWeight]
+     * 3. Draws square using Processing's [PApplet.square] with:
+     *    - Top-left corner at [origin.x], [origin.y]
+     *    - Side length [sideLength]
+     * 4. Restores original style with [PApplet.popStyle]
+     *
+     * @param g Processing graphics context to draw on
+     *
+     * @see PApplet.square
+     * @see PApplet.pushStyle
+     */
+    override fun draw(g: PApplet) {
+        g.pushStyle()
+        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
+        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
+        g.strokeWeight(strokeWeight)
+        g.square(origin.x, origin.y, sideLength)
+        g.popStyle()
+    }
 
     /**
      * Returns a string representation of the square

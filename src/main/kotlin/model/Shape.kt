@@ -4,6 +4,7 @@ import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.utils.Color
 import de.fhkiel.oop.utils.RandomUtils.random
 import de.fhkiel.oop.utils.RandomUtils.randomColor
+import processing.core.PApplet
 
 /**
  * Abstract base for all 2D shapes.
@@ -108,6 +109,12 @@ abstract class Shape(
      * @return The area of the shape.
      */
     abstract fun getArea(): Float
+
+    /**
+     * Draws this shape on the given Processing sketch.
+     * Every concrete shape overrides this to call the matching primitive.
+     */
+    abstract fun draw(g: PApplet)
 
     /**
      * Abstract method to calculate the perimeter of the shape.

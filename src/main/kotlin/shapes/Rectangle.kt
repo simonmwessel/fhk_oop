@@ -9,6 +9,7 @@ import de.fhkiel.oop.utils.FloatExtensions.formatAttribute2Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
 import de.fhkiel.oop.utils.RandomUtils.random
+import processing.core.PApplet
 
 /**
  * A rectangle defined by its top-left corner, width and height.
@@ -86,6 +87,33 @@ class Rectangle(
      * @return The area of the rectangle.
      */
     override fun getArea(): Float = width * height
+
+    /**
+     * Renders the rectangle on the Processing canvas with configured visual attributes.
+     *
+     * 1. Saves current drawing style with [PApplet.pushStyle]
+     * 2. Applies:
+     *    - Fill color from [fillColor]
+     *    - Stroke color from [strokeColor]
+     *    - Stroke weight from [strokeWeight]
+     * 3. Draws rectangle using Processing's [PApplet.rect] with:
+     *    - Top-left corner at [origin.x], [origin.y]
+     *    - Dimensions [width] x [height]
+     * 4. Restores original style with [PApplet.popStyle]
+     *
+     * @param g Processing graphics context to draw on
+     *
+     * @see PApplet.rect
+     * @see PApplet.pushStyle
+     */
+    override fun draw(g: PApplet) {
+        g.pushStyle()
+        g.fill(fillColor.red, fillColor.green, fillColor.blue, fillColor.alpha)
+        g.stroke(strokeColor.red, strokeColor.green, strokeColor.blue, strokeColor.alpha)
+        g.strokeWeight(strokeWeight)
+        g.rect(origin.x, origin.y, width, height)
+        g.popStyle()
+    }
 
     /**
      * Returns a string representation of the rectangle

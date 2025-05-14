@@ -23,7 +23,7 @@ import processing.core.PApplet
  * 1. [settings] configures the sketch window size.
  * 2. [setup]    initializes color mode, background, resizability, and populates the [shapes] list.
  * 3. [draw]     clears the canvas each frame and renders each shape with its graphic attributes.
- *s
+ *
  * @author  Simon Wessel
  * @version 1.1
  * @since   2.3
@@ -82,37 +82,28 @@ class Sketch : PApplet() {
     }
 
     /**
-     * Draw loop: clears the background and renders each shape.
+     * Continuously renders all shapes to the sketch canvas while handling window resizing.
      *
-     * For each [Shape] in [shapes]:
-     *  1. Applies fill and stroke colors via [fill] and [stroke].
-     *  2. Sets stroke weight from [strokeWeight].
-     *  3. Draws the shape using the appropriate Processing primitive:
-     *     * [Circle] via [ellipse], using `radius * 2` for width/height.
-     *     * [Rectangle] via [rect], using `width` and `height`.
-     *     * [Square] via [rect], using `sideLength` for both dimensions.
+     * This Processing framework method:
+     * 1. Clears the canvas using [Config.SKETCH_BACKGROUND_COLOR]
+     * 2. Calculates scaling/offset to keep shapes centered if window is resized
+     * 3. Delegates actual shape rendering to each [Shape]'s [Shape.draw] implementation
      *
-     * Called repeatedly by Processing at the frame rate.
+     * The scaling logic preserves aspect ratio using:
+     * - [baseW]/[baseH] as reference dimensions from [Config]
+     * - [min] to maintain proportional scaling
+     * - Dynamic offset calculation for centering
      *
-     * @see Circle
-     * @see Rectangle
-     * @see Square
+     * @see PApplet.draw Processing's draw cycle documentation
+     * @see Shape.draw Individual shape rendering logic
+     * @see Config.SKETCH_BACKGROUND_COLOR Background color source
      */
     override fun draw() {
-        for (shape in shapes) {
-            fill(
-                shape.fillColor.red,
-                shape.fillColor.green,
-                shape.fillColor.blue,
-                shape.fillColor.alpha
-            )
-            stroke(
-                shape.strokeColor.red,
-                shape.strokeColor.green,
-                shape.strokeColor.blue,
-                shape.strokeColor.alpha
-            )
-            strokeWeight(shape.strokeWeight)
+        background(
+            Config.SKETCH_BACKGROUND_COLOR.red,
+            Config.SKETCH_BACKGROUND_COLOR.green,
+            Config.SKETCH_BACKGROUND_COLOR.blue
+        )
 
             when (shape) {
                 is Circle ->
@@ -138,5 +129,6 @@ class Sketch : PApplet() {
                     )
             }
         }
+        shapes.forEach { it.draw(this) }
     }
 }
