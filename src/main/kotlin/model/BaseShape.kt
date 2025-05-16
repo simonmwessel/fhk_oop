@@ -29,7 +29,7 @@ import processing.core.PApplet
  */
 abstract class BaseShape (
     originParam: Point = Point(),
-    styleParam:  Style  = Style()
+    styleParam:  Style = Style()
 ) {
 
     /** Backing field for location */
