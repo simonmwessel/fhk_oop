@@ -11,14 +11,14 @@ repositories {
     mavenCentral()
 }
 
-// Processing Core library when processing is installed on the system (e.g. Arch via AUR package "processing")
-val processingCoreJar = fileTree("/usr/share/processing/lib/app/resources/core/library/") {
-    include("core-*.jar")
-}.singleFile
+// Processing library jars when processing is installed on the system (e.g. Arch via AUR package "processing")
+val processingLibs = fileTree("/usr/share/processing/lib/app/resources/core/library/") {
+    include("core-*.jar", "gluegen-rt-*.jar", "jogl-all-*.jar")
+}
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation(files(processingCoreJar))
+    implementation(files(processingLibs))
 }
 
 application {

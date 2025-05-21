@@ -123,7 +123,7 @@ object RandomUtils {
      * @receiver Closed range of [Float].
      *
      * @param peakFraction For [Distribution.NORMAL]: Relative peak position (0.0–1.0). Overrides [mean].
-     * @param mean         For [Distribution.NORMAL]: Mean μ (default: global → midpoint).
+     * @param mean         For [Distribution.NORMAL]: Mean μ (default: global -> midpoint).
      * @param sigma        For [Distribution.NORMAL]: Standard deviation σ (default: global → range/6).
      *
      * @return Random value following the global distribution.
