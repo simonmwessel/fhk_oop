@@ -1,6 +1,8 @@
 package de.fhkiel.oop
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.DistributionConfig
+import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.factory.FormFactory
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Shape
@@ -34,7 +36,7 @@ import processing.core.PApplet
  * @param resizeMode determines which resizing strategy to apply when the window is resized.
  *
  * @author  Simon Wessel
- * @version 1.3
+ * @version 1.4
  * @since   2.3
  *
  * @see ResizeMode
@@ -121,7 +123,7 @@ class Sketch(
      * Duration (in milliseconds) that the hint box remains visible.
      * Must be >= 0.
      */
-    private var _hintDuration: Int = 3_000
+    private var _hintDuration: Int = 5_000
     var hintDuration: Int
         /** Returns the hint duration. */
         get() = _hintDuration
@@ -183,13 +185,7 @@ class Sketch(
 
         surface.setResizable(true)
 
-        shapes = FormFactory().produce(
-            count            = 40,
-            safe             = true,
-            sizeDist         = Distribution.NORMAL,
-            sizePeakFraction = .2f,
-            originDist       = Distribution.UNIFORM
-        )
+        addShapes(count = 40)
 
         hintStartTime = millis()
 
@@ -255,7 +251,10 @@ class Sketch(
 
         val lines = listOf(
             "Press 'M' to toggle resize mode",
-            "(current: $resizeMode)"
+            "(current: $resizeMode)",
+            "Press 'S' to add a square",
+            "Press 'R' to add a rectangle",
+            "Press 'C' to add a circle"
         )
 
         textSize(16f)
@@ -282,16 +281,67 @@ class Sketch(
     }
 
     /**
+     * Adds a specified number of shapes to the existing list of shapes.
+     *
+     * Delegates shape generation logic entirely to [FormFactory.produce].
+     * The new shapes are appended to the current [_shapes] list.
+     *
+     * @param count The number of new shapes to add. Must be > 0.
+     * @param shapeType Optional. The specific type of shape to generate (e.g., "[Square]", "[Rectangle]", "[Circle]").
+     *   If null or an unknown type is provided, random shapes will be generated.
+     * @param safe If true (default) and [shapeType] is null, ensures produced shapes are within canvas bounds.
+     *   This parameter is used by [FormFactory.produce].
+     * @param sizeDist Distribution for size parameters. Defaults to [Distribution.NORMAL].
+     * @param sizePeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in size range.
+     *   Defaults to 0.2f. Overrides [sizeMean] if set.
+     * @param sizeMean For [Distribution.NORMAL]: Absolute mean for sizes. Defaults to null.
+     * @param sizeSigma For [Distribution.NORMAL]: Standard deviation for sizes. Defaults to null.
+     * @param originDist Distribution for origin coordinates. Defaults to [Distribution.UNIFORM].
+     * @param originPeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in origin range.
+     *   Defaults to null. Overrides [originMean] if set.
+     * @param originMean For [Distribution.NORMAL]: Absolute mean for origins. Defaults to null.
+     * @param originSigma For [Distribution.NORMAL]: Standard deviation for origins. Defaults to null.
+     */
+    fun addShapes(generationParams: GenerationParams) {
+        require(count > 0) { "Number of shapes to add must be > 0" }
+
+        val newShapes = FormFactory().produce(
+            count        = count,
+            shapeType    = shapeType,
+            safe         = safe,
+            sizeConfig   = sizeConfig,
+            originConfig = originConfig,
+        )
+
+        _shapes += newShapes
+
+        val typeDescription = shapeType?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase() else it.toString()
+        } ?: "random"
+
+        println("\nAdded $count new ${typeDescription}(s). Total shapes: ${_shapes.size}")
+        newShapes.forEach { println(it) }
+    }
+
+    /**
      * Toggles the [resizeMode] when the user presses 'M' or 'm',
      * and restarts the hint timer.
+     * Adds a new shape based on key press:
+     * - 's' or 'S': Adds a new Square.
+     * - 'r' or 'R': Adds a new Rectangle.
+     * - 'c' or 'C': Adds a new Circle.
      */
     override fun keyPressed() {
-        if (key == 'm' || key == 'M') {
-            resizeMode = when (resizeMode) {
-                ResizeMode.UNIFORM_SCALE -> ResizeMode.RELATIVE
-                ResizeMode.RELATIVE      -> ResizeMode.UNIFORM_SCALE
+        when (key.lowercaseChar()) {
+            'm' -> {
+                resizeMode = when (resizeMode) {
+                    ResizeMode.UNIFORM_SCALE -> ResizeMode.RELATIVE
+                    ResizeMode.RELATIVE      -> ResizeMode.UNIFORM_SCALE
+                }
             }
-            hintStartTime = millis()
+            's' -> addShapes(1, "square")
+            'r' -> addShapes(1, "rectangle")
+            'c' -> addShapes(1, "circle")
         }
     }
 }

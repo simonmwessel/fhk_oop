@@ -1,5 +1,6 @@
 package de.fhkiel.oop.utils
 
+import de.fhkiel.oop.config.DistributionConfig
 import kotlin.random.Random
 
 /**
@@ -106,13 +107,14 @@ object RandomUtils {
      */
     @JvmStatic
     fun ClosedFloatingPointRange<Float>.random(
-        dist: Distribution = defaultDistribution,
-        peakFraction: Float? = defaultPeakFraction,
-        mean: Float? = defaultMean,
-        sigma: Float? = defaultSigma
-    ): Float = when (dist) {
+        config: DistributionConfig
+    ): Float = when (config.distribution) {
         Distribution.UNIFORM -> randomUniform()
-        Distribution.NORMAL -> randomNormal(peakFraction, mean, sigma)
+        Distribution.NORMAL -> randomNormal(
+            peakFraction = config.peakFraction,
+            mean = config.mean,
+            sigma = config.sigma
+        )
     }
 
     /**
