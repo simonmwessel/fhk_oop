@@ -16,6 +16,10 @@ import de.fhkiel.oop.utils.RandomUtils.Distribution
  *   Used if [peakFraction] is null.
  * @property sigma For [Distribution.NORMAL]: Standard deviation for the distribution.
  *
+ * @author  Simon Wessel
+ * @version 1.1
+ * @since   2.7
+ *
  * @see GenerationParams
  * @see de.fhkiel.oop.factory.FormFactory
  * @see Distribution

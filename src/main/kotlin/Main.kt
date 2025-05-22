@@ -18,7 +18,7 @@ import processing.core.PApplet
  * Finally, starts the Processing sketch by invoking [PApplet.main] on [Sketch].
  *
  * @author  Simon Wessel
- * @version 2.7
+ * @version 2.8
  * @since   1.0
  */
 object Main {

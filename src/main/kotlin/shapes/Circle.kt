@@ -2,9 +2,11 @@ package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
+import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
+import de.fhkiel.oop.model.distanceTo
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
@@ -76,6 +78,9 @@ class Circle(
             )
         }
 
+    /**
+     * Companion object for [Circle] providing factory methods.
+     */
     companion object {
         /**
          * Static method to create a Circle from a given area.
@@ -95,6 +100,28 @@ class Circle(
      * @return The area of the circle.
      */
     override fun getArea(): Float = (Math.PI * radius.pow(2)).toFloat()
+
+    /**
+     * {@inheritDoc}
+     *
+     * For a circle, this checks if the distance from the [point] to the circle's [origin] is less than or equal to its [radius].
+     */
+    override fun contains(point: Point): Boolean =
+        point.distanceTo(origin) <= radius
+
+    /**
+     * {@inheritDoc}
+     *
+     * For a circle, the bounding box is a square whose sides are equal to the circle's diameter (2 * [radius]),
+     * centered at the circle's [origin].
+     */
+    override fun boundingBox(): BoundingBox =
+        BoundingBox(
+            x = origin.x - radius,
+            y = origin.y - radius,
+            width  = radius * 2,
+            height = radius * 2
+        )
 
     /**
      * Draws the circle with uniform scaling - maintains perfect roundness

@@ -5,6 +5,8 @@ import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.factory.FormFactory
 import de.fhkiel.oop.model.BaseShape
+import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.SelectableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
@@ -36,7 +38,7 @@ import processing.core.PApplet
  * @param resizeMode determines which resizing strategy to apply when the window is resized.
  *
  * @author  Simon Wessel
- * @version 1.4
+ * @version 1.8
  * @since   2.3
  *
  * @see ResizeMode
@@ -331,5 +333,37 @@ class Sketch(
             'r' -> addShapes(GenerationParams.RECTANGLE)
             'c' -> addShapes(GenerationParams.CIRCLE)
         }
+    }
+
+    /**
+     * Handles mouse press events for selecting and deselecting shapes.
+     *
+     * When the mouse is pressed, this method determines the clicked point. It then checks if any [SelectableShape]
+     * contains this point. The behavior for selection depends on whether the SHIFT key is pressed:
+     * - **Single Select (SHIFT not pressed):** If a selectable shape is clicked, it becomes the only selected shape.
+     *   All other previously selected shapes are deselected. If the click is not on any selectable shape,
+     *   all shapes are deselected.
+     * - **Multi-select (SHIFT pressed):** If a selectable shape is clicked, its selection state is toggled
+     *   (selected if it was unselected, unselected if it was selected). Other shapes' selection states remain unchanged.
+     *
+     * The sketch is redrawn after processing the mouse press to reflect any changes in selection.
+     */
+    override fun mousePressed() {
+        val clickPoint = Point(mouseX.toFloat(), mouseY.toFloat())
+
+        val multiSelect = keyPressed && keyCode == SHIFT
+
+        val clicked = shapes
+            .asReversed()
+            .filterIsInstance<SelectableShape>()
+            .firstOrNull { it.contains(clickPoint) }
+
+        if (!multiSelect) {
+            shapes
+                .filterIsInstance<SelectableShape>()
+                .forEach { it.isSelected = false }
+        }
+
+        clicked?.let { it.isSelected = !it.isSelected }
     }
 }

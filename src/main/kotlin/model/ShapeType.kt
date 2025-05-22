@@ -9,6 +9,10 @@ import de.fhkiel.oop.factory.FormFactory
  * Each enum constant implements the [produce] method to delegate the actual shape creation
  * to the corresponding method in [FormFactory] (e.g., [FormFactory.circle]).
  *
+ * @author  Simon Wessel
+ * @version 1.1
+ * @since   2.7
+ *
  * @see FormFactory
  * @see FormFactory.circle
  * @see FormFactory.rectangle

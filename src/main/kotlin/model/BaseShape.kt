@@ -97,6 +97,21 @@ abstract class BaseShape (
     )
 
     /**
+     * Checks if a given point is contained within the shape.
+     *
+     * @param point The [Point] to check.
+     * @return `true` if the point is inside or on the boundary of the shape, `false` otherwise.
+     */
+    abstract fun contains(point: Point): Boolean;
+
+    /**
+     * Calculates the minimal axis-aligned bounding box that encloses the shape.
+     *
+     * @return The [BoundingBox] of the shape.
+     */
+    abstract fun boundingBox(): BoundingBox;
+
+    /**
      * Executes the provided drawing block on the given PApplet instance with the current style applied.
      *
      * This helper method wraps the pushStyle/popStyle pattern and allows direct use of drawing

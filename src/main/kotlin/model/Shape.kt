@@ -43,4 +43,18 @@ sealed interface Shape {
         scaleY: Float,
         uniformScale: Float
     )
+
+    /**
+     * Returns true if [point] lies inside or on the boundary of this shape.
+     *
+     * @param point the test point in canvas‐coordinates
+     */
+    fun contains(point: Point): Boolean
+
+    /**
+     * Computes the minimal axis‐aligned bounding box enclosing this shape.
+     *
+     * @return the bounding box
+     */
+    fun boundingBox(): BoundingBox
 }

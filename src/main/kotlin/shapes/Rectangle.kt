@@ -2,6 +2,7 @@ package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
+import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -110,6 +111,9 @@ class Rectangle(
             )
         }
 
+    /**
+     * Companion object for [Rectangle] providing factory methods.
+     */
     companion object {
         /**
          * Static method to create a Rectangle from a given area and length.
@@ -130,6 +134,25 @@ class Rectangle(
      * @return The area of the rectangle.
      */
     override fun getArea(): Float = width * height
+
+    /**
+     * {@inheritDoc}
+     *
+     * For a rectangle, this checks if the [point]'s x-coordinate is within the rectangle's x-range
+     * (from [origin].x to [origin].x + [width]) and the y-coordinate is within the rectangle's y-range
+     * (from [origin].y to [origin].y + [height]).
+     */
+    override fun contains(point: Point): Boolean =
+        point.x in origin.x..(origin.x + width)
+     && point.y in origin.y..(origin.y + height)
+
+    /**
+     * {@inheritDoc}
+     *
+     * For a rectangle, the bounding box is the rectangle itself, defined by its [origin], [width], and [height].
+     */
+    override fun boundingBox(): BoundingBox =
+        BoundingBox(origin.x, origin.y, width, height)
 
     /**
      * Draws the rectangle with uniform scaling - entire scene grows/shrinks

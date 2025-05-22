@@ -5,6 +5,7 @@ import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.SelectableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.ShapeType
 import de.fhkiel.oop.shapes.Circle
@@ -68,7 +69,7 @@ import kotlin.random.Random
  * ```
  *
  * @author Simon Wessel
- * @version 2.4
+ * @version 2.8
  * @since 1.7
  */
 class FormFactory {
@@ -82,12 +83,15 @@ class FormFactory {
      * If `generationParams.safe` is true, shapes are generated within canvas bounds using [produceInBounds],
      * otherwise, legacy generation is used via [produceLegacy].
      *
+     * If `generationParams.selectable` is true, the generated shapes are wrapped in [SelectableShape].
+     *
      * @param generationParams Parameters for shape generation, encapsulating:
      *   - `count`: Number of shapes to create.
      *   - `shapeType`: Optional specific [ShapeType]. If null, random types are generated.
      *   - `safe`: If `true`, restricts shapes to canvas bounds.
      *   - `size`: The default [DistributionConfig] for sizes, intended to be used if not overridden by the `sizeConfig` parameter of this method.
      *   - `origin`: The default [DistributionConfig] for origins, intended to be used if not overridden by the `originConfig` parameter of this method.
+     *   - `selectable`: If `true`, wraps the generated shapes in [SelectableShape].
      *   (Note: To use `generationParams.size` or `generationParams.origin`, pass them explicitly as arguments to `sizeConfig` or `originConfig` respectively).
      * @param sizeConfig The [DistributionConfig] to use for generating shape sizes (e.g., radius, width, height).
      *   This configuration specifies the [DistributionConfig.distribution] type (e.g., [Distribution.NORMAL], [Distribution.UNIFORM]),
@@ -108,14 +112,22 @@ class FormFactory {
         generationParams: GenerationParams,
         sizeConfig:       DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig:     DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
-    ): List<BaseShape> =
-        if (generationParams.safe) produceInBounds(
-            count        = generationParams.count,
-            shapeType    = generationParams.shapeType,
-            sizeConfig   = sizeConfig,
-            originConfig = originConfig
-        )
-        else produceLegacy(generationParams.count, generationParams.shapeType)
+    ): List<BaseShape> {
+        val raw: List<BaseShape> =
+            if (generationParams.safe) produceInBounds(
+                count        = generationParams.count,
+                shapeType    = generationParams.shapeType,
+                sizeConfig   = sizeConfig,
+                originConfig = originConfig
+            ) else produceLegacy(
+                count     = generationParams.count,
+                shapeType = generationParams.shapeType
+            )
+
+        if (generationParams.selectable)
+            return raw.map { SelectableShape(it) }
+        return raw
+    }
 
     /**
      * Builds a [Circle] fully contained within the canvas, using specified distribution configurations.

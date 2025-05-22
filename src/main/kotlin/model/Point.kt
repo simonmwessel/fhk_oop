@@ -3,7 +3,7 @@ package de.fhkiel.oop.model
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.validateInRange
-import de.fhkiel.oop.utils.RandomUtils.random
+import kotlin.math.hypot
 
 /**
  * Represents a point in 2D space.
@@ -67,3 +67,13 @@ data class Point(
         } +
         Config.SUFFIX
 }
+
+/**
+ * Computes the Euclidean distance between this point and [other].
+ *
+ * @param other the point to measure distance to
+ *
+ * @return the Euclidean distance as a Float
+ */
+fun Point.distanceTo(other: Point): Float =
+    hypot(other.x - this.x, other.y - this.y)

@@ -2,6 +2,7 @@ package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
+import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -94,6 +95,32 @@ class Square(
      * @return The area of the square.
      */
     override fun getArea(): Float = sideLength * sideLength
+
+    /**
+     * {@inheritDoc}
+     *
+     * For a square, this checks if the [point]'s x-coordinate is within the square's x-range
+     * (from [origin].x to [origin].x + [sideLength]) and the y-coordinate is within the square's y-range
+     * (from [origin].y to [origin].y + [sideLength]).
+     */
+    override fun contains(point: Point): Boolean =
+        point.x >= origin.x
+     && point.x <= origin.x + sideLength
+     && point.y >= origin.y
+     && point.y <= origin.y + sideLength
+
+    /**
+     * {@inheritDoc}
+     *
+     * For a square, the bounding box is the square itself, defined by its [origin] and [sideLength].
+     */
+    override fun boundingBox(): BoundingBox =
+        BoundingBox(
+            x = origin.x,
+            y = origin.y,
+            width  = sideLength,
+            height = sideLength
+        )
 
     /**
      * Draws the square with uniform scaling - maintains perfect squareness
