@@ -2,9 +2,11 @@ package de.fhkiel.oop.factory
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.config.DistributionConfig
+import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
+import de.fhkiel.oop.model.ShapeType
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
 import de.fhkiel.oop.shapes.Square
@@ -16,31 +18,53 @@ import kotlin.random.Random
  * Factory for creating random [Shape] instances: [Circle], [Rectangle], [Square].
  *
  * ### Configuration Options
- * #### **Bounds Handling**
+ * Shapes are generated based on [GenerationParams] and specific [DistributionConfig] settings.
+ *
+ * #### **Bounds Handling** (via [GenerationParams.safe])
  * - `safe = true` (default): Shapes are fully contained within the [Config] canvas.
- * - `safe = false`: Legacy mode with unrestricted coordinates.
+ * - `safe = false`: Legacy mode with unrestricted coordinates (shapes might be partially or fully outside canvas).
  *
- * #### **Probability Distributions**
- * - `sizeDist`: Controls size parameters (radius, width, etc.).
- * - `originDist`: Controls origin coordinates.
+ * #### **Probability Distributions** (via [GenerationParams.size], [GenerationParams.origin] or direct `sizeConfig`/`originConfig` parameters)
+ * - Size parameters (radius, width, etc.) are controlled by a [DistributionConfig].
+ * - Origin coordinates are controlled by a [DistributionConfig].
  *
- * #### **Normal Distribution Parameters** (applies only when distribution is [Distribution.NORMAL])
- * - `sizePeakFraction`/`sizeMean`: Peak position for sizes.
- * - `sizeSigma`: Spread for sizes.
- * - `originPeakFraction`/`originMean`: Peak position for origins.
- * - `originSigma`: Spread for origins.
+ * #### **Normal Distribution Parameters** (within [DistributionConfig] when [DistributionConfig.distribution] is [Distribution.NORMAL])
+ * - `peakFraction` or `mean`: Defines the central tendency ([DistributionConfig.peakFraction], [DistributionConfig.mean]).
+ * - `sigma`: Defines the spread or standard deviation ([DistributionConfig.sigma]).
  *
  * ### Example
  * ```kotlin
  * val factory = FormFactory()
- * val shapes  = factory.produce(
- *     count            = 50,
- *     shapeType        = "Circle", // Optional: Generate only circles
- *     safe             = true,
- *     sizeDist         = Distribution.NORMAL,
- *     sizePeakFraction = 0.25f, // Peak at 25% of size range
- *     originDist       = Distribution.UNIFORM
+ *
+ * // Define distribution configurations
+ * val customSizeConfig = DistributionConfig(
+ *     distribution = Distribution.NORMAL,
+ *     peakFraction = 0.25f // Peak at 25% of size range
  * )
+ * val customOriginConfig = DistributionConfig(distribution = Distribution.UNIFORM)
+ *
+ * // Setup generation parameters, including the distribution configs
+ * val params = GenerationParams(
+ *     count = 50,
+ *     shapeType = ShapeType.CIRCLE,
+ *     safe = true,
+ *     size = customSizeConfig,    // Define default size config within params
+ *     origin = customOriginConfig // Define default origin config within params
+ * )
+ *
+ * // Produce shapes using the size/origin configs from GenerationParams by passing them explicitly
+ * val shapes = factory.produce(
+ *     generationParams = params,
+ *     sizeConfig = params.size,       // Explicitly use size config from params
+ *     originConfig = params.origin    // Explicitly use origin config from params
+ * )
+ *
+ * // Alternative: Produce shapes using default size/origin configs of the 'produce' method,
+ * // if GenerationParams' internal configs are not explicitly passed to produce's parameters.
+ * val simpleParams = GenerationParams(count = 10, shapeType = ShapeType.SQUARE) // Uses GenerationParams' default DistributionConfig for size and origin
+ * // This call will use DistributionConfig.DEFAULT_SIZE and DistributionConfig.DEFAULT_ORIGIN
+ * // because simpleParams.size and simpleParams.origin are not explicitly passed to produce's parameters.
+ * val shapesWithDefaults = factory.produce(simpleParams)
  * ```
  *
  * @author Simon Wessel
@@ -50,55 +74,65 @@ import kotlin.random.Random
 class FormFactory {
 
     /**
-     * Produces a list of random shapes with full control over distributions.
+     * Produces a list of random shapes based on the provided parameters.
      *
-     * @param count              Number of shapes to create.
-     * @param shapeType          Optional. The specific type of shape to generate (e.g., "Square", "Rectangle", "Circle").
-     *                           If null or an unknown type is provided, random shapes will be generated (if safe=true)
-     *                           or legacy random shapes (if safe=false).
-     * @param safe               If `true`, restricts shapes to canvas bounds.
+     * Shape generation behavior is primarily controlled by [generationParams].
+     * The [sizeConfig] and [originConfig] parameters of this method allow providing specific distribution
+     * configurations for this particular call, which are then used by the underlying generation logic.
+     * If `generationParams.safe` is true, shapes are generated within canvas bounds using [produceInBounds],
+     * otherwise, legacy generation is used via [produceLegacy].
      *
-     * @param sizeDist           Distribution for size parameters (radius, width, etc.).
-     * @param sizePeakFraction   For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in size range. Overrides [sizeMean] if set.
-     * @param sizeMean           For [Distribution.NORMAL]: Absolute mean for sizes (used if [sizePeakFraction] is null).
-     * @param sizeSigma          For [Distribution.NORMAL]: Standard deviation for sizes.
+     * @param generationParams Parameters for shape generation, encapsulating:
+     *   - `count`: Number of shapes to create.
+     *   - `shapeType`: Optional specific [ShapeType]. If null, random types are generated.
+     *   - `safe`: If `true`, restricts shapes to canvas bounds.
+     *   - `size`: The default [DistributionConfig] for sizes, intended to be used if not overridden by the `sizeConfig` parameter of this method.
+     *   - `origin`: The default [DistributionConfig] for origins, intended to be used if not overridden by the `originConfig` parameter of this method.
+     *   (Note: To use `generationParams.size` or `generationParams.origin`, pass them explicitly as arguments to `sizeConfig` or `originConfig` respectively).
+     * @param sizeConfig The [DistributionConfig] to use for generating shape sizes (e.g., radius, width, height).
+     *   This configuration specifies the [DistributionConfig.distribution] type (e.g., [Distribution.NORMAL], [Distribution.UNIFORM]),
+     *   and for normal distributions, parameters like [DistributionConfig.peakFraction] (or [DistributionConfig.mean]) and [DistributionConfig.sigma].
+     *   Defaults to [DistributionConfig.DEFAULT_SIZE].
+     * @param originConfig The [DistributionConfig] to use for generating shape origins (coordinates).
+     *   Similar to `sizeConfig`, this specifies distribution type and its parameters.
+     *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
+     * @return An immutable [List] of generated [BaseShape]s.
      *
-     * @param originDist         Distribution for origin coordinates.
-     * @param originPeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in origin range. Overrides [originMean] if set.
-     * @param originMean         For [Distribution.NORMAL]: Absolute mean for origins (used if [originPeakFraction] is null).
-     * @param originSigma        For [Distribution.NORMAL]: Standard deviation for origins.
-     *
-     * @return Immutable [List] of generated [Shape]s following specified distributions.
+     * @see GenerationParams
+     * @see DistributionConfig
+     * @see ShapeType
+     * @see produceInBounds
+     * @see produceLegacy
      */
     fun produce(
-        count:        Int,
-        shapeType:    String? = null,
-        safe:         Boolean = true,
-        sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
-        originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
+        generationParams: GenerationParams,
+        sizeConfig:       DistributionConfig = DistributionConfig.DEFAULT_SIZE,
+        originConfig:     DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): List<BaseShape> =
-        if (safe) produceInBounds(
-            count        = count,
-            shapeType    = shapeType,
+        if (generationParams.safe) produceInBounds(
+            count        = generationParams.count,
+            shapeType    = generationParams.shapeType,
             sizeConfig   = sizeConfig,
             originConfig = originConfig
         )
-        else produceLegacy(count, shapeType)
+        else produceLegacy(generationParams.count, generationParams.shapeType)
 
     /**
-     * Builds a [Circle] fully contained within the canvas.
+     * Builds a [Circle] fully contained within the canvas, using specified distribution configurations.
      *
-     * @param sizeDist           Distribution for radius generation.
-     * @param sizePeakFraction   For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in radius range.
-     * @param sizeMean           For [Distribution.NORMAL]: Absolute mean for radius.
-     * @param sizeSigma          For [Distribution.NORMAL]: Standard deviation for radius.
+     * The size (radius) of the circle is determined by [sizeConfig].
+     * The origin (center point) of the circle is determined by [originConfig].
      *
-     * @param originDist         Distribution for center coordinates.
-     * @param originPeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in coordinate range.
-     * @param originMean         For [Distribution.NORMAL]: Absolute mean for coordinates.
-     * @param originSigma        For [Distribution.NORMAL]: Standard deviation for coordinates.
-     *
-     * @return [Circle] with generated parameters following specified distributions.
+     * @param sizeConfig The [DistributionConfig] for generating the circle's radius.
+     *   It defines the [DistributionConfig.distribution] (e.g., [Distribution.NORMAL], [Distribution.UNIFORM])
+     *   and its relevant parameters (e.g., [DistributionConfig.peakFraction], [DistributionConfig.mean], [DistributionConfig.sigma]).
+     *   Defaults to [DistributionConfig.DEFAULT_SIZE].
+     * @param originConfig The [DistributionConfig] for generating the circle's center coordinates (x, y).
+     *   It defines the distribution and its parameters similarly to `sizeConfig`.
+     *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
+     * @return A [Circle] instance with generated parameters.
+     * @see DistributionConfig
+     * @see Config.MAX_CIRCLE_RADIUS
      */
     fun circle(
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
@@ -111,19 +145,21 @@ class FormFactory {
     }
 
     /**
-     * Builds a [Rectangle] fully contained within the canvas.
+     * Builds a [Rectangle] fully contained within the canvas, using specified distribution configurations.
      *
-     * @param sizeDist           Distribution for width/height generation.
-     * @param sizePeakFraction   For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in dimension ranges.
-     * @param sizeMean           For [Distribution.NORMAL]: Absolute mean for dimensions.
-     * @param sizeSigma          For [Distribution.NORMAL]: Standard deviation for dimensions.
+     * The width and height of the rectangle are determined by [sizeConfig].
+     * The top-left origin point of the rectangle is determined by [originConfig].
      *
-     * @param originDist         Distribution for top-left coordinates.
-     * @param originPeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in coordinate range.
-     * @param originMean         For [Distribution.NORMAL]: Absolute mean for coordinates.
-     * @param originSigma        For [Distribution.NORMAL]: Standard deviation for coordinates.
-     *
-     * @return [Rectangle] with generated parameters following specified distributions.
+     * @param sizeConfig The [DistributionConfig] for generating the rectangle's width and height.
+     *   It defines the [DistributionConfig.distribution] and its relevant parameters.
+     *   Defaults to [DistributionConfig.DEFAULT_SIZE].
+     * @param originConfig The [DistributionConfig] for generating the rectangle's top-left coordinates (x, y).
+     *   It defines the distribution and its parameters.
+     *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
+     * @return A [Rectangle] instance with generated parameters.
+     * @see DistributionConfig
+     * @see Config.MAX_RECT_WIDTH
+     * @see Config.MAX_RECT_HEIGHT
      */
     fun rectangle(
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
@@ -137,19 +173,20 @@ class FormFactory {
     }
 
     /**
-     * Builds a [Square] fully contained within the canvas.
+     * Builds a [Square] fully contained within the canvas, using specified distribution configurations.
      *
-     * @param sizeDist           Distribution for side length generation.
-     * @param sizePeakFraction   For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in side length range.
-     * @param sizeMean           For [Distribution.NORMAL]: Absolute mean for side length.
-     * @param sizeSigma          For [Distribution.NORMAL]: Standard deviation for side length.
+     * The side length of the square is determined by [sizeConfig].
+     * The top-left origin point of the square is determined by [originConfig].
      *
-     * @param originDist         Distribution for top-left coordinates.
-     * @param originPeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in coordinate range.
-     * @param originMean         For [Distribution.NORMAL]: Absolute mean for coordinates.
-     * @param originSigma        For [Distribution.NORMAL]: Standard deviation for coordinates.
-     *
-     * @return [Square] with generated parameters following specified distributions.
+     * @param sizeConfig The [DistributionConfig] for generating the square's side length.
+     *   It defines the [DistributionConfig.distribution] and its relevant parameters.
+     *   Defaults to [DistributionConfig.DEFAULT_SIZE].
+     * @param originConfig The [DistributionConfig] for generating the square's top-left coordinates (x, y).
+     *   It defines the distribution and its parameters.
+     *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
+     * @return A [Square] instance with generated parameters.
+     * @see DistributionConfig
+     * @see Config.MAX_SQUARE_SIDE
      */
     fun square(
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
@@ -162,40 +199,35 @@ class FormFactory {
     }
 
     /**
-     * Internal method for safe shape generation with bounds checking.
+     * Internal method for safe shape generation, ensuring shapes are fully contained within canvas bounds.
      *
-     * @param count              Number of shapes to generate.
-     * @param shapeType          Optional. Specific type of shape to generate. If null or an unknown type is provided, random types are generated.
-     *
-     * @param sizeDist           Distribution for size parameters.
-     * @param sizePeakFraction   Normal distribution peak fraction for sizes.
-     * @param sizeMean           Normal distribution mean for sizes.
-     * @param sizeSigma          Normal distribution sigma for sizes.
-     *
-     * @param originDist         Distribution for origin parameters.
-     * @param originPeakFraction Normal distribution peak fraction for origins.
-     * @param originMean         Normal distribution mean for origins.
-     * @param originSigma        Normal distribution sigma for origins.
-     *
-     * @return List of shapes generated with bounds constraints.
+     * @param count Number of shapes to generate.
+     * @param shapeType Optional. The specific [ShapeType] to generate. If null, random shape types are generated.
+     * @param sizeConfig The [DistributionConfig] used for determining the size parameters of the shapes
+     *   (e.g., radius, width/height). This includes distribution type and its parameters.
+     * @param originConfig The [DistributionConfig] used for determining the origin coordinates of the shapes.
+     *   This includes distribution type and its parameters.
+     * @return A list of [BaseShape]s generated with bounds constraints.
+     * @see ShapeType
+     * @see DistributionConfig
      */
     private fun produceInBounds(
         count:        Int,
-        shapeType:    String? = null,
+        shapeType:    ShapeType? = null,
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): List<BaseShape> {
-        val actualShapeProducer: () -> BaseShape = when (shapeType?.lowercase()) {
-            "circle" -> {
+        val actualShapeProducer: () -> BaseShape = when (shapeType) {
+            ShapeType.CIRCLE -> {
                 { circle(sizeConfig, originConfig) }
             }
-            "rectangle" -> {
+            ShapeType.RECTANGLE -> {
                 { rectangle(sizeConfig, originConfig) }
             }
-            "square" -> {
+            ShapeType.SQUARE -> {
                 { square(sizeConfig, originConfig) }
             }
-            else -> {
+            else -> { // Random shape if type is null or unknown
                 {
                     when (Random.nextDouble()) {
                         in 0.0..0.33  -> circle(sizeConfig, originConfig)
@@ -209,19 +241,21 @@ class FormFactory {
     }
 
     /**
-     * Internal method for legacy shape generation without bounds checking.
+     * Internal method for legacy shape generation, which does not perform bounds checking.
+     * Shapes might be generated with default constructors and may exceed canvas bounds.
      *
      * @param count Number of shapes to generate.
-     * @param shapeType Optional. Specific type of shape to generate. If null or an unknown type is provided, random types are generated.
-     *
-     * @return List of shapes with random parameters (may exceed canvas bounds).
+     * @param shapeType Optional. The specific [ShapeType] to generate. If null, random shape types are generated
+     *   using their default constructors.
+     * @return A list of [BaseShape]s with parameters generated by their default constructors (may exceed canvas bounds).
+     * @see ShapeType
      */
-    private fun produceLegacy(count: Int, shapeType: String? = null): List<BaseShape> {
-        val actualShapeProducer: () -> BaseShape = when (shapeType?.lowercase()) {
-            "circle"    -> { { Circle() } }
-            "rectangle" -> { { Rectangle() } }
-            "square"    -> { { Square() } }
-            else        -> { // Random shape if type is null or unknown
+    private fun produceLegacy(count: Int, shapeType: ShapeType? = null): List<BaseShape> {
+        val actualShapeProducer: () -> BaseShape = when (shapeType) {
+            ShapeType.CIRCLE    -> { { Circle() } }
+            ShapeType.RECTANGLE -> { { Rectangle() } }
+            ShapeType.SQUARE    -> { { Square() } }
+            else                -> { // Random shape if type is null or unknown
                 {
                     when (Random.nextDouble()) {
                         in 0.0..0.33  -> Circle()

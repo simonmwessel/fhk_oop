@@ -185,7 +185,7 @@ class Sketch(
 
         surface.setResizable(true)
 
-        addShapes(count = 40)
+        addShapes(GenerationParams.RANDOM_20)
 
         hintStartTime = millis()
 
@@ -286,40 +286,28 @@ class Sketch(
      * Delegates shape generation logic entirely to [FormFactory.produce].
      * The new shapes are appended to the current [_shapes] list.
      *
-     * @param count The number of new shapes to add. Must be > 0.
-     * @param shapeType Optional. The specific type of shape to generate (e.g., "[Square]", "[Rectangle]", "[Circle]").
-     *   If null or an unknown type is provided, random shapes will be generated.
-     * @param safe If true (default) and [shapeType] is null, ensures produced shapes are within canvas bounds.
-     *   This parameter is used by [FormFactory.produce].
-     * @param sizeDist Distribution for size parameters. Defaults to [Distribution.NORMAL].
-     * @param sizePeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in size range.
-     *   Defaults to 0.2f. Overrides [sizeMean] if set.
-     * @param sizeMean For [Distribution.NORMAL]: Absolute mean for sizes. Defaults to null.
-     * @param sizeSigma For [Distribution.NORMAL]: Standard deviation for sizes. Defaults to null.
-     * @param originDist Distribution for origin coordinates. Defaults to [Distribution.UNIFORM].
-     * @param originPeakFraction For [Distribution.NORMAL]: Relative peak position (0.0-1.0) in origin range.
-     *   Defaults to null. Overrides [originMean] if set.
-     * @param originMean For [Distribution.NORMAL]: Absolute mean for origins. Defaults to null.
-     * @param originSigma For [Distribution.NORMAL]: Standard deviation for origins. Defaults to null.
+     * @param generationParams The parameters for generating shapes, as defined in [GenerationParams].
+     *   This includes `count` (must be > 0), `shapeType` (if null, random shapes are generated),
+     *   `safe` (for bounds checking), and `size`/`origin` ([DistributionConfig]) settings.
+     * @see FormFactory.produce
+     * @see GenerationParams
      */
     fun addShapes(generationParams: GenerationParams) {
-        require(count > 0) { "Number of shapes to add must be > 0" }
+        require(generationParams.count > 0) { "Number of shapes to add must be > 0" }
 
         val newShapes = FormFactory().produce(
-            count        = count,
-            shapeType    = shapeType,
-            safe         = safe,
-            sizeConfig   = sizeConfig,
-            originConfig = originConfig,
+            generationParams = generationParams,
+            sizeConfig       = generationParams.size,
+            originConfig     = generationParams.origin,
         )
 
         _shapes += newShapes
 
-        val typeDescription = shapeType?.replaceFirstChar {
+        val typeDescription = generationParams.shapeType?.name?.lowercase()?.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase() else it.toString()
         } ?: "random"
 
-        println("\nAdded $count new ${typeDescription}(s). Total shapes: ${_shapes.size}")
+        println("\nAdded ${generationParams.count} new ${typeDescription}(s). Total shapes: ${_shapes.size}")
         newShapes.forEach { println(it) }
     }
 
@@ -339,9 +327,9 @@ class Sketch(
                     ResizeMode.RELATIVE      -> ResizeMode.UNIFORM_SCALE
                 }
             }
-            's' -> addShapes(1, "square")
-            'r' -> addShapes(1, "rectangle")
-            'c' -> addShapes(1, "circle")
+            's' -> addShapes(GenerationParams.SQUARE)
+            'r' -> addShapes(GenerationParams.RECTANGLE)
+            'c' -> addShapes(GenerationParams.CIRCLE)
         }
     }
 }

@@ -1,5 +1,6 @@
 package de.fhkiel.oop
 
+import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.factory.FormFactory
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.shapes.Circle
@@ -57,7 +58,7 @@ object Main {
 
         // FormFactory
         println("Testing FormFactory:")
-        for (shape in FormFactory().produce(10)) println(shape)
+        for (shape in FormFactory().produce(GenerationParams.RANDOM_20)) println(shape)
 
         // Start Processing sketch
         PApplet.main("de.fhkiel.oop.Sketch")
