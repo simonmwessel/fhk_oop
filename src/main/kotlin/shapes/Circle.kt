@@ -144,19 +144,23 @@ class Circle(
         offX : Float,
         offY : Float
     ): BoundingBox = when (mode) {
-        Sketch.ResizeMode.UNIFORM_SCALE ->
-            super.screenBoundingBox(mode, sx, sy, us, offX, offY)
+        Sketch.ResizeMode.UNIFORM_SCALE -> {
+            val scaledRadius = radius * us
+            val screenCenterX = offX + origin.x * us
+            val screenCenterY = offY + origin.y * us
+            BoundingBox(screenCenterX - scaledRadius, screenCenterY - scaledRadius, scaledRadius * 2, scaledRadius * 2)
+        }
 
         Sketch.ResizeMode.RELATIVE -> {
-            val cx = origin.x * sx
-            val cy = origin.y * sy
-            val r  = radius     * us
-            BoundingBox(cx - r, cy - r, r * 2, r * 2)
+            val scaledRadius = radius * us
+            val screenCenterX = origin.x * sx
+            val screenCenterY = origin.y * sy
+            BoundingBox(screenCenterX - scaledRadius, screenCenterY - scaledRadius, scaledRadius * 2, scaledRadius * 2)
         }
     }
 
     /**
-     * Tests whether a point in screen coordinates hits the circle.
+     * Tests whether a point in screen coordinates hits the circle, including its stroke.
      *
      * @param mode The resize mode (UNIFORM_SCALE or RELATIVE).
      * @param sx   Horizontal scaling factor (windowWidth / baseWidth).
@@ -167,7 +171,7 @@ class Circle(
      * @param offX Horizontal offset for the bounding box.
      * @param offY Vertical offset for the bounding box.
      *
-     * @return `true` if the point hits the circle, `false` otherwise.
+     * @return `true` if the point hits the circle (fill or stroke), `false` otherwise.
      */
     override fun hitTestScreen(
         mode : Sketch.ResizeMode,
@@ -178,20 +182,18 @@ class Circle(
         my   : Float,
         offX : Float,
         offY : Float
-    ): Boolean = when (mode) {
-        Sketch.ResizeMode.UNIFORM_SCALE -> {
-            val cx = offX + origin.x * us
-            val cy = offY + origin.y * us
-            val r  = radius * us
-            (mx - cx)*(mx - cx) + (my - cy)*(my - cy) <= r*r
-        }
+    ): Boolean {
+        val screenCenterX = if (mode == Sketch.ResizeMode.UNIFORM_SCALE) offX + origin.x * us else origin.x * sx
+        val screenCenterY = if (mode == Sketch.ResizeMode.UNIFORM_SCALE) offY + origin.y * us else origin.y * sy
+        val screenRadius = radius * us
+        val screenHalfStroke = style.weight * us / 2f
 
-        Sketch.ResizeMode.RELATIVE -> {
-            val cx = origin.x * sx
-            val cy = origin.y * sy
-            val r  = radius     * us
-            (mx - cx)*(mx - cx) + (my - cy)*(my - cy) <= r*r
-        }
+        // Distance squared from click to center
+        val distSq = (mx - screenCenterX).pow(2) + (my - screenCenterY).pow(2)
+        // Outer radius squared (radius + half stroke)
+        val outerRadiusSq = (screenRadius + screenHalfStroke).pow(2)
+
+        return distSq <= outerRadiusSq
     }
 
     /**

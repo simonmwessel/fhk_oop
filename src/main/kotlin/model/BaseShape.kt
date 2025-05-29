@@ -143,21 +143,21 @@ abstract class BaseShape (
     }
 
     /**
-     * Checks if a point in screen coordinates hits the shape.
+     * Checks if a point in screen coordinates hits the shape, including its stroke.
      *
      * This method determines if the mouse coordinates (mx, my) fall within the
-     * bounding box of the shape when scaled according to the specified resize mode.
+     * shape's fill area plus half of its stroke thickness, scaled according to the specified resize mode.
      *
      * @param mode The resize mode (either UNIFORM_SCALE or RELATIVE).
      * @param sx   Horizontal scale factor (windowWidth / baseWidth).
      * @param sy   Vertical scale factor (windowHeight / baseHeight).
-     * @param us   Uniform scale factor for circles/squares (min(windowScaleX, windowScaleY)).
+     * @param us   Uniform scale factor for stroke weight and uniform shape dimensions (min(windowScaleX, windowScaleY)).
      * @param mx   Mouse X coordinate in screen coordinates.
      * @param my   Mouse Y coordinate in screen coordinates.
      * @param offX Optional horizontal offset for centering (default is 0).
      * @param offY Optional vertical offset for centering (default is 0).
      *
-     * @return `true` if the mouse coordinates hit the shape, `false` otherwise.
+     * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
      */
     open fun hitTestScreen(
         mode : Sketch.ResizeMode,
@@ -169,9 +169,14 @@ abstract class BaseShape (
         offX : Float = 0f,
         offY : Float = 0f
     ): Boolean {
-        val b = screenBoundingBox(mode, sx, sy, us, offX, offY)
-        return mx in b.x..(b.x + b.width) &&
-                my in b.y..(b.y + b.height)
+        val b = screenBoundingBox(mode, sx, sy, us, offX, offY) // Screen bounding box of the fill area
+        // style.weight is logical, us scales it to screen. Half of it for each side.
+        val screenHalfStroke = style.weight * us / 2f
+
+        return mx >= b.x - screenHalfStroke &&
+               mx <= b.x + b.width + screenHalfStroke &&
+               my >= b.y - screenHalfStroke &&
+               my <= b.y + b.height + screenHalfStroke
     }
 
     /**
