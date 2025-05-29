@@ -1,5 +1,6 @@
 package de.fhkiel.oop.model
 
+import de.fhkiel.oop.Sketch
 import processing.core.PApplet
 
 /**
@@ -27,7 +28,7 @@ import processing.core.PApplet
  * @see Style
  * @see BoundingBox
  */
-class SelectableShape(private val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
+class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
     /**
      * Whether this shape is currently selected.
      *
@@ -56,7 +57,8 @@ class SelectableShape(private val inner: BaseShape) : BaseShape(inner.origin, in
     override fun drawUniform(g: PApplet) {
         inner.drawUniform(g)
         if (isSelected) {
-            drawHandles(inner.boundingBox(), g, 1f, 1f, 1f)
+            val isCentered = inner is de.fhkiel.oop.shapes.Circle
+            drawHandles(inner.boundingBox(), g, 1f, 1f, 1f, isCentered)
         }
     }
 
@@ -79,7 +81,8 @@ class SelectableShape(private val inner: BaseShape) : BaseShape(inner.origin, in
     ) {
         inner.drawRelative(g, scaleX, scaleY, uniformScale)
         if (isSelected) {
-            drawHandles(inner.boundingBox(), g, scaleX, scaleY, uniformScale)
+            val isCentered = inner is de.fhkiel.oop.shapes.Circle
+            drawHandles(inner.boundingBox(), g, scaleX, scaleY, uniformScale, isCentered)
         }
     }
 
@@ -105,6 +108,35 @@ class SelectableShape(private val inner: BaseShape) : BaseShape(inner.origin, in
         inner.boundingBox()
 
     /**
+     * Computes the screen bounding box of this shape in the specified resize mode.
+     *
+     * Delegates the computation to the wrapped [inner] shape.
+     *
+     * @param mode the resize mode (either [Sketch.ResizeMode.UNIFORM_SCALE] or [Sketch.ResizeMode.RELATIVE])
+     * @param sx horizontal scaling factor (for [Sketch.ResizeMode.RELATIVE])
+     * @param sy vertical scaling factor (for [Sketch.ResizeMode.RELATIVE])
+     * @param us uniform scaling factor (for [Sketch.ResizeMode.UNIFORM_SCALE])
+     * @param offX horizontal offset for the bounding box (default is 0)
+     * @param offY vertical offset for the bounding box (default is 0)
+     *
+     * @return the bounding box in screen coordinates
+     *
+     * @see Sketch.ResizeMode
+     * @see BoundingBox.toScreen
+     * @see de.fhkiel.oop.shapes.Circle.boundingBox
+     * @see de.fhkiel.oop.shapes.Rectangle.boundingBox
+     * @see de.fhkiel.oop.shapes.Square.boundingBox
+     */
+    override fun screenBoundingBox(
+        mode : Sketch.ResizeMode,
+        sx   : Float,
+        sy   : Float,
+        us   : Float,
+        offX : Float,
+        offY : Float
+    ): BoundingBox = inner.screenBoundingBox(mode, sx, sy, us, offX, offY)
+
+    /**
      * Returns a string representation of this shape.
      *
      * Delegates to the wrapped [inner] shape’s `toString()` method.
@@ -120,29 +152,76 @@ class SelectableShape(private val inner: BaseShape) : BaseShape(inner.origin, in
  * @param g the Processing context
  * @param scaleX horizontal scaling factor
  * @param scaleY vertical scaling factor
- * @param uniformScale uniform scaling factor (for handle size)
+ * @param uniformScale uniform scaling factor (for handle size and box dimensions)
+ * @param centeredOrigin true if the shape's logical origin (that is scaled by scaleX/Y)
+ *   is the center of its bounding box (e.g., [de.fhkiel.oop.shapes.Circle]).
+ *   false if it's the top-left of the bounding box (e.g., [de.fhkiel.oop.shapes.Rectangle]).
  */
 private fun drawHandles(
     box: BoundingBox,
     g: PApplet,
     scaleX: Float,
     scaleY: Float,
-    uniformScale: Float
+    uniformScale: Float,
+    centeredOrigin: Boolean
 ) {
-    val (x, y, w, h) = box
+    val finalScreenBoxX: Float
+    val finalScreenBoxY: Float
+
+    // Calculate the screen dimensions of the bounding box for the handles.
+    val screenBoxWidth: Float
+    val screenBoxHeight: Float
+
+    if (centeredOrigin) {
+        // For shapes like Circle, where box.x = origin.x - radius, box.width = 2 * radius.
+        // The logical center of the shape is (box.x + box.width / 2, box.y + box.height / 2).
+        val logicalCenterX = box.x + box.width / 2f
+        val logicalCenterY = box.y + box.height / 2f
+
+        // Scaled center of the shape based on its primary origin scaling.
+        val screenCenterX = logicalCenterX * scaleX
+        val screenCenterY = logicalCenterY * scaleY
+
+        // Half-width/height of the bounding box, scaled uniformly (represents screen radius for a circle).
+        val screenHalfWidth = (box.width / 2f) * uniformScale
+        val screenHalfHeight = (box.height / 2f) * uniformScale
+
+        finalScreenBoxX = screenCenterX - screenHalfWidth
+        finalScreenBoxY = screenCenterY - screenHalfHeight
+
+        // For centered shapes like Circle, their bounding box (which is a square)
+        // and thus the selection handles' bounding box should scale uniformly.
+        screenBoxWidth  = box.width * uniformScale
+        screenBoxHeight = box.height * uniformScale
+    } else {
+        // For shapes like Rectangle/Square (top-left origin), where box.x is the shape's origin.x.
+        finalScreenBoxX = box.x * scaleX
+        finalScreenBoxY = box.y * scaleY
+
+        // For Rectangles/Squares, the selection handles' bounding box
+        // should match the shape's visual scaling.
+        screenBoxWidth  = box.width  * uniformScale
+        screenBoxHeight = box.height * uniformScale
+    }
+
+    // Calculate the size of the handles, scaled uniformly.
     val handleSize = 8f * uniformScale
 
     g.pushStyle()
     g.noStroke()
     g.fill(0f)
 
-    val xs = listOf(x, x + w)
-    val ys = listOf(y, y + h)
-    for (cx in xs) {
-        for (cy in ys) {
-            val dx = cx * scaleX - handleSize / 2
-            val dy = cy * scaleY - handleSize / 2
-            g.rect(dx, dy, handleSize, handleSize)
+    // Define the X and Y coordinates for the corners of the uniformly scaled screen bounding box.
+    val screenCornerXs = listOf(finalScreenBoxX, finalScreenBoxX + screenBoxWidth)
+    val screenCornerYs = listOf(finalScreenBoxY, finalScreenBoxY + screenBoxHeight)
+
+    // Draw a handle at each corner.
+    for (cornerX in screenCornerXs) {
+        for (cornerY in screenCornerYs) {
+            // Calculate top-left of the handle square to center it on the corner.
+            val handleTopLeftX = cornerX - handleSize / 2
+            val handleTopLeftY = cornerY - handleSize / 2
+            g.rect(handleTopLeftX, handleTopLeftY, handleSize, handleSize)
         }
     }
     g.popStyle()

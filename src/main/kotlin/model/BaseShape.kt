@@ -1,5 +1,6 @@
 package de.fhkiel.oop.model
 
+import de.fhkiel.oop.Sketch
 import de.fhkiel.oop.config.Config
 import processing.core.PApplet
 
@@ -102,14 +103,44 @@ abstract class BaseShape (
      * @param point The [Point] to check.
      * @return `true` if the point is inside or on the boundary of the shape, `false` otherwise.
      */
-    abstract fun contains(point: Point): Boolean;
+    abstract fun contains(point: Point): Boolean
 
     /**
      * Calculates the minimal axis-aligned bounding box that encloses the shape.
      *
      * @return The [BoundingBox] of the shape.
      */
-    abstract fun boundingBox(): BoundingBox;
+    abstract fun boundingBox(): BoundingBox
+
+    /**
+     * Computes the screen bounding box based on the resize mode and scaling factors.
+     *
+     * This method adjusts the bounding box of the shape according to the specified
+     * resize mode and scaling factors, allowing for uniform or relative scaling.
+     *
+     * @param mode   The resize mode (either UNIFORM_SCALE or RELATIVE).
+     * @param sx     Horizontal scaling factor (for RELATIVE mode).
+     * @param sy     Vertical scaling factor (for RELATIVE mode).
+     * @param us     Uniform scaling factor (for UNIFORM_SCALE mode).
+     * @param offX   Optional horizontal offset for the bounding box (default is 0).
+     * @param offY   Optional vertical offset for the bounding box (default is 0).
+     *
+     * @return The adjusted [BoundingBox] for the shape.
+     */
+    open fun screenBoundingBox(
+        mode : Sketch.ResizeMode,
+        sx   : Float,
+        sy   : Float,
+        us   : Float,
+        offX : Float = 0f,
+        offY : Float = 0f
+    ): BoundingBox = when (mode) {
+        Sketch.ResizeMode.UNIFORM_SCALE ->
+            boundingBox().let { BoundingBox(offX + it.x*us, offY + it.y*us, it.width*us, it.height*us) }
+
+        Sketch.ResizeMode.RELATIVE ->
+            boundingBox().let { BoundingBox(it.x*sx, it.y*sy, it.width*us, it.height*us) }
+    }
 
     /**
      * Executes the provided drawing block on the given PApplet instance with the current style applied.

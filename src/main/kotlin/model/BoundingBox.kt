@@ -1,5 +1,7 @@
 package de.fhkiel.oop.model
 
+import de.fhkiel.oop.Sketch.ResizeMode
+
 /**
  * Represents an axis-aligned bounding box (AABB).
  * An AABB is a rectangle aligned with the coordinate axes that completely encloses a shape.
@@ -20,3 +22,25 @@ data class BoundingBox(
     val width: Float,
     val height: Float
 )
+
+/**
+ * Converts this logical BoundingBox into screen coordinates.
+ *
+ * @param mode active resize strategy
+ * @param sx   horizontal scale (windowW / baseW)
+ * @param sy   vertical scale (windowH / baseH)
+ * @param us   uniform scale = min(sx, sy)
+ * @param offX horizontal offset produced by UNIFORM_SCALE centering
+ * @param offY vertical offset produced by UNIFORM_SCALE centering
+ */
+fun BoundingBox.toScreen(
+    mode : ResizeMode,
+    sx   : Float,
+    sy   : Float,
+    us   : Float,
+    offX : Float = 0f,
+    offY : Float = 0f
+): BoundingBox = when (mode) {
+    ResizeMode.UNIFORM_SCALE -> BoundingBox(offX + x * us, offY + y * us, width * us, height * us)
+    ResizeMode.RELATIVE      -> BoundingBox(       x * sx ,       y * sy, width * us, height * us)
+}

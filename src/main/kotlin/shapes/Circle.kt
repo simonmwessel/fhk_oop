@@ -1,5 +1,6 @@
 package de.fhkiel.oop.shapes
 
+import de.fhkiel.oop.Sketch
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.BoundingBox
@@ -122,6 +123,37 @@ class Circle(
             width  = radius * 2,
             height = radius * 2
         )
+
+    /**
+     * Computes the screen bounding box of the circle based on the resize mode.
+     *
+     * @param mode The resize mode (UNIFORM_SCALE or RELATIVE).
+     * @param sx   Horizontal scaling factor (windowWidth / baseWidth).
+     * @param sy   Vertical scaling factor (windowHeight / baseHeight).
+     * @param us   Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY)).
+     * @param offX Horizontal offset for the bounding box.
+     * @param offY Vertical offset for the bounding box.
+     *
+     * @return The bounding box of the circle in screen coordinates.
+     */
+    override fun screenBoundingBox(
+        mode : Sketch.ResizeMode,
+        sx   : Float,
+        sy   : Float,
+        us   : Float,
+        offX : Float,
+        offY : Float
+    ): BoundingBox = when (mode) {
+        Sketch.ResizeMode.UNIFORM_SCALE ->
+            super.screenBoundingBox(mode, sx, sy, us, offX, offY)
+
+        Sketch.ResizeMode.RELATIVE -> {
+            val cx = origin.x * sx
+            val cy = origin.y * sy
+            val r  = radius     * us
+            BoundingBox(cx - r, cy - r, r * 2, r * 2)
+        }
+    }
 
     /**
      * Draws the circle with uniform scaling - maintains perfect roundness

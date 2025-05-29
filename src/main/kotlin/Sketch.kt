@@ -5,7 +5,6 @@ import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.factory.FormFactory
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.SelectableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
@@ -336,34 +335,41 @@ class Sketch(
     }
 
     /**
-     * Handles mouse press events for selecting and deselecting shapes.
+     * Handles mouse clicks to toggle selection of shapes.
      *
-     * When the mouse is pressed, this method determines the clicked point. It then checks if any [SelectableShape]
-     * contains this point. The behavior for selection depends on whether the SHIFT key is pressed:
-     * - **Single Select (SHIFT not pressed):** If a selectable shape is clicked, it becomes the only selected shape.
-     *   All other previously selected shapes are deselected. If the click is not on any selectable shape,
-     *   all shapes are deselected.
-     * - **Multi-select (SHIFT pressed):** If a selectable shape is clicked, its selection state is toggled
-     *   (selected if it was unselected, unselected if it was selected). Other shapes' selection states remain unchanged.
+     * When the user clicks on a shape, it toggles its selection state.
+     * If the SHIFT key is not pressed, all other shapes are deselected first.
      *
-     * The sketch is redrawn after processing the mouse press to reflect any changes in selection.
+     * Uses hit detection based on the current [resizeMode] to determine which shape was clicked.
      */
     override fun mousePressed() {
-        val clickPoint = Point(mouseX.toFloat(), mouseY.toFloat())
+        // Setup scales
+        val sx = width  / baseW
+        val sy = height / baseH
+        val us = min(width, height) / baseMin
 
-        val multiSelect = keyPressed && keyCode == SHIFT
+        val f    = min(width / baseW, height / baseH)
+        val offX = (width  - baseW * f) / 2f
+        val offY = (height - baseH * f) / 2f
 
-        val clicked = shapes
-            .asReversed()
+        // Hit detection
+        val hit = shapes
             .filterIsInstance<SelectableShape>()
-            .firstOrNull { it.contains(clickPoint) }
+            .asReversed()
+            .firstOrNull { s ->
+                val sb = s.screenBoundingBox(
+                    resizeMode, sx, sy,
+                    if (resizeMode == ResizeMode.UNIFORM_SCALE) f else us,
+                    offX, offY
+                )
+                mouseX.toFloat() in sb.x..(sb.x + sb.width)
+             && mouseY.toFloat() in sb.y..(sb.y + sb.height)
+            }
 
-        if (!multiSelect) {
-            shapes
-                .filterIsInstance<SelectableShape>()
-                .forEach { it.isSelected = false }
-        }
+        // Handle selection toggle
+        if (!keyPressed || keyCode != SHIFT)
+            shapes.filterIsInstance<SelectableShape>().forEach { it.isSelected = false }
 
-        clicked?.let { it.isSelected = !it.isSelected }
+        hit?.let { it.isSelected = !it.isSelected }
     }
 }
