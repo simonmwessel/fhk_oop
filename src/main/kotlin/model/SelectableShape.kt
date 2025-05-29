@@ -165,63 +165,57 @@ private fun drawHandles(
     uniformScale: Float,
     centeredOrigin: Boolean
 ) {
-    val finalScreenBoxX: Float
-    val finalScreenBoxY: Float
-
-    // Calculate the screen dimensions of the bounding box for the handles.
-    val screenBoxWidth: Float
-    val screenBoxHeight: Float
+    val handleSize = 8f * uniformScale
+    g.pushStyle()
+    g.noStroke()
+    g.fill(0f) // Black color for handles
 
     if (centeredOrigin) {
-        // For shapes like Circle, where box.x = origin.x - radius, box.width = 2 * radius.
-        // The logical center of the shape is (box.x + box.width / 2, box.y + box.height / 2).
+        // For shapes like Circle, draw handles at cardinal points
         val logicalCenterX = box.x + box.width / 2f
         val logicalCenterY = box.y + box.height / 2f
 
-        // Scaled center of the shape based on its primary origin scaling.
+        // Scaled center of the shape based on its primary origin scaling
         val screenCenterX = logicalCenterX * scaleX
         val screenCenterY = logicalCenterY * scaleY
+        // Screen radius of the circle
+        val screenRadius = (box.width / 2f) * uniformScale
 
-        // Half-width/height of the bounding box, scaled uniformly (represents screen radius for a circle).
-        val screenHalfWidth = (box.width / 2f) * uniformScale
-        val screenHalfHeight = (box.height / 2f) * uniformScale
+        // Define the 4 points for the handles on the circle's circumference
+        val handleCoordinates = listOf(
+            screenCenterX to screenCenterY - screenRadius, // Top
+            screenCenterX to screenCenterY + screenRadius, // Bottom
+            screenCenterX - screenRadius to screenCenterY, // Left
+            screenCenterX + screenRadius to screenCenterY  // Right
+        )
 
-        finalScreenBoxX = screenCenterX - screenHalfWidth
-        finalScreenBoxY = screenCenterY - screenHalfHeight
-
-        // For centered shapes like Circle, their bounding box (which is a square)
-        // and thus the selection handles' bounding box should scale uniformly.
-        screenBoxWidth  = box.width * uniformScale
-        screenBoxHeight = box.height * uniformScale
+        for ((cx, cy) in handleCoordinates) {
+            val handleTopLeftX = cx - handleSize / 2
+            val handleTopLeftY = cy - handleSize / 2
+            g.rect(handleTopLeftX, handleTopLeftY, handleSize, handleSize)
+        }
     } else {
-        // For shapes like Rectangle/Square (top-left origin), where box.x is the shape's origin.x.
-        finalScreenBoxX = box.x * scaleX
-        finalScreenBoxY = box.y * scaleY
+        // For shapes like Rectangle/Square (top-left origin)
+        val finalScreenBoxX = box.x * scaleX
+        val finalScreenBoxY = box.y * scaleY
 
         // For Rectangles/Squares, the selection handles' bounding box
-        // should match the shape's visual scaling.
-        screenBoxWidth  = box.width  * uniformScale
-        screenBoxHeight = box.height * uniformScale
-    }
+        // dimensions (using uniformScale as per current file state for consistency,
+        // though scaleX/scaleY might be more accurate for non-uniform window scaling).
+        val screenBoxWidth  = box.width  * uniformScale
+        val screenBoxHeight = box.height * uniformScale
 
-    // Calculate the size of the handles, scaled uniformly.
-    val handleSize = 8f * uniformScale
+        // Define the X and Y coordinates for the corners of the screen bounding box
+        val screenCornerXs = listOf(finalScreenBoxX, finalScreenBoxX + screenBoxWidth)
+        val screenCornerYs = listOf(finalScreenBoxY, finalScreenBoxY + screenBoxHeight)
 
-    g.pushStyle()
-    g.noStroke()
-    g.fill(0f)
-
-    // Define the X and Y coordinates for the corners of the uniformly scaled screen bounding box.
-    val screenCornerXs = listOf(finalScreenBoxX, finalScreenBoxX + screenBoxWidth)
-    val screenCornerYs = listOf(finalScreenBoxY, finalScreenBoxY + screenBoxHeight)
-
-    // Draw a handle at each corner.
-    for (cornerX in screenCornerXs) {
-        for (cornerY in screenCornerYs) {
-            // Calculate top-left of the handle square to center it on the corner.
-            val handleTopLeftX = cornerX - handleSize / 2
-            val handleTopLeftY = cornerY - handleSize / 2
-            g.rect(handleTopLeftX, handleTopLeftY, handleSize, handleSize)
+        // Draw a handle at each corner
+        for (cornerX in screenCornerXs) {
+            for (cornerY in screenCornerYs) {
+                val handleTopLeftX = cornerX - handleSize / 2
+                val handleTopLeftY = cornerY - handleSize / 2
+                g.rect(handleTopLeftX, handleTopLeftY, handleSize, handleSize)
+            }
         }
     }
     g.popStyle()
