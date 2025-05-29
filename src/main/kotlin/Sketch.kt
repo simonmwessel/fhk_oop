@@ -357,13 +357,12 @@ class Sketch(
             .filterIsInstance<SelectableShape>()
             .asReversed()
             .firstOrNull { s ->
-                val sb = s.screenBoundingBox(
+                s.hitTestScreen(
                     resizeMode, sx, sy,
                     if (resizeMode == ResizeMode.UNIFORM_SCALE) f else us,
+                    mouseX.toFloat(), mouseY.toFloat(),
                     offX, offY
                 )
-                mouseX.toFloat() in sb.x..(sb.x + sb.width)
-             && mouseY.toFloat() in sb.y..(sb.y + sb.height)
             }
 
         // Handle selection toggle

@@ -143,6 +143,38 @@ abstract class BaseShape (
     }
 
     /**
+     * Checks if a point in screen coordinates hits the shape.
+     *
+     * This method determines if the mouse coordinates (mx, my) fall within the
+     * bounding box of the shape when scaled according to the specified resize mode.
+     *
+     * @param mode The resize mode (either UNIFORM_SCALE or RELATIVE).
+     * @param sx   Horizontal scale factor (windowWidth / baseWidth).
+     * @param sy   Vertical scale factor (windowHeight / baseHeight).
+     * @param us   Uniform scale factor for circles/squares (min(windowScaleX, windowScaleY)).
+     * @param mx   Mouse X coordinate in screen coordinates.
+     * @param my   Mouse Y coordinate in screen coordinates.
+     * @param offX Optional horizontal offset for centering (default is 0).
+     * @param offY Optional vertical offset for centering (default is 0).
+     *
+     * @return `true` if the mouse coordinates hit the shape, `false` otherwise.
+     */
+    open fun hitTestScreen(
+        mode : Sketch.ResizeMode,
+        sx   : Float,
+        sy   : Float,
+        us   : Float,
+        mx   : Float,
+        my   : Float,
+        offX : Float = 0f,
+        offY : Float = 0f
+    ): Boolean {
+        val b = screenBoundingBox(mode, sx, sy, us, offX, offY)
+        return mx in b.x..(b.x + b.width) &&
+                my in b.y..(b.y + b.height)
+    }
+
+    /**
      * Executes the provided drawing block on the given PApplet instance with the current style applied.
      *
      * This helper method wraps the pushStyle/popStyle pattern and allows direct use of drawing

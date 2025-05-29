@@ -156,6 +156,45 @@ class Circle(
     }
 
     /**
+     * Tests whether a point in screen coordinates hits the circle.
+     *
+     * @param mode The resize mode (UNIFORM_SCALE or RELATIVE).
+     * @param sx   Horizontal scaling factor (windowWidth / baseWidth).
+     * @param sy   Vertical scaling factor (windowHeight / baseHeight).
+     * @param us   Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY)).
+     * @param mx   Mouse x-coordinate in screen coordinates.
+     * @param my   Mouse y-coordinate in screen coordinates.
+     * @param offX Horizontal offset for the bounding box.
+     * @param offY Vertical offset for the bounding box.
+     *
+     * @return `true` if the point hits the circle, `false` otherwise.
+     */
+    override fun hitTestScreen(
+        mode : Sketch.ResizeMode,
+        sx   : Float,
+        sy   : Float,
+        us   : Float,
+        mx   : Float,
+        my   : Float,
+        offX : Float,
+        offY : Float
+    ): Boolean = when (mode) {
+        Sketch.ResizeMode.UNIFORM_SCALE -> {
+            val cx = offX + origin.x * us
+            val cy = offY + origin.y * us
+            val r  = radius * us
+            (mx - cx)*(mx - cx) + (my - cy)*(my - cy) <= r*r
+        }
+
+        Sketch.ResizeMode.RELATIVE -> {
+            val cx = origin.x * sx
+            val cy = origin.y * sy
+            val r  = radius     * us
+            (mx - cx)*(mx - cx) + (my - cy)*(my - cy) <= r*r
+        }
+    }
+
+    /**
      * Draws the circle with uniform scaling - maintains perfect roundness
      * while centering the entire composition.
      *

@@ -137,6 +137,34 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
     ): BoundingBox = inner.screenBoundingBox(mode, sx, sy, us, offX, offY)
 
     /**
+     * Tests whether a point in screen coordinates hits the shape.
+     *
+     * Delegates the hit test to the wrapped [inner] shape.
+     *
+     * @param mode the resize mode (either [Sketch.ResizeMode.UNIFORM_SCALE] or [Sketch.ResizeMode.RELATIVE])
+     * @param sx   horizontal scaling factor (for [Sketch.ResizeMode.RELATIVE])
+     * @param sy   vertical scaling factor (for [Sketch.ResizeMode.RELATIVE])
+     * @param us   uniform scaling factor (for [Sketch.ResizeMode.UNIFORM_SCALE])
+     * @param mx   mouse x-coordinate in screen coordinates
+     * @param my   mouse y-coordinate in screen coordinates
+     * @param offX horizontal offset for the bounding box (default is 0)
+     * @param offY vertical offset for the bounding box (default is 0)
+     *
+     * @return true if the point hits the shape, false otherwise
+     */
+    override fun hitTestScreen(
+        mode : Sketch.ResizeMode,
+        sx   : Float,
+        sy   : Float,
+        us   : Float,
+        mx   : Float,
+        my   : Float,
+        offX : Float,
+        offY : Float
+    ): Boolean =
+        inner.hitTestScreen(mode, sx, sy, us, mx, my, offX, offY)
+
+    /**
      * Returns a string representation of this shape.
      *
      * Delegates to the wrapped [inner] shape’s `toString()` method.
