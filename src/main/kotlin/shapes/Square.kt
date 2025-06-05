@@ -1,8 +1,11 @@
 package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.BoundingBox
+import de.fhkiel.oop.model.select.BoundingBox
+import de.fhkiel.oop.model.select.CornerHandleStrategy
+import de.fhkiel.oop.model.select.HandleStrategy
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -97,65 +100,31 @@ class Square(
     override fun getArea(): Float = sideLength * sideLength
 
     /**
-     * {@inheritDoc}
+     * Returns the bounding box of the square.
+     * The bounding box is defined by the top-left corner and the side length.
      *
-     * For a square, this checks if the [point]'s x-coordinate is within the square's x-range
-     * (from [origin].x to [origin].x + [sideLength]) and the y-coordinate is within the square's y-range
-     * (from [origin].y to [origin].y + [sideLength]).
+     * @return The [BoundingBox] of the square.
      */
-    override fun contains(point: Point): Boolean =
-        point.x >= origin.x
-     && point.x <= origin.x + sideLength
-     && point.y >= origin.y
-     && point.y <= origin.y + sideLength
+    override fun boundingBox(): BoundingBox = BoundingBox(origin.x, origin.y, sideLength, sideLength)
 
     /**
-     * {@inheritDoc}
+     * Returns the handle strategy for this shape.
+     * For a square, the [CornerHandleStrategy] is used to handle corner points.
      *
-     * For a square, the bounding box is the square itself, defined by its [origin] and [sideLength].
+     * @return The [HandleStrategy] to use for this shape.
      */
-    override fun boundingBox(): BoundingBox =
-        BoundingBox(
-            x = origin.x,
-            y = origin.y,
-            width  = sideLength,
-            height = sideLength
-        )
+    override fun handleStrategy(): HandleStrategy = CornerHandleStrategy
 
     /**
-     * Draws the square with uniform scaling - maintains perfect squareness
-     * while centering the entire composition.
+     * Draws the circle on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * @param g Processing graphics context
-     *
-     * @see Shape.drawUniform
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to use for drawing.
      */
-    override fun drawUniform(g: PApplet) = withStyle(g) {
-        rect(origin.x, origin.y, sideLength, sideLength)
-    }
-
-    /**
-     * Draws the square with relative positioning - scales position coordinates
-     * while maintaining perfect squareness through [uniformScale].
-     *
-     * @param g            Processing graphics context
-     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
-     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
-     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
-     *
-     * @see Shape.drawRelative
-     */
-    override fun drawRelative(
-        g: PApplet,
-        scaleX: Float,
-        scaleY: Float,
-        uniformScale: Float
-    ) = withStyle(g) {
-        val x    = origin.x   * scaleX
-        val y    = origin.y   * scaleY
-        val side = sideLength * uniformScale
-
-        rect(x, y, side, side)
+    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
+        val (x, y)     = mapper.worldToScreen(this@Square.origin.x, this@Square.origin.y)
+        val sideLength = mapper.worldScalarToScreen(this@Square.sideLength)
+        rect(x, y, sideLength, sideLength)
     }
 
     /**

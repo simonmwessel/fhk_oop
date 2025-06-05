@@ -1,5 +1,8 @@
 package de.fhkiel.oop.model
 
+import de.fhkiel.oop.mapper.CoordinateMapper
+import de.fhkiel.oop.model.select.BoundingBox
+import de.fhkiel.oop.model.select.HandleStrategy
 import processing.core.PApplet
 
 /**
@@ -29,27 +32,13 @@ sealed interface Shape {
     /** Mathematical area of the shape (square units). */
     fun getArea(): Float
 
-    /** Draws the shape using *uniform* scaling so aspect ratio is preserved. */
-    fun drawUniform(g: PApplet)
-
     /**
-     * Draws the shape with separate X/Y scaling factors plus *uniformScale*
-     * so that circles remain circles and squares remain squares when the
-     * window is resized non‑uniformly.
-     */
-    fun drawRelative(
-        g: PApplet,
-        scaleX: Float,
-        scaleY: Float,
-        uniformScale: Float
-    )
-
-    /**
-     * Returns true if [point] lies inside or on the boundary of this shape.
+     * Draws the shape on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * @param point the test point in canvas‐coordinates
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to use for drawing.
      */
-    fun contains(point: Point): Boolean
+    fun draw(g: PApplet, mapper: CoordinateMapper)
 
     /**
      * Computes the minimal axis‐aligned bounding box enclosing this shape.
@@ -57,4 +46,39 @@ sealed interface Shape {
      * @return the bounding box
      */
     fun boundingBox(): BoundingBox
+
+    /**
+     * Computes the screen bounding box of this shape using the provided [CoordinateMapper].
+     *
+     * This method converts the world coordinates of the shape to screen coordinates
+     * and returns the bounding box in screen space.
+     *
+     * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
+     *
+     * @return The bounding box in screen space.
+     */
+    fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox
+
+    /**
+     * Checks if the given screen coordinates (mx, my) are within the shape.
+     *
+     * This method uses the provided [CoordinateMapper] to convert the screen coordinates
+     * to world coordinates before performing the hit test.
+     *
+     * @param mapper The coordinate mapper to convert screen coordinates to world coordinates.
+     * @param mx The x-coordinate in screen space.
+     * @param my The y-coordinate in screen space.
+     *
+     * @return `true` if the point is within the shape, `false` otherwise.
+     */
+    fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean
+
+    /**
+     * Configures the handle strategy for this shape.
+     * [de.fhkiel.oop.model.select.CornerHandleStrategy] for handling corner points,
+     * [de.fhkiel.oop.model.select.EdgeHandleStrategy] for handling edge points,
+     *
+     * @return the handle strategy to use for this shape
+     */
+    fun handleStrategy(): HandleStrategy
 }

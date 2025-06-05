@@ -1,7 +1,9 @@
 package de.fhkiel.oop.model
 
-import de.fhkiel.oop.Sketch
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.mapper.CoordinateMapper
+import de.fhkiel.oop.model.select.BoundingBox
+import de.fhkiel.oop.model.select.HandleStrategy
 import processing.core.PApplet
 
 /**
@@ -31,7 +33,7 @@ import processing.core.PApplet
 abstract class BaseShape (
     originParam: Point = Point(),
     styleParam:  Style = Style()
-) {
+): Shape {
 
     /** Backing field for location */
     private var _origin: Point = originParam
@@ -41,7 +43,7 @@ abstract class BaseShape (
      *
      * @return the location point.
      */
-    var origin: Point
+    override var origin: Point
         /** Returns the location of the shape. */
         get() = _origin
         /** Sets the location of the shape. */
@@ -55,7 +57,7 @@ abstract class BaseShape (
      *
      * @return the style as [Style].
      */
-    var style: Style
+    override var style: Style
         /** Returns the style of the shape. */
         get() = _style
         /** Sets the style of the shape. */
@@ -66,118 +68,70 @@ abstract class BaseShape (
      *
      * @return The area of the shape.
      */
-    abstract fun getArea(): Float
+    abstract override fun getArea(): Float
 
     /**
-     * Renders the shape using uniform scaling to preserve aspect ratio.
-     * The entire scene is scaled around the center of the window.
+     * Draws the shape on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * @param g Processing graphics context
+     * This method should be implemented by subclasses to define how the shape is rendered.
      *
-     * @see de.fhkiel.oop.Sketch.ResizeMode.UNIFORM_SCALE
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to use for drawing.
      */
-    abstract fun drawUniform(g: PApplet)
-
-    /**
-     * Renders the shape with relative positioning while preserving shape integrity.
-     * Positions are scaled relative to window size, while circles/squares maintain
-     * their aspect ratio via [uniformScale].
-     *
-     * @param g            Processing graphics context
-     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
-     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
-     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
-     *
-     * @see de.fhkiel.oop.Sketch.ResizeMode.RELATIVE
-     */
-    abstract fun drawRelative(
-        g: PApplet,
-        scaleX: Float,
-        scaleY: Float,
-        uniformScale: Float
-    )
-
-    /**
-     * Checks if a given point is contained within the shape.
-     *
-     * @param point The [Point] to check.
-     * @return `true` if the point is inside or on the boundary of the shape, `false` otherwise.
-     */
-    abstract fun contains(point: Point): Boolean
+    abstract override fun draw(g: PApplet, mapper: CoordinateMapper)
 
     /**
      * Calculates the minimal axis-aligned bounding box that encloses the shape.
      *
-     * @return The [BoundingBox] of the shape.
+     * @return The [de.fhkiel.oop.model.select.BoundingBox] of the shape.
      */
-    abstract fun boundingBox(): BoundingBox
+    abstract override fun boundingBox(): BoundingBox
 
     /**
      * Computes the screen bounding box based on the resize mode and scaling factors.
      *
-     * This method adjusts the bounding box of the shape according to the specified
-     * resize mode and scaling factors, allowing for uniform or relative scaling.
-     *
-     * @param mode   The resize mode (either UNIFORM_SCALE or RELATIVE).
-     * @param sx     Horizontal scaling factor (for RELATIVE mode).
-     * @param sy     Vertical scaling factor (for RELATIVE mode).
-     * @param us     Uniform scaling factor (for UNIFORM_SCALE mode).
-     * @param offX   Optional horizontal offset for the bounding box (default is 0).
-     * @param offY   Optional vertical offset for the bounding box (default is 0).
-     *
      * @return The adjusted [BoundingBox] for the shape.
      */
-    open fun screenBoundingBox(
-        mode : Sketch.ResizeMode,
-        sx   : Float,
-        sy   : Float,
-        us   : Float,
-        offX : Float = 0f,
-        offY : Float = 0f
-    ): BoundingBox = when (mode) {
-        Sketch.ResizeMode.UNIFORM_SCALE ->
-            boundingBox().let { BoundingBox(offX + it.x*us, offY + it.y*us, it.width*us, it.height*us) }
+    override fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox {
+        val worldBox = boundingBox() // Get the shape's AABB in world coordinates
 
-        Sketch.ResizeMode.RELATIVE ->
-            boundingBox().let { BoundingBox(it.x*sx, it.y*sy, it.width*us, it.height*us) }
+        // Transform the origin (top-left) using position scaling
+        val (screenX, screenY) = mapper.worldToScreen(worldBox.x, worldBox.y)
+
+        // Transform the width and height using uniform scalar scaling
+        val screenWidth  = mapper.worldScalarToScreen(worldBox.width)
+        val screenHeight = mapper.worldScalarToScreen(worldBox.height)
+
+        return BoundingBox(screenX, screenY, screenWidth, screenHeight)
     }
 
     /**
      * Checks if a point in screen coordinates hits the shape, including its stroke.
      *
-     * This method determines if the mouse coordinates (mx, my) fall within the
-     * shape's fill area plus half of its stroke thickness, scaled according to the specified resize mode.
-     *
-     * @param mode The resize mode (either UNIFORM_SCALE or RELATIVE).
-     * @param sx   Horizontal scale factor (windowWidth / baseWidth).
-     * @param sy   Vertical scale factor (windowHeight / baseHeight).
-     * @param us   Uniform scale factor for stroke weight and uniform shape dimensions (min(windowScaleX, windowScaleY)).
-     * @param mx   Mouse X coordinate in screen coordinates.
-     * @param my   Mouse Y coordinate in screen coordinates.
-     * @param offX Optional horizontal offset for centering (default is 0).
-     * @param offY Optional vertical offset for centering (default is 0).
-     *
      * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
      */
-    open fun hitTestScreen(
-        mode : Sketch.ResizeMode,
-        sx   : Float,
-        sy   : Float,
-        us   : Float,
-        mx   : Float,
-        my   : Float,
-        offX : Float = 0f,
-        offY : Float = 0f
-    ): Boolean {
-        val b = screenBoundingBox(mode, sx, sy, us, offX, offY) // Screen bounding box of the fill area
-        // style.weight is logical, us scales it to screen. Half of it for each side.
-        val screenHalfStroke = style.weight * us / 2f
+    override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
+        val b = this.screenBoundingBox(mapper) // Screen bounding box of the fill area
+        // Scale the stroke weight from world units to screen pixels
+        val screenHalfStroke = mapper.worldScalarToScreen(style.weight / 2f)
 
+        // Perform hit test including the stroke
         return mx >= b.x - screenHalfStroke &&
                mx <= b.x + b.width + screenHalfStroke &&
                my >= b.y - screenHalfStroke &&
                my <= b.y + b.height + screenHalfStroke
     }
+
+    /**
+     * Configures the handle strategy for this shape.
+     *
+     * This method should be overridden by subclasses to provide specific handle strategies
+     * such as [de.fhkiel.oop.model.select.CornerHandleStrategy] for corner points or
+     * [de.fhkiel.oop.model.select.EdgeHandleStrategy] for edge points.
+     *
+     * @return The handle strategy to use for this shape.
+     */
+    abstract override fun handleStrategy(): HandleStrategy
 
     /**
      * Executes the provided drawing block on the given PApplet instance with the current style applied.

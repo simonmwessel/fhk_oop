@@ -5,7 +5,7 @@ import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Point
-import de.fhkiel.oop.model.SelectableShape
+import de.fhkiel.oop.model.select.SelectableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.ShapeType
 import de.fhkiel.oop.shapes.Circle

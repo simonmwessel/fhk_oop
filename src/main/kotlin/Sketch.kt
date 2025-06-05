@@ -4,8 +4,11 @@ import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.factory.FormFactory
+import de.fhkiel.oop.mapper.CoordinateMapper
+import de.fhkiel.oop.mapper.RelativeScaleMapper
+import de.fhkiel.oop.mapper.UniformScaleMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.SelectableShape
+import de.fhkiel.oop.model.select.SelectableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
@@ -22,10 +25,10 @@ import processing.core.PApplet
  *  - Distribution control for sizes and origins using [Distribution].
  *  - Rendering of shapes using Processing's drawing primitives provided by [PApplet].
  *
- * ## Resize Modes
+ * ## Mapper Modes
  * This sketch can operate in two different resizing strategies:
- *  - [ResizeMode.UNIFORM_SCALE]: scales the entire scene uniformly, preserving aspect ratio.
- *  - [ResizeMode.RELATIVE]: re-maps each shape to the current window size so that shapes “stick” to their
+ *  - [UniformScaleMapper]: scales the entire scene uniformly, preserving aspect ratio.
+ *  - [RelativeScaleMapper]: re-maps each shape to the current window size so that shapes “stick” to their
  *    relative edges, while circles and squares remain truly round/square.
  *
  * ## Workflow
@@ -34,36 +37,20 @@ import processing.core.PApplet
  * 3. [draw]     clears the canvas each frame and renders each shape with its graphic attributes,
  *               using the selected resize strategy.
  *
- * @param resizeMode determines which resizing strategy to apply when the window is resized.
- *
  * @author  Simon Wessel
  * @version 1.8
  * @since   2.3
  *
- * @see ResizeMode
  * @see Config
  * @see FormFactory
  * @see Distribution
  * @see PApplet
  * @see Shape
+ * @see CoordinateMapper
+ * @see RelativeScaleMapper
+ * @see UniformScaleMapper
  */
-class Sketch(
-    initialResizeMode: ResizeMode = ResizeMode.RELATIVE
-) : PApplet() {
-
-    /**
-     * The current resize mode used by the sketch.
-     * Can be toggled between [ResizeMode.UNIFORM_SCALE] and [ResizeMode.RELATIVE].
-     */
-    private var _resizeMode: ResizeMode = initialResizeMode
-    var resizeMode: ResizeMode
-        /** Returns the current resize mode. */
-        get() = _resizeMode
-        /** Sets the resize mode. */
-        set(v) {
-            _resizeMode = v
-        }
-
+class Sketch() : PApplet() {
     /**
      * The list of shapes to draw each frame.
      * Must not be empty.
@@ -149,21 +136,20 @@ class Sketch(
         }
 
     /**
-     * Defines strategies for handling window resizing:
-     *
-     * - [UNIFORM_SCALE]: Centers and scales the entire scene proportionally
-     * - [RELATIVE]: Maps shapes to window coordinates while preserving:
-     *   - Circle/square roundness
-     *   - Rectangle aspect ratios
-     *   - Relative positional relationships
+     * The coordinate mapper used for resizing and positioning shapes.
+     * This can be either a [RelativeScaleMapper] or a [UniformScaleMapper].
      */
-    enum class ResizeMode {
-        /** Scale whole scene uniformly around center. */
-        UNIFORM_SCALE,
-
-        /** Map shapes to relative window coords, preserving individual aspect constraints. */
-        RELATIVE
-    }
+    private var _mapper: CoordinateMapper = RelativeScaleMapper(this, baseW, baseH, baseMin)
+    var mapper: CoordinateMapper
+        /** Returns the current coordinate mapper. */
+        get() = _mapper
+        /** Sets the coordinate mapper. */
+        set(v) {
+            require(v is RelativeScaleMapper || v is UniformScaleMapper) {
+                "Mapper must be either RelativeScaleMapper or UniformScaleMapper"
+            }
+            _mapper = v
+        }
 
     /**
      * Configures the initial size of the sketch window based on [baseW] and [baseH].
@@ -195,14 +181,14 @@ class Sketch(
     }
 
     /**
-     * Handles window resizing by delegating to the active [ResizeMode] strategy.
+     * Handles window resizing by delegating to the active [CoordinateMapper] strategy.
      *
-     * For [ResizeMode.UNIFORM_SCALE]:
+     * For [UniformScaleMapper]:
      * 1. Calculates single scale factor from the smallest dimension
      * 2. Centers content with black borders
      * 3. Applies uniform scaling
      *
-     * For [ResizeMode.RELATIVE]:
+     * For [RelativeScaleMapper]:
      * 1. Scales positions by window/base ratios
      * 2. Scales circles/squares by min(windowAspectRatio, baseAspectRatio)
      * 3. Scales rectangles proportionally to window
@@ -214,28 +200,7 @@ class Sketch(
             Config.SKETCH_BACKGROUND_COLOR.blue
         )
 
-        when (resizeMode) {
-            ResizeMode.UNIFORM_SCALE -> {
-                val f    = min(width / baseW, height / baseH)
-                val offX = (width  - baseW * f) / 2f
-                val offY = (height - baseH * f) / 2f
-
-                pushMatrix()
-                translate(offX, offY)
-                scale(f)
-
-                shapes.forEach { it.drawUniform(this) }
-
-                popMatrix()
-            }
-            ResizeMode.RELATIVE -> {
-                val sx  = width  / baseW
-                val sy  = height / baseH
-                val us  = min(width, height) / baseMin
-
-                shapes.forEach { it.drawRelative(this, sx, sy, us) }
-            }
-        }
+        shapes.forEach { it.draw(this, mapper) }
 
         drawHint()
     }
@@ -249,6 +214,11 @@ class Sketch(
         if (millis() - hintStartTime >= hintDuration) return
 
         pushStyle()
+
+        val resizeMode = when (mapper) {
+            is RelativeScaleMapper -> "Relative"
+            is UniformScaleMapper  -> "Uniform Scale"
+        }
 
         val lines = listOf(
             "Press 'M' to toggle resize mode",
@@ -313,7 +283,7 @@ class Sketch(
     }
 
     /**
-     * Toggles the [resizeMode] when the user presses 'M' or 'm',
+     * Toggles the [CoordinateMapper] when the user presses 'M' or 'm',
      * and restarts the hint timer.
      * Adds a new shape based on key press:
      * - 's' or 'S': Adds a new Square.
@@ -323,9 +293,9 @@ class Sketch(
     override fun keyPressed() {
         when (key.lowercaseChar()) {
             'm' -> {
-                resizeMode = when (resizeMode) {
-                    ResizeMode.UNIFORM_SCALE -> ResizeMode.RELATIVE
-                    ResizeMode.RELATIVE      -> ResizeMode.UNIFORM_SCALE
+                mapper = when (mapper) {
+                    is RelativeScaleMapper -> UniformScaleMapper(this, baseW, baseH)
+                    is UniformScaleMapper  -> RelativeScaleMapper(this, baseW, baseH, baseMin)
                 }
             }
             's' -> addShapes(GenerationParams.SQUARE)
@@ -340,30 +310,14 @@ class Sketch(
      * When the user clicks on a shape, it toggles its selection state.
      * If the SHIFT key is not pressed, all other shapes are deselected first.
      *
-     * Uses hit detection based on the current [resizeMode] to determine which shape was clicked.
+     * Uses hit detection based on the current [CoordinateMapper] to determine which shape was clicked.
      */
     override fun mousePressed() {
-        // Setup scales
-        val sx = width  / baseW
-        val sy = height / baseH
-        val us = min(width, height) / baseMin
-
-        val f    = min(width / baseW, height / baseH)
-        val offX = (width  - baseW * f) / 2f
-        val offY = (height - baseH * f) / 2f
-
         // Hit detection
         val hit = shapes
             .filterIsInstance<SelectableShape>()
             .asReversed()
-            .firstOrNull { s ->
-                s.hitTestScreen(
-                    resizeMode, sx, sy,
-                    if (resizeMode == ResizeMode.UNIFORM_SCALE) f else us,
-                    mouseX.toFloat(), mouseY.toFloat(),
-                    offX, offY
-                )
-            }
+            .firstOrNull { it.hitTestScreen(this.mapper, mouseX.toFloat(), mouseY.toFloat()) }
 
         // Handle selection toggle
         if (!keyPressed || keyCode != SHIFT)

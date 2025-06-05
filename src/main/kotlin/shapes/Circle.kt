@@ -1,13 +1,14 @@
 package de.fhkiel.oop.shapes
 
-import de.fhkiel.oop.Sketch
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.BoundingBox
+import de.fhkiel.oop.model.select.BoundingBox
+import de.fhkiel.oop.model.select.EdgeHandleStrategy
+import de.fhkiel.oop.model.select.HandleStrategy
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
-import de.fhkiel.oop.model.distanceTo
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
@@ -105,131 +106,63 @@ class Circle(
     /**
      * {@inheritDoc}
      *
-     * For a circle, this checks if the distance from the [point] to the circle's [origin] is less than or equal to its [radius].
-     */
-    override fun contains(point: Point): Boolean =
-        point.distanceTo(origin) <= radius
-
-    /**
-     * {@inheritDoc}
-     *
      * For a circle, the bounding box is a square whose sides are equal to the circle's diameter (2 * [radius]),
      * centered at the circle's [origin].
      */
     override fun boundingBox(): BoundingBox =
-        BoundingBox(
-            x = origin.x - radius,
-            y = origin.y - radius,
-            width  = radius * 2,
-            height = radius * 2
-        )
+        BoundingBox(origin.x - radius, origin.y - radius, radius * 2, radius * 2)
 
     /**
      * Computes the screen bounding box of the circle based on the resize mode.
      *
-     * @param mode The resize mode (UNIFORM_SCALE or RELATIVE).
-     * @param sx   Horizontal scaling factor (windowWidth / baseWidth).
-     * @param sy   Vertical scaling factor (windowHeight / baseHeight).
-     * @param us   Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY)).
-     * @param offX Horizontal offset for the bounding box.
-     * @param offY Vertical offset for the bounding box.
-     *
      * @return The bounding box of the circle in screen coordinates.
      */
-    override fun screenBoundingBox(
-        mode : Sketch.ResizeMode,
-        sx   : Float,
-        sy   : Float,
-        us   : Float,
-        offX : Float,
-        offY : Float
-    ): BoundingBox = when (mode) {
-        Sketch.ResizeMode.UNIFORM_SCALE -> {
-            val scaledRadius = radius * us
-            val screenCenterX = offX + origin.x * us
-            val screenCenterY = offY + origin.y * us
-            BoundingBox(screenCenterX - scaledRadius, screenCenterY - scaledRadius, scaledRadius * 2, scaledRadius * 2)
-        }
-
-        Sketch.ResizeMode.RELATIVE -> {
-            val scaledRadius = radius * us
-            val screenCenterX = origin.x * sx
-            val screenCenterY = origin.y * sy
-            BoundingBox(screenCenterX - scaledRadius, screenCenterY - scaledRadius, scaledRadius * 2, scaledRadius * 2)
-        }
+    override fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox {
+        val (screenCenterX, screenCenterY) = mapper.worldToScreen(origin.x, origin.y)
+        val screenRadius = mapper.worldScalarToScreen(radius)
+        return BoundingBox(
+            screenCenterX - screenRadius,
+            screenCenterY - screenRadius,
+            screenRadius * 2,
+            screenRadius * 2
+        )
     }
 
     /**
      * Tests whether a point in screen coordinates hits the circle, including its stroke.
      *
-     * @param mode The resize mode (UNIFORM_SCALE or RELATIVE).
-     * @param sx   Horizontal scaling factor (windowWidth / baseWidth).
-     * @param sy   Vertical scaling factor (windowHeight / baseHeight).
-     * @param us   Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY)).
-     * @param mx   Mouse x-coordinate in screen coordinates.
-     * @param my   Mouse y-coordinate in screen coordinates.
-     * @param offX Horizontal offset for the bounding box.
-     * @param offY Vertical offset for the bounding box.
-     *
      * @return `true` if the point hits the circle (fill or stroke), `false` otherwise.
      */
-    override fun hitTestScreen(
-        mode : Sketch.ResizeMode,
-        sx   : Float,
-        sy   : Float,
-        us   : Float,
-        mx   : Float,
-        my   : Float,
-        offX : Float,
-        offY : Float
-    ): Boolean {
-        val screenCenterX = if (mode == Sketch.ResizeMode.UNIFORM_SCALE) offX + origin.x * us else origin.x * sx
-        val screenCenterY = if (mode == Sketch.ResizeMode.UNIFORM_SCALE) offY + origin.y * us else origin.y * sy
-        val screenRadius = radius * us
-        val screenHalfStroke = style.weight * us / 2f
+    override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
+        val (screenCenterX, screenCenterY) = mapper.worldToScreen(origin.x, origin.y)
+        val screenRadius = mapper.worldScalarToScreen(radius)
+        val screenHalfStroke = mapper.worldScalarToScreen(style.weight / 2f)
 
-        // Distance squared from click to center
         val distSq = (mx - screenCenterX).pow(2) + (my - screenCenterY).pow(2)
-        // Outer radius squared (radius + half stroke)
         val outerRadiusSq = (screenRadius + screenHalfStroke).pow(2)
 
         return distSq <= outerRadiusSq
     }
 
     /**
-     * Draws the circle with uniform scaling - maintains perfect roundness
-     * while centering the entire composition.
+     * Configures the handle strategy for this shape.
+     * This method returns the [EdgeHandleStrategy] for circles, which allows handles to be placed
+     * along the edges of the circle.
      *
-     * @param g Processing graphics context
-     *
-     * @see Shape.drawUniform
+     * @return The handle strategy for the circle.
      */
-    override fun drawUniform(g: PApplet) = withStyle(g) {
-        ellipse(origin.x, origin.y, radius * 2, radius * 2)
-    }
+    override fun handleStrategy(): HandleStrategy = EdgeHandleStrategy
 
     /**
-     * Draws the circle with relative positioning - scales position coordinates
-     * while maintaining perfect roundness through [uniformScale].
+     * Draws the circle on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * @param g            Processing graphics context
-     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
-     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
-     * @param uniformScale Unified scaling factor for circles/squares (min(windowScaleX, windowScaleY))
-     *
-     * @see Shape.drawRelative
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to use for drawing.
      */
-    override fun drawRelative(
-        g: PApplet,
-        scaleX: Float,
-        scaleY: Float,
-        uniformScale: Float
-    ) = withStyle(g) {
-        val cx = origin.x * scaleX
-        val cy = origin.y * scaleY
-        val r  = radius     * uniformScale
-
-        ellipse(cx, cy, r * 2, r * 2)
+    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
+        val (x, y) = mapper.worldToScreen(this@Circle.origin.x, this@Circle.origin.y)
+        val radius = mapper.worldScalarToScreen(this@Circle.radius)
+        ellipse(x, y, radius * 2, radius * 2)
     }
 
     /**

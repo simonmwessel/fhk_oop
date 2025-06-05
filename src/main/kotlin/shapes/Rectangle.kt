@@ -1,8 +1,11 @@
 package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.BoundingBox
+import de.fhkiel.oop.model.select.BoundingBox
+import de.fhkiel.oop.model.select.CornerHandleStrategy
+import de.fhkiel.oop.model.select.HandleStrategy
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -136,59 +139,32 @@ class Rectangle(
     override fun getArea(): Float = width * height
 
     /**
-     * {@inheritDoc}
+     * Calculates the minimal axis-aligned bounding box that encloses the rectangle.
      *
-     * For a rectangle, this checks if the [point]'s x-coordinate is within the rectangle's x-range
-     * (from [origin].x to [origin].x + [width]) and the y-coordinate is within the rectangle's y-range
-     * (from [origin].y to [origin].y + [height]).
+     * @return The bounding box as [BoundingBox].
      */
-    override fun contains(point: Point): Boolean =
-        point.x in origin.x..(origin.x + width)
-     && point.y in origin.y..(origin.y + height)
+    override fun boundingBox(): BoundingBox = BoundingBox(origin.x, origin.y, width, height)
 
     /**
-     * {@inheritDoc}
+     * Configures the handle strategy for this shape.
+     * This rectangle uses the [CornerHandleStrategy], which allows for resizing
+     * by dragging the corners of the rectangle.
      *
-     * For a rectangle, the bounding box is the rectangle itself, defined by its [origin], [width], and [height].
+     * @return The handle strategy to use for this shape.
      */
-    override fun boundingBox(): BoundingBox =
-        BoundingBox(origin.x, origin.y, width, height)
+    override fun handleStrategy(): HandleStrategy = CornerHandleStrategy
 
     /**
-     * Draws the rectangle with uniform scaling - entire scene grows/shrinks
-     * equally while keeping center position.
+     * Draws the circle on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * @param g Processing graphics context
-     *
-     * @see Shape.drawUniform
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to use for drawing.
      */
-    override fun drawUniform(g: PApplet) = withStyle(g) {
-        g.rect(origin.x, origin.y, this@Rectangle.width, this@Rectangle.height)
-    }
-
-    /**
-     * Draws the rectangle with relative positioning - scales position and
-     * dimensions independently to fill available space.
-     *
-     * @param g            Processing graphics context
-     * @param scaleX       Horizontal scaling factor (windowWidth / baseWidth)
-     * @param scaleY       Vertical scaling factor (windowHeight / baseHeight)
-     * @param uniformScale Ignored for rectangles, but required for interface compatibility.
-     *
-     * @see Shape.drawRelative
-     */
-    override fun drawRelative(
-        g: PApplet,
-        scaleX: Float,
-        scaleY: Float,
-        uniformScale: Float
-    ) = withStyle(g) {
-        val x = origin.x * scaleX
-        val y = origin.y * scaleY
-        val w = this@Rectangle.width  * uniformScale
-        val h = this@Rectangle.height * uniformScale
-
-        rect(x, y, w, h)
+    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
+        val (x, y) = mapper.worldToScreen(this@Rectangle.origin.x, this@Rectangle.origin.y)
+        val width  = mapper.worldScalarToScreen(this@Rectangle.width)
+        val height = mapper.worldScalarToScreen(this@Rectangle.height)
+        g.rect(x, y, width, height)
     }
 
     /**
