@@ -1,8 +1,7 @@
 package de.fhkiel.oop.model
 
+import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
-import de.fhkiel.oop.model.select.BoundingBox
-import de.fhkiel.oop.model.select.HandleStrategy
 import processing.core.PApplet
 
 /**
@@ -29,6 +28,9 @@ sealed interface Shape {
     /** Visual appearance (fill/stroke colours & stroke weight). */
     var style: Style
 
+    /** The strategies used for shape manipulation, such as move constraints. */
+    var strategies: ShapeStrategyConfig
+
     /** Mathematical area of the shape (square units). */
     fun getArea(): Float
 
@@ -39,6 +41,15 @@ sealed interface Shape {
      * @param mapper The coordinate mapper to use for drawing.
      */
     fun draw(g: PApplet, mapper: CoordinateMapper)
+
+    /**
+     * Returns the axis‐aligned bounding box of this shape,
+     * *if* its origin were temporarily set to [candidateOrigin].
+     *
+     * @param candidateOrigin the hypothetical origin to test (in world coordinates)
+     * @return a BoundingBox that covers the shape’s full extent at that origin
+     */
+    fun boundingBoxAt(candidateOrigin: Point): BoundingBox
 
     /**
      * Computes the minimal axis‐aligned bounding box enclosing this shape.
@@ -72,13 +83,4 @@ sealed interface Shape {
      * @return `true` if the point is within the shape, `false` otherwise.
      */
     fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean
-
-    /**
-     * Configures the handle strategy for this shape.
-     * [de.fhkiel.oop.model.select.CornerHandleStrategy] for handling corner points,
-     * [de.fhkiel.oop.model.select.EdgeHandleStrategy] for handling edge points,
-     *
-     * @return the handle strategy to use for this shape
-     */
-    fun handleStrategy(): HandleStrategy
 }

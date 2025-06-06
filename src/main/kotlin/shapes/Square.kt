@@ -31,7 +31,7 @@ import kotlin.math.sqrt
  * @see Point
  * @see Config
  *
- * @author  Simon Wessel
+ * @author Simon Wessel
  */
 class Square(
     originParam:     Point = Point(),

@@ -1,6 +1,7 @@
-package de.fhkiel.oop.model.select
+package de.fhkiel.oop.strategy.handle
 
 import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.BoundingBox
 
 /**
  * Strategy interface that defines **where selection handles** should be placed

@@ -1,9 +1,8 @@
 package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
-import de.fhkiel.oop.model.select.BoundingBox
-import de.fhkiel.oop.model.select.HandleStrategy
 import processing.core.PApplet
 
 /**
@@ -64,6 +63,13 @@ abstract class BaseShape (
         set(v) { _style = v }
 
     /**
+     * The strategies used for shape manipulation, such as move constraints.
+     *
+     * @return the strategies as [ShapeStrategyConfig].
+     */
+    abstract override var strategies: ShapeStrategyConfig
+
+    /**
      * Abstract method to calculate the area of the shape.
      *
      * @return The area of the shape.
@@ -81,11 +87,17 @@ abstract class BaseShape (
     abstract override fun draw(g: PApplet, mapper: CoordinateMapper)
 
     /**
+     * Returns a BoundingBox that represents the full occupied area
+     * of this shape if its origin were [candidateOrigin].
+     */
+    abstract override fun boundingBoxAt(candidateOrigin: Point): BoundingBox
+
+    /**
      * Calculates the minimal axis-aligned bounding box that encloses the shape.
      *
-     * @return The [de.fhkiel.oop.model.select.BoundingBox] of the shape.
+     * @return The [BoundingBox] of the shape.
      */
-    abstract override fun boundingBox(): BoundingBox
+    override fun boundingBox(): BoundingBox = boundingBoxAt(origin)
 
     /**
      * Computes the screen bounding box based on the resize mode and scaling factors.
@@ -121,17 +133,6 @@ abstract class BaseShape (
                my >= b.y - screenHalfStroke &&
                my <= b.y + b.height + screenHalfStroke
     }
-
-    /**
-     * Configures the handle strategy for this shape.
-     *
-     * This method should be overridden by subclasses to provide specific handle strategies
-     * such as [de.fhkiel.oop.model.select.CornerHandleStrategy] for corner points or
-     * [de.fhkiel.oop.model.select.EdgeHandleStrategy] for edge points.
-     *
-     * @return The handle strategy to use for this shape.
-     */
-    abstract override fun handleStrategy(): HandleStrategy
 
     /**
      * Executes the provided drawing block on the given PApplet instance with the current style applied.

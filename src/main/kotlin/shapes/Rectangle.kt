@@ -1,11 +1,10 @@
 package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.select.BoundingBox
-import de.fhkiel.oop.model.select.CornerHandleStrategy
-import de.fhkiel.oop.model.select.HandleStrategy
+import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -47,7 +46,8 @@ open class Rectangle(
     originParam: Point = Point(),
     widthParam:  Float = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(),
     heightParam: Float = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(),
-    styleParam:  Style = Style()
+    styleParam:  Style = Style(),
+    strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.RECTANGLE
 ) : BaseShape(originParam, styleParam) {
 
     /**
@@ -114,6 +114,19 @@ open class Rectangle(
             )
         }
 
+    private var _strategies: ShapeStrategyConfig = strategiesParam
+
+    /**
+     * The strategies used for shape manipulation, such as move constraints.
+     *
+     * @return the strategies as [ShapeStrategyConfig].
+     */
+    override var strategies: ShapeStrategyConfig
+        /** Returns the strategies of the circle. */
+        get() = _strategies
+        /** Sets the strategies of the circle. */
+        set(v) { _strategies = v }
+
     /**
      * Companion object for [Rectangle] providing factory methods.
      */
@@ -143,16 +156,13 @@ open class Rectangle(
      *
      * @return The bounding box as [BoundingBox].
      */
-    override fun boundingBox(): BoundingBox = BoundingBox(origin.x, origin.y, width, height)
-
-    /**
-     * Configures the handle strategy for this shape.
-     * This rectangle uses the [CornerHandleStrategy], which allows for resizing
-     * by dragging the corners of the rectangle.
-     *
-     * @return The handle strategy to use for this shape.
-     */
-    override fun handleStrategy(): HandleStrategy = CornerHandleStrategy
+    override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
+        BoundingBox(
+            x = candidateOrigin.x,
+            y = candidateOrigin.y,
+            width  = width,
+            height = height
+        )
 
     /**
      * Draws the circle on the given [PApplet] using the provided [CoordinateMapper].

@@ -1,11 +1,10 @@
 package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.select.BoundingBox
-import de.fhkiel.oop.model.select.EdgeHandleStrategy
-import de.fhkiel.oop.model.select.HandleStrategy
+import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
@@ -45,7 +44,8 @@ import kotlin.math.sqrt
 class Circle(
     originParam: Point = Point(),
     radiusParam: Float = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(),
-    styleParam:  Style = Style()
+    styleParam:  Style = Style(),
+    strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.CIRCLE
 )  : BaseShape(originParam, styleParam) {
 
     /**
@@ -80,6 +80,19 @@ class Circle(
             )
         }
 
+    private var _strategies: ShapeStrategyConfig = strategiesParam
+
+    /**
+     * The strategies used for shape manipulation, such as move constraints.
+     *
+     * @return the strategies as [ShapeStrategyConfig].
+     */
+    override var strategies: ShapeStrategyConfig
+        /** Returns the strategies of the circle. */
+        get() = _strategies
+        /** Sets the strategies of the circle. */
+        set(v) { _strategies = v }
+
     /**
      * Companion object for [Circle] providing factory methods.
      */
@@ -109,8 +122,13 @@ class Circle(
      * For a circle, the bounding box is a square whose sides are equal to the circle's diameter (2 * [radius]),
      * centered at the circle's [origin].
      */
-    override fun boundingBox(): BoundingBox =
-        BoundingBox(origin.x - radius, origin.y - radius, radius * 2, radius * 2)
+    override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
+        BoundingBox(
+            x = candidateOrigin.x - radius,
+            y = candidateOrigin.y - radius,
+            width  = radius * 2,
+            height = radius * 2
+        )
 
     /**
      * Computes the screen bounding box of the circle based on the resize mode.
@@ -143,15 +161,6 @@ class Circle(
 
         return distSq <= outerRadiusSq
     }
-
-    /**
-     * Configures the handle strategy for this shape.
-     * This method returns the [EdgeHandleStrategy] for circles, which allows handles to be placed
-     * along the edges of the circle.
-     *
-     * @return The handle strategy for the circle.
-     */
-    override fun handleStrategy(): HandleStrategy = EdgeHandleStrategy
 
     /**
      * Draws the circle on the given [PApplet] using the provided [CoordinateMapper].

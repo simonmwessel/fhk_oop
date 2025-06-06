@@ -1,4 +1,4 @@
-package de.fhkiel.oop.model.select
+package de.fhkiel.oop.model
 
 
 /**

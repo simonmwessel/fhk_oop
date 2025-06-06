@@ -1,15 +1,14 @@
-package de.fhkiel.oop.model.select
+package de.fhkiel.oop.model
 
+import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
-import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.strategy.handle.HandleStrategy
 import processing.core.PApplet
 
-
 /**
- * Decorator that adds *selection* behavior to any [de.fhkiel.oop.model.BaseShape].
+ * Decorator that adds *selection* behavior to any [BaseShape].
  *
- * When a `SelectableShape` is marked as selected (`isSelected = true`), it draws
+ * When a `ManipulatableShape` is marked as selected (`isSelected = true`), it draws
  * small square "handles" around the wrapped shape's bounding box. Both positions
  * and sizes of these handles are computed such that they move and scale *exactly*
  * with the shape, regardless of the current [CoordinateMapper] in use.
@@ -20,17 +19,41 @@ import processing.core.PApplet
  * @property inner      The [BaseShape] being decorated. All operations are forwarded to it.
  * @property isSelected Flag indicating selection state; when `true`, handles are rendered.
  *
- * @constructor Creates a new `SelectableShape` that wraps the given [inner] shape.
+ * @constructor Creates a new `ManipulatableShape` that wraps the given [inner] shape.
  *
- * @see de.fhkiel.oop.model.BaseShape
- * @see de.fhkiel.oop.mapper.CoordinateMapper
+ * @see BaseShape
+ * @see CoordinateMapper
  * @see HandleStrategy
- * @see CornerHandleStrategy
- * @see EdgeHandleStrategy
+ * @see de.fhkiel.oop.strategy.handle.CornerHandleStrategy
+ * @see de.fhkiel.oop.strategy.handle.EdgeHandleStrategy
  *
  * @author Simon Wessel
  */
-class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
+class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
+
+    /**
+     * The strategy used to determine where handles should be placed.
+     * Defaults to the [HandleStrategy] defined in inner.strategies.
+     */
+    private var _strategies: ShapeStrategyConfig = inner.strategies
+
+    /**
+     * The strategies used for shape manipulation, such as move constraints.
+     * This property is delegated to the inner shape's strategies.
+     */
+    override var strategies: ShapeStrategyConfig
+        /**
+         * Gets the strategies from the inner shape.
+         *
+         * @return The current strategies.
+         */
+        get() = _strategies
+        /** Sets the strategies for the inner shape. */
+        set(v) {
+            _strategies = v
+            inner.strategies = v
+        }
+
     /**
      * Whether this shape is currently selected.
      * If `true`, handles will be drawn during the next `draw(...)` call.
@@ -70,9 +93,9 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
      * @param g      The Processing PApplet context (used for drawing).
      * @param mapper The [CoordinateMapper] for converting world→screen.
      *
-     * @see de.fhkiel.oop.model.BaseShape.draw
-     * @see de.fhkiel.oop.model.BaseShape.boundingBox
-     * @see de.fhkiel.oop.model.BaseShape.screenBoundingBox
+     * @see BaseShape.draw
+     * @see BaseShape.boundingBox
+     * @see BaseShape.screenBoundingBox
      * @see HandleStrategy
      * @see CoordinateMapper.worldScalarToScreen
      */
@@ -84,7 +107,7 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
         val screenBox = inner.screenBoundingBox(mapper)
 
         val worldBox = inner.boundingBox()
-        val worldHandlePoints: List<Point> = inner.handleStrategy().handlePoints(worldBox)
+        val worldHandlePoints: List<Point> = inner.strategies.handleStrategy.handlePoints(worldBox)
 
         g.pushStyle()
         g.noStroke()
@@ -118,9 +141,9 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
      *
      * @return A [BoundingBox] (world‐space).
      *
-     * @see de.fhkiel.oop.model.BaseShape.boundingBox
+     * @see BaseShape.boundingBox
      */
-    override fun boundingBox(): BoundingBox =
+    override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
         inner.boundingBox()
 
     /**
@@ -132,7 +155,7 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
      * @param mapper The [CoordinateMapper] to convert world↔screen.
      * @return A [BoundingBox] (screen‐space).
      *
-     * @see de.fhkiel.oop.model.BaseShape.screenBoundingBox
+     * @see BaseShape.screenBoundingBox
      */
     override fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox =
         inner.screenBoundingBox(mapper)
@@ -148,22 +171,10 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
      * @param my     Mouse Y‐coordinate in pixels.
      * @return `true` if the point hits the shape; `false` otherwise.
      *
-     * @see de.fhkiel.oop.model.BaseShape.hitTestScreen
+     * @see BaseShape.hitTestScreen
      */
     override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean =
         inner.hitTestScreen(mapper, mx, my)
-
-    /**
-     * {@inheritDoc}
-     *
-     * Delegates to inner.handleStrategy, returning the [HandleStrategy] used
-     * to compute world‐space handle points (e.g. corners or edge‐midpoints).
-     *
-     * @return The [HandleStrategy] of the wrapped shape.
-     *
-     * @see HandleStrategy
-     */
-    override fun handleStrategy(): HandleStrategy = inner.handleStrategy()
 
     /**
      * {@inheritDoc}
@@ -173,7 +184,7 @@ class SelectableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.styl
      *
      * @return A [String] describing the wrapped shape.
      *
-     * @see de.fhkiel.oop.model.BaseShape.toString
+     * @see BaseShape.toString
      */
     override fun toString(): String = inner.toString()
 }

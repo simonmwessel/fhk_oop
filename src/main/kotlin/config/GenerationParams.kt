@@ -15,7 +15,7 @@ import de.fhkiel.oop.model.ShapeType
  * @property safe If `true` (default), shapes are generated fully contained within the canvas bounds
  *   defined in [Config]. If `false`, legacy mode with potentially unrestricted
  *   coordinates is used.
- * @property selectable If `true`, the generated shapes will be wrapped in the [de.fhkiel.oop.model.select.SelectableShape] decorator,
+ * @property selectable If `true`, the generated shapes will be wrapped in the [de.fhkiel.oop.model.ManipulatableShape] decorator,
  *   allowing for selection and manipulation.
  * @property size The [DistributionConfig] used for determining the size parameters of the shapes
  *   (e.g., radius for [de.fhkiel.oop.shapes.Circle], side for [de.fhkiel.oop.shapes.Square], or width/height for [de.fhkiel.oop.shapes.Rectangle]).

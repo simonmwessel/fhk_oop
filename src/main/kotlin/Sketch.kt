@@ -8,7 +8,7 @@ import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.mapper.RelativeScaleMapper
 import de.fhkiel.oop.mapper.UniformScaleMapper
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.select.SelectableShape
+import de.fhkiel.oop.model.ManipulatableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
@@ -315,13 +315,13 @@ class Sketch() : PApplet() {
     override fun mousePressed() {
         // Hit detection
         val hit = shapes
-            .filterIsInstance<SelectableShape>()
+            .filterIsInstance<ManipulatableShape>()
             .asReversed()
             .firstOrNull { it.hitTestScreen(this.mapper, mouseX.toFloat(), mouseY.toFloat()) }
 
         // Handle selection toggle
         if (!keyPressed || keyCode != SHIFT)
-            shapes.filterIsInstance<SelectableShape>().forEach { it.isSelected = false }
+            shapes.filterIsInstance<ManipulatableShape>().forEach { it.isSelected = false }
 
         hit?.let { it.isSelected = !it.isSelected }
     }
