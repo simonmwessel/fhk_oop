@@ -43,7 +43,7 @@ import kotlin.Float
  * @version 2.7
  * @since   1.0
  */
-class Rectangle(
+open class Rectangle(
     originParam: Point = Point(),
     widthParam:  Float = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(),
     heightParam: Float = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(),
@@ -66,7 +66,7 @@ class Rectangle(
      *
      * @return the width.
      */
-    var width: Float
+    open var width: Float
         /** Returns the width of the rectangle. */
         get() = _width
         /**
@@ -98,7 +98,7 @@ class Rectangle(
      *
      * @return the height.
      */
-    var height: Float
+    open var height: Float
         /** Returns the height of the rectangle. */
         get() = _height
         /**
