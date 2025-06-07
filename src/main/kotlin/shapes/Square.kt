@@ -2,7 +2,7 @@ package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.utils.FloatExtensions.validateInRange
@@ -20,7 +20,7 @@ import kotlin.math.sqrt
  * @constructor Creates a [Square] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
- * @param originParam     top-left point or random if omitted
+ * @param originParam     top-left vector or random if omitted
  * @param sideLengthParam side length or random ∈ ([Float.MIN_VALUE]..[Config.MAX_SQUARE_SIDE]) if omitted
  * @param styleParam      Initial style (random colours & weight by default).
  *
@@ -28,13 +28,13 @@ import kotlin.math.sqrt
  * @see BaseShape
  * @see Rectangle
  * @see Style
- * @see Point
+ * @see Vector2D
  * @see Config
  *
  * @author Simon Wessel
  */
 class Square(
-    originParam:     Point = Point(),
+    originParam:     Vector2D = Vector2D(),
     sideLengthParam: Float = (Float.MIN_VALUE..Config.MAX_SQUARE_SIDE).random(),
     styleParam:      Style = Style()
 ) : Rectangle(
@@ -91,7 +91,7 @@ class Square(
          *
          * @return A new Square object with the specified area.
          */
-        fun fromArea(topLeft: Point, area: Float): Square =
+        fun fromArea(topLeft: Vector2D, area: Float): Square =
             Square(topLeft, sqrt(area.toDouble()).toFloat())
     }
 

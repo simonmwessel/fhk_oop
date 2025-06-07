@@ -2,7 +2,7 @@ package de.fhkiel.oop
 
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.factory.FormFactory
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
 import de.fhkiel.oop.shapes.Square
@@ -24,7 +24,7 @@ import processing.core.PApplet
 object Main {
 
     /**
-     * Application entry point.
+     * Application entry vector.
      *
      * @param args command-line arguments (ignored)
      *
@@ -40,20 +40,20 @@ object Main {
 
         // Circles
         println(Circle())
-        println(Circle(Point(0f, 0f), 5f))
-        println(Circle.fromArea(Point(0f, 0f), 50f))
+        println(Circle(Vector2D(0f, 0f), 5f))
+        println(Circle.fromArea(Vector2D(0f, 0f), 50f))
         println()
 
         // Rectangles
         println(Rectangle())
-        println(Rectangle(Point(0f, 0f), 5f, 10f))
-        println(Rectangle.fromArea(Point(0f, 0f), 50f, 5f))
+        println(Rectangle(Vector2D(0f, 0f), 5f, 10f))
+        println(Rectangle.fromArea(Vector2D(0f, 0f), 50f, 5f))
         println()
 
         // Squares
         println(Square())
-        println(Square(Point(0f, 0f), 5f))
-        println(Square.fromArea(Point(0f, 0f), 25f))
+        println(Square(Vector2D(0f, 0f), 5f))
+        println(Square.fromArea(Vector2D(0f, 0f), 25f))
         println()
 
         // FormFactory

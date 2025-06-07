@@ -1,6 +1,7 @@
 package de.fhkiel.oop.mapper
 
 import de.fhkiel.oop.model.BoundingBox
+import de.fhkiel.oop.model.Vector2D
 import processing.core.PApplet
 import kotlin.math.min
 
@@ -79,16 +80,14 @@ class RelativeScaleMapper(
      * screenX = worldX * sx
      * screenY = worldY * sy
      * ```
+     * @param vector The vector in world coordinates (world units).
      *
-     * @param worldX X‐coordinate in world units.
-     * @param worldY Y‐coordinate in world units.
-     * @return A [Pair] `(screenX, screenY)` in pixels.
+     * @return A new [Vector2D] in screen coordinates (pixels).
      *
      * @see screenToWorld
      */
-    override fun worldToScreen(worldX: Float, worldY: Float): Pair<Float, Float> {
-        return Pair(worldX * sx, worldY * sy)
-    }
+    override fun worldToScreen(vector: Vector2D): Vector2D =
+        Vector2D(vector.x * sx, vector.y * sy)
 
     /**
      * {@inheritDoc}
@@ -99,15 +98,14 @@ class RelativeScaleMapper(
      * worldY = screenY / sy
      * ```
      *
-     * @param screenX X‐coordinate in pixels.
-     * @param screenY Y‐coordinate in pixels.
-     * @return A [Pair] `(worldX, worldY)` in world units.
+     * @param vector The vector in screen coordinates (pixels).
+     *
+     * @return A new [Vector2D] in world coordinates (world units).
      *
      * @see worldToScreen
      */
-    override fun screenToWorld(screenX: Float, screenY: Float): Pair<Float, Float> {
-        return Pair(screenX / sx, screenY / sy)
-    }
+    override fun screenToWorld(vector: Vector2D): Vector2D =
+        Vector2D(vector.x / sx, vector.y / sy)
 
     /**
      * {@inheritDoc}

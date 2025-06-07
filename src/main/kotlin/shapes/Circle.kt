@@ -5,7 +5,7 @@ import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.BoundingBox
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
@@ -20,7 +20,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
- * A circle defined by a center point and a radius.
+ * A circle defined by a center vector and a radius.
  *
  * @property origin The center of the circle.
  * @property radius Radius length in units ∈ ([Float.MIN_VALUE]..[Config.MAX_CIRCLE_RADIUS]).
@@ -28,13 +28,13 @@ import kotlin.math.sqrt
  * @constructor Creates a [Circle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
- * @param originParam center point or random if omitted
+ * @param originParam center vector or random if omitted
  * @param radiusParam radius or random ∈ ([Float.MIN_VALUE]..[Config.MAX_CIRCLE_RADIUS]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
  * @see Shape
- * @see Point
+ * @see Vector2D
  * @see Config
  *
  * @author  Simon Wessel
@@ -42,7 +42,7 @@ import kotlin.math.sqrt
  * @since   1.0
  */
 class Circle(
-    originParam: Point = Point(),
+    originParam: Vector2D = Vector2D(),
     radiusParam: Float = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(),
     styleParam:  Style = Style(),
     strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.CIRCLE
@@ -105,7 +105,7 @@ class Circle(
          *
          * @return A new Circle object with the specified area.
          */
-        fun fromArea(center: Point, area: Float): Circle =
+        fun fromArea(center: Vector2D, area: Float): Circle =
             Circle(center, sqrt((area / Math.PI)).toFloat())
     }
 
@@ -123,11 +123,11 @@ class Circle(
      * centered at [candidateOrigin]. We then expand by half the stroke weight
      * on each side to include the border.
      *
-     * @param candidateOrigin The hypothetical center point.
+     * @param candidateOrigin The hypothetical center vector.
      * @return A [BoundingBox] including the stroke border.
      * @see BaseShape.boundingBoxAt
      */
-    override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
+    override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         BoundingBox(
             x      = candidateOrigin.x - radius - style.weight / 2f,
             y      = candidateOrigin.y - radius - style.weight / 2f,
@@ -136,16 +136,16 @@ class Circle(
         )
 
     /**
-     * Tests whether a point in screen coordinates hits the circle, including its stroke.
+     * Tests whether a vector in screen coordinates hits the circle, including its stroke.
      *
-     * @return `true` if the point hits the circle (fill or stroke), `false` otherwise.
+     * @return `true` if the vector hits the circle (fill or stroke), `false` otherwise.
      */
     override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
-        val (screenCenterX, screenCenterY) = mapper.worldToScreen(origin.x, origin.y)
+        val screenCenterVector = mapper.worldToScreen(origin)
         val screenRadius                   = mapper.worldScalarToScreen(radius)
         val screenHalfStroke               = mapper.worldScalarToScreen(style.weight / 2f)
 
-        val distSq        = (mx - screenCenterX).pow(2) + (my - screenCenterY).pow(2)
+        val distSq        = (mx - screenCenterVector.x).pow(2) + (my - screenCenterVector.y).pow(2)
         val outerRadiusSq = (screenRadius + screenHalfStroke).pow(2)
 
         return distSq <= outerRadiusSq
@@ -158,9 +158,9 @@ class Circle(
      * @param mapper The coordinate mapper to use for drawing.
      */
     override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
-        val (x, y) = mapper.worldToScreen(this@Circle.origin.x, this@Circle.origin.y)
+        val vector = mapper.worldToScreen(this@Circle.origin)
         val radius = mapper.worldScalarToScreen(this@Circle.radius)
-        ellipse(x, y, radius * 2, radius * 2)
+        ellipse(vector.x, vector.y, radius * 2, radius * 2)
     }
 
     /**

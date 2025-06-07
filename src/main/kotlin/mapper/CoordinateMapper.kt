@@ -1,6 +1,7 @@
 package de.fhkiel.oop.mapper
 
 import de.fhkiel.oop.model.BoundingBox
+import de.fhkiel.oop.model.Vector2D
 
 /**
  * Strategy interface that converts between **world** coordinates (model space)
@@ -9,8 +10,8 @@ import de.fhkiel.oop.model.BoundingBox
  * for lengths irrespective of axis).
  *
  * The four methods in this interface cover:
- *  1. `worldToScreen(worldX, worldY)`: Map a 2D point from world to screen.
- *  2. `screenToWorld(screenX, screenY)`: Map a 2D point from screen to world.
+ *  1. `worldToScreen(worldX, worldY)`: Map a 2D vector from world to screen.
+ *  2. `screenToWorld(screenX, screenY)`: Map a 2D vector from screen to world.
  *  3. `worldScalarToScreen(dist)`: Map a scalar distance (in world units) to pixels.
  *  4. `screenScalarToWorld(sizePx)`: Map a scalar distance (in pixels) back to world units.
  *
@@ -24,28 +25,28 @@ import de.fhkiel.oop.model.BoundingBox
  */
 sealed interface CoordinateMapper {
     /**
-     * Maps a point given in world‐space into screen‐space (pixels).
+     * Maps a vector given in world‐space into screen‐space (pixels).
      *
-     * @param worldX X‐coordinate in world units.
-     * @param worldY Y‐coordinate in world units.
-     * @return A [Pair] of floats `(screenX, screenY)` representing pixel coordinates.
+     * @param vector The vector in world coordinates (world units).
+     *
+     * @return A new [Vector2D] in screen coordinates (pixels).
      *
      * @see screenToWorld
      * @see worldScalarToScreen
      */
-    fun worldToScreen(worldX: Float, worldY: Float): Pair<Float, Float>
+    fun worldToScreen(vector: Vector2D): Vector2D
 
     /**
-     * Maps a point given in screen‐space (pixels) back into world‐space.
+     * Maps a vector given in screen‐space (pixels) back into world‐space.
      *
-     * @param screenX X‐coordinate in pixels.
-     * @param screenY Y‐coordinate in pixels.
-     * @return A [Pair] of floats `(worldX, worldY)` representing world coordinates.
+     * @param vector The vector in screen coordinates (pixels).
+     *
+     * @return A new [Vector2D] in world coordinates (world units).
      *
      * @see worldToScreen
      * @see screenScalarToWorld
      */
-    fun screenToWorld(screenX: Float, screenY: Float): Pair<Float, Float>
+    fun screenToWorld(vector: Vector2D): Vector2D
 
     /**
      * Maps a scalar distance (in world units) into screen‐space length (in pixels),

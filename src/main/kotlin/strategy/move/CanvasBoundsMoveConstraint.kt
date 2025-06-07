@@ -2,7 +2,7 @@ package de.fhkiel.oop.strategy.move
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 
 /**
  * A [MoveConstraintStrategy] that clamps a shape’s origin so that its
@@ -21,7 +21,7 @@ import de.fhkiel.oop.model.Point
  * @see Config.MAX_X, Config.MAX_Y
  */
 object CanvasBoundsMoveConstraint : MoveConstraintStrategy {
-    override fun clampOrigin(desiredOrigin: Point, shape: BaseShape): Point {
+    override fun clampOrigin(desiredOrigin: Vector2D, shape: BaseShape): Vector2D {
         val newBox = shape.boundingBoxAt(desiredOrigin)
 
         val dx = when {
@@ -35,6 +35,6 @@ object CanvasBoundsMoveConstraint : MoveConstraintStrategy {
             else                                    -> 0f
         }
 
-        return Point(desiredOrigin.x + dx, desiredOrigin.y + dy)
+        return Vector2D(desiredOrigin.x + dx, desiredOrigin.y + dy)
     }
 }

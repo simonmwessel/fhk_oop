@@ -12,7 +12,7 @@ import java.util.Locale
  * string output.
  *
  * All numeric ranges and padding values feed into:
- * - [de.fhkiel.oop.model.Point]
+ * - [de.fhkiel.oop.model.Vector2D]
  * - [de.fhkiel.oop.model.Shape]
  * - [de.fhkiel.oop.shapes.Circle], [de.fhkiel.oop.shapes.Rectangle], [de.fhkiel.oop.shapes.Square]
  * - [de.fhkiel.oop.utils.FloatExtensions] methods

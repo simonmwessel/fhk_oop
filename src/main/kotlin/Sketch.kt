@@ -9,7 +9,7 @@ import de.fhkiel.oop.mapper.RelativeScaleMapper
 import de.fhkiel.oop.mapper.UniformScaleMapper
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.ManipulatableShape
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
@@ -166,12 +166,12 @@ class Sketch() : PApplet() {
         private set(v) {
             _draggingShape = v
             if (v != null) {
-                _dragOffset = Point(mouseX.toFloat() - v.origin.x, mouseY.toFloat() - v.origin.y)
+                _dragOffset = Vector2D(mouseX.toFloat() - v.origin.x, mouseY.toFloat() - v.origin.y)
             }
         }
 
     /** Backing field for the current drag offset. */
-    private var _dragOffset: Point = Point(0f, 0f)
+    private var _dragOffset: Vector2D = Vector2D(0f, 0f)
 
     /**
      * The current drag offset, which is the difference between the mouse position
@@ -179,7 +179,7 @@ class Sketch() : PApplet() {
      *
      * This is used to maintain the relative position of the shape during dragging.
      */
-    var dragOffset: Point
+    var dragOffset: Vector2D
         /** Returns the current drag offset. */
         get() = _dragOffset
         /** Sets the drag offset. */
@@ -370,17 +370,17 @@ class Sketch() : PApplet() {
 
             if (ms.isSelected) {
                 draggingShape = ms
-                val (wx, wy) = mapper.screenToWorld(mouseX.toFloat(), mouseY.toFloat())
-                dragOffset = Point(wx - ms.inner.origin.x, wy - ms.inner.origin.y)
+                val worldMouseVector = mapper.screenToWorld(Vector2D(mouseX.toFloat(), mouseY.toFloat()))
+                dragOffset = Vector2D(worldMouseVector.x - ms.inner.origin.x, worldMouseVector.y - ms.inner.origin.y)
             } else draggingShape = null
         }
     }
 
     override fun mouseDragged() {
-        val (wx, wy) = mapper.screenToWorld(mouseX.toFloat(), mouseY.toFloat())
+        val worldMouseVector = mapper.screenToWorld(Vector2D(mouseX.toFloat(), mouseY.toFloat()))
         val ms = draggingShape ?: return
 
-        val desired = Point(wx - dragOffset.x, wy - dragOffset.y)
+        val desired = Vector2D(worldMouseVector.x - dragOffset.x, worldMouseVector.y - dragOffset.y)
 
         val clamped = ms.inner.strategies.moveConstraint
             .clampOrigin(desired, ms.inner)
@@ -394,6 +394,6 @@ class Sketch() : PApplet() {
 
     override fun mouseReleased() {
         draggingShape = null
-        dragOffset = Point(0f, 0f)
+        dragOffset = Vector2D(0f, 0f)
     }
 }

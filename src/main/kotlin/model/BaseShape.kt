@@ -10,7 +10,7 @@ import processing.core.PApplet
  *
  * It now stores **exactly two** mutable properties:
  *
- * * [origin] – geometric anchor point (semantics defined by subclasses)
+ * * [origin] – geometric anchor vector (semantics defined by subclasses)
  * * [style]  – visual appearance, grouped in a single [Style] value object
  *
  * There are **no** proxy getters such as `fillColor`.
@@ -19,28 +19,28 @@ import processing.core.PApplet
  * @constructor The primary constructor allows callers to override both origin
  *              and style; omitting either parameter falls back to defaults.
  *
- * @param originParam Initial origin of the shape (defaults to random point).
+ * @param originParam Initial origin of the shape (defaults to random vector).
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
- * @see Point
+ * @see Vector2D
  *
  * @author  Simon Wessel
  */
 abstract class BaseShape (
-    originParam: Point = Point(),
+    originParam: Vector2D = Vector2D(),
     styleParam:  Style = Style()
 ): Shape {
 
     /** Backing field for location */
-    private var _origin: Point = originParam
+    private var _origin: Vector2D = originParam
 
     /**
      * Geometric anchor of the shape (centre for circles, top-left for rectangles and squares).
      *
-     * @return the location point.
+     * @return the location vector.
      */
-    override var origin: Point
+    override var origin: Vector2D
         /** Returns the location of the shape. */
         get() = _origin
         /** Sets the location of the shape. */
@@ -88,10 +88,10 @@ abstract class BaseShape (
      * Returns a BoundingBox that represents the full occupied area
      * of this shape if its origin were [candidateOrigin].
      */
-    abstract override fun boundingBoxAt(candidateOrigin: Point): BoundingBox
+    abstract override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox
 
     /**
-     * Checks if a point in screen coordinates hits the shape, including its stroke.
+     * Checks if a vector in screen coordinates hits the shape, including its stroke.
      *
      * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
      */

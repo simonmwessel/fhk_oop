@@ -1,6 +1,6 @@
 package de.fhkiel.oop.strategy.handle
 
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 
 /**
@@ -13,7 +13,7 @@ import de.fhkiel.oop.model.BoundingBox
  *  3. Bottom‐Left
  *  4. Bottom‐Right
  *
- * These points are returned in **world coordinates**. The caller is responsible
+ * These vectors are returned in **world coordinates**. The caller is responsible
  * for mapping them into screen coordinates via a [de.fhkiel.oop.mapper.CoordinateMapper].
  *
  * @author Simon Wessel
@@ -25,7 +25,7 @@ object CornerHandleStrategy : HandleStrategy {
     /**
      * {@inheritDoc}
      *
-     * Returns a list of four [Point] instances:
+     * Returns a list of four [Vector2D] instances:
      *  - `(bbox.x,               bbox.y)`               -> top‐left
      *  - `(bbox.x + bbox.width,  bbox.y)`               -> top‐right
      *  - `(bbox.x,               bbox.y + bbox.height)` -> bottom‐left
@@ -33,13 +33,13 @@ object CornerHandleStrategy : HandleStrategy {
      *
      * @param bbox The axis‐aligned bounding box of a shape (world units).
      *
-     * @return A [List] of four [Point]s in the specified order (TL, TR, BL, BR).
+     * @return A [List] of four [Vector2D]s in the specified order (TL, TR, BL, BR).
      */
-    override fun handlePoints(bbox: BoundingBox): List<Point> =
+    override fun handleVectors(bbox: BoundingBox): List<Vector2D> =
         listOf(
-            Point(bbox.x, bbox.y),               // TL
-            Point(bbox.x + bbox.width, bbox.y),               // TR
-            Point(bbox.x, bbox.y + bbox.height), // BL
-            Point(bbox.x + bbox.width, bbox.y + bbox.height)  // BR
+            Vector2D(bbox.x, bbox.y),               // TL
+            Vector2D(bbox.x + bbox.width, bbox.y),               // TR
+            Vector2D(bbox.x, bbox.y + bbox.height), // BL
+            Vector2D(bbox.x + bbox.width, bbox.y + bbox.height)  // BR
         )
 }

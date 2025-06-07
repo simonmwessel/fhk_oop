@@ -1,7 +1,7 @@
 package de.fhkiel.oop.strategy.move
 
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 
 interface MoveConstraintStrategy {
     /**
@@ -13,5 +13,5 @@ interface MoveConstraintStrategy {
      * @param shape          The concrete shape to be moved.
      * @return               A clamped/adjusted origin for that shape.
      */
-    fun clampOrigin(desiredOrigin: Point, shape: BaseShape): Point
+    fun clampOrigin(desiredOrigin: Vector2D, shape: BaseShape): Vector2D
 }

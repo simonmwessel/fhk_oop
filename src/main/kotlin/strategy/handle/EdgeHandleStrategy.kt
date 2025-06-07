@@ -1,6 +1,6 @@
 package de.fhkiel.oop.strategy.handle
 
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 
 /**
@@ -11,7 +11,7 @@ import de.fhkiel.oop.model.BoundingBox
  *  3. West  (left edge midpoint)
  *  4. East  (right edge midpoint)
  *
- * The returned points are in **world coordinates**. The caller can then convert
+ * The returned vectors are in **world coordinates**. The caller can then convert
  * them to screen coordinates via a [de.fhkiel.oop.mapper.CoordinateMapper].
  *
  * @author Simon Wessel
@@ -25,23 +25,23 @@ object EdgeHandleStrategy : HandleStrategy {
      *
      * Let `cx = bbox.x + bbox.width / 2f` be the horizontal center,
      * and `cy = bbox.y + bbox.height / 2f` be the vertical center of `bbox`.
-     * Then returns the four midpoints in the order:
-     *  1. North `Point(cx, bbox.y)`
-     *  2. South `Point(cx, bbox.y + bbox.height)`
-     *  3. West  `Point(bbox.x, cy)`
-     *  4. East  `Point(bbox.x + bbox.width, cy)`
+     * Then returns the four vectors in the order:
+     *  1. North `Vector2D(cx, bbox.y)`
+     *  2. South `Vector2D(cx, bbox.y + bbox.height)`
+     *  3. West  `Vector2D(bbox.x, cy)`
+     *  4. East  `Vector2D(bbox.x + bbox.width, cy)`
      *
      * @param bbox The axis‐aligned bounding box of a shape (in world units).
-     * @return A [List] of four [Point]s (N, S, W, E).
+     * @return A [List] of four [Vector2D]s (N, S, W, E).
      */
-    override fun handlePoints(bbox: BoundingBox): List<Point> {
+    override fun handleVectors(bbox: BoundingBox): List<Vector2D> {
         val cx = bbox.x + bbox.width  / 2f
         val cy = bbox.y + bbox.height / 2f
         return listOf(
-            Point(cx, bbox.y),               // N
-            Point(cx, bbox.y + bbox.height), // S
-            Point(bbox.x, cy),               // W
-            Point(bbox.x + bbox.width, cy)   // E
+            Vector2D(cx, bbox.y),               // N
+            Vector2D(cx, bbox.y + bbox.height), // S
+            Vector2D(bbox.x, cy),               // W
+            Vector2D(bbox.x + bbox.width, cy)   // E
         )
     }
 }

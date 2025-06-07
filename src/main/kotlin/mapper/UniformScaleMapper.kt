@@ -1,6 +1,7 @@
 package de.fhkiel.oop.mapper
 
 import de.fhkiel.oop.model.BoundingBox
+import de.fhkiel.oop.model.Vector2D
 import processing.core.PApplet
 import kotlin.math.min
 
@@ -65,17 +66,22 @@ class UniformScaleMapper(
     /**
      * {@inheritDoc}
      *
-     * Maps world coordinates to screen coordinates while preserving aspect ratio
-     * and centering the content inside the window (letter‐boxing if needed).
+     * Inverts the uniform, centered mapping:
      *
-     * @param worldX X‐coordinate in world units.
-     * @param worldY Y‐coordinate in world units.
-     * @return A [Pair] `(screenX, screenY)` in pixels.
+     * ```
+     * screenX = worldX * f + offX
+     * screenY = worldY * f + offY
+     * ```
+     *
+     * @param vector The vector in world coordinates (world units).
+     *
+     * @return A new [Vector2D] in screen coordinates (pixels).
      *
      * @see screenToWorld
+     * @see Vector2D
      */
-    override fun worldToScreen(worldX: Float, worldY: Float): Pair<Float, Float> =
-        Pair(worldX * f + offX, worldY * f + offY)
+    override fun worldToScreen(vector: Vector2D): Vector2D =
+        Vector2D(vector.x * f + offX, vector.y * f + offY)
 
     /**
      * {@inheritDoc}
@@ -86,14 +92,15 @@ class UniformScaleMapper(
      * worldY = (screenY - offY) / f
      * ```
      *
-     * @param screenX X‐coordinate in pixels.
-     * @param screenY Y‐coordinate in pixels.
-     * @return A [Pair] `(worldX, worldY)` in world units.
+     * @param vector The vector in screen coordinates (pixels).
+     *
+     * @return A new [Vector2D] in world coordinates (world units).
      *
      * @see worldToScreen
+     * @see Vector2D
      */
-    override fun screenToWorld(screenX: Float, screenY: Float): Pair<Float, Float> =
-        Pair((screenX - offX) / f, (screenY - offY) / f)
+    override fun screenToWorld(vector: Vector2D): Vector2D =
+        Vector2D((vector.x - offX) / f, (vector.y - offY) / f)
 
     /**
      * {@inheritDoc}

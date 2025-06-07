@@ -77,8 +77,8 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
      * 2. If [isSelected] is `true`, computes:
      *     - The shape’s on‐screen bounding box via `inner.screenBoundingBox(mapper)`.
      *     - The shape’s world‐space bounding box via `inner.boundingBox()`.
-     *     - All handle‐points in world‐space via `inner.handleStrategy().handlePoints(...)`.
-     *     - Converts each handle point to a pixel offset by:
+     *     - All handle‐vector in world‐space via `inner.handleStrategy().handleVectors(...)`.
+     *     - Converts each handle vector to a pixel offset by:
      *         a. Computing `(dxWorld, dyWorld) = (pt.x - worldBox.x, pt.y - worldBox.y)`.
      *         b. Mapping `(dxWorld, dyWorld)` to `(dxScreen, dyScreen)` using
      *            `mapper.worldScalarToScreen(...)` (uniform scaling).
@@ -106,7 +106,7 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
         val worldBox  = inner.boundingBoxAt(inner.origin)
         val screenBox = mapper.worldBoundingBoxToScreen(worldBox)
 
-        val worldHandlePoints: List<Point> = inner.strategies.handleStrategy.handlePoints(worldBox)
+        val worldHandleVectors: List<Vector2D> = inner.strategies.handleStrategy.handleVectors(worldBox)
 
         g.pushStyle()
         g.noStroke()
@@ -114,7 +114,7 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
 
         val handleSidePx = mapper.worldScalarToScreen(10f)
 
-        for (worldPt in worldHandlePoints) {
+        for (worldPt in worldHandleVectors) {
             val dxWorld = worldPt.x - worldBox.x
             val dyWorld = worldPt.y - worldBox.y
 
@@ -142,7 +142,7 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
      * @return The wrapped shape’s bounding box at that origin.
      * @see BaseShape.boundingBoxAt
      */
-    override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
+    override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         inner.boundingBoxAt(candidateOrigin)
 
     /**
@@ -154,7 +154,7 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
      * @param mapper The [CoordinateMapper] for mapping hit‐test coordinates.
      * @param mx     Mouse X‐coordinate in pixels.
      * @param my     Mouse Y‐coordinate in pixels.
-     * @return `true` if the point hits the shape; `false` otherwise.
+     * @return `true` if the vector hits the shape; `false` otherwise.
      *
      * @see BaseShape.hitTestScreen
      */

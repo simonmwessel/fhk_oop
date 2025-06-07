@@ -4,7 +4,7 @@ import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.model.BaseShape
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.ManipulatableShape
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.ShapeType
@@ -133,7 +133,7 @@ class FormFactory {
      * Builds a [Circle] fully contained within the canvas, using specified distribution configurations.
      *
      * The size (radius) of the circle is determined by [sizeConfig].
-     * The origin (center point) of the circle is determined by [originConfig].
+     * The origin (center vector) of the circle is determined by [originConfig].
      *
      * @param sizeConfig The [DistributionConfig] for generating the circle's radius.
      *   It defines the [DistributionConfig.distribution] (e.g., [Distribution.NORMAL], [Distribution.UNIFORM])
@@ -153,14 +153,14 @@ class FormFactory {
         val r = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(sizeConfig)
         val x = (r..Config.MAX_X - r).random(originConfig)
         val y = (r..Config.MAX_Y - r).random(originConfig)
-        return Circle(Point(x, y), r)
+        return Circle(Vector2D(x, y), r)
     }
 
     /**
      * Builds a [Rectangle] fully contained within the canvas, using specified distribution configurations.
      *
      * The width and height of the rectangle are determined by [sizeConfig].
-     * The top-left origin point of the rectangle is determined by [originConfig].
+     * The top-left origin vector of the rectangle is determined by [originConfig].
      *
      * @param sizeConfig The [DistributionConfig] for generating the rectangle's width and height.
      *   It defines the [DistributionConfig.distribution] and its relevant parameters.
@@ -181,14 +181,14 @@ class FormFactory {
         val h = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(sizeConfig)
         val x = (Float.MIN_VALUE..Config.MAX_X - w).random(originConfig)
         val y = (Float.MIN_VALUE..Config.MAX_Y - h).random(originConfig)
-        return Rectangle(Point(x, y), w, h)
+        return Rectangle(Vector2D(x, y), w, h)
     }
 
     /**
      * Builds a [Square] fully contained within the canvas, using specified distribution configurations.
      *
      * The side length of the square is determined by [sizeConfig].
-     * The top-left origin point of the square is determined by [originConfig].
+     * The top-left origin vector of the square is determined by [originConfig].
      *
      * @param sizeConfig The [DistributionConfig] for generating the square's side length.
      *   It defines the [DistributionConfig.distribution] and its relevant parameters.
@@ -207,7 +207,7 @@ class FormFactory {
         val s = (Float.MIN_VALUE..Config.MAX_SQUARE_SIDE).random(sizeConfig)
         val x = (Float.MIN_VALUE..Config.MAX_X - s).random(originConfig)
         val y = (Float.MIN_VALUE..Config.MAX_Y - s).random(originConfig)
-        return Square(Point(x, y), s)
+        return Square(Vector2D(x, y), s)
     }
 
     /**

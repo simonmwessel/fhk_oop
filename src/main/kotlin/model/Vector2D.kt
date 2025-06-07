@@ -4,7 +4,7 @@ import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 
 /**
- * Represents a point in 2D space.
+ * Represents a two-dimensional vector in 2D space.
  *
  * Both coordinates default to random values within the canvas bounds
  * defined by [Config.MAX_X] and [Config.MAX_Y].
@@ -16,7 +16,7 @@ import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
  * @version 2.3
  * @since   1.0
  */
-data class Point(
+data class Vector2D(
     private var _x: Float = 0f,
     private var _y: Float = 0f
 ) {
@@ -25,9 +25,9 @@ data class Point(
      * @throws IllegalArgumentException if outside the allowed range.
      */
     var x: Float
-        /** Returns the X-coordinate of the point. */
+        /** Returns the X-coordinate of the vector. */
         get() = _x
-        /** Sets the X-coordinate of the point. */
+        /** Sets the X-coordinate of the vector. */
         set(value) {
             _x = value
         }
@@ -37,17 +37,17 @@ data class Point(
      * @throws IllegalArgumentException if outside the allowed range.
      */
     var y: Float
-        /** Returns the Y-coordinate of the point. */
+        /** Returns the Y-coordinate of the vector. */
         get() = _y
-        /** Sets the Y-coordinate of the point. */
+        /** Sets the Y-coordinate of the vector. */
         set(value) {
             _y = value
         }
 
     /**
-     * Returns a string representation of the point.
+     * Returns a string representation of the vector.
      *
-     * @return a string representation of the point in the format "{ X:  x.xx | Y:  y.yy }".
+     * @return a string representation of the vector in the format "{ X:  x.xx | Y:  y.yy }".
      */
     override fun toString(): String =
         Config.PREFIX +

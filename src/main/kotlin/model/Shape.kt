@@ -9,19 +9,19 @@ import processing.core.PApplet
  * 2‑D shape. Only the *direct* sub‑types of a sealed interface must live in the same
  * package.
  *
- * @property origin The geometric anchor point of the shape.
+ * @property origin The geometric anchor vector of the shape.
  * @property style  The visual appearance of the shape (fill/stroke colours & stroke weight).
  *
  * @see Style
- * @see Point
+ * @see Vector2D
  * @see BaseShape
  *
  * @author  Simon Wessel
  */
 sealed interface Shape {
 
-    /** Geometric anchor point – semantics depend on the concrete subtype. */
-    var origin: Point
+    /** Geometric anchor vector – semantics depend on the concrete subtype. */
+    var origin: Vector2D
 
     /** Visual appearance (fill/stroke colours & stroke weight). */
     var style: Style
@@ -47,7 +47,7 @@ sealed interface Shape {
      * @param candidateOrigin the hypothetical origin to test (in world coordinates)
      * @return a BoundingBox that covers the shape’s full extent at that origin
      */
-    fun boundingBoxAt(candidateOrigin: Point): BoundingBox
+    fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox
 
     /**
      * Checks if the given screen coordinates (mx, my) are within the shape.
@@ -59,7 +59,7 @@ sealed interface Shape {
      * @param mx The x-coordinate in screen space.
      * @param my The y-coordinate in screen space.
      *
-     * @return `true` if the point is within the shape, `false` otherwise.
+     * @return `true` if the vector is within the shape, `false` otherwise.
      */
     fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean
 }

@@ -5,7 +5,7 @@ import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.BoundingBox
-import de.fhkiel.oop.model.Point
+import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
@@ -28,20 +28,20 @@ import kotlin.Float
  * @constructor Creates a [Rectangle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
- * @param originParam top-left point or random if omitted
+ * @param originParam top-left vector or random if omitted
  * @param widthParam  width or random ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_WIDTH]) if omitted
  * @param heightParam height or random ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_HEIGHT]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
  * @see Shape
- * @see Point
+ * @see Vector2D
  * @see Config
  *
  * @author  Simon Wessel
  */
 open class Rectangle(
-    originParam: Point = Point(),
+    originParam: Vector2D = Vector2D(),
     widthParam:  Float = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(),
     heightParam: Float = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(),
     styleParam:  Style = Style(),
@@ -138,7 +138,7 @@ open class Rectangle(
          *
          * @return A new Rectangle object with the specified area and length.
          */
-        fun fromArea(topLeft: Point, area: Float, length: Float): Rectangle =
+        fun fromArea(topLeft: Vector2D, area: Float, length: Float): Rectangle =
             Rectangle(topLeft, area / length, length)
     }
 
@@ -159,7 +159,7 @@ open class Rectangle(
      * @return A [BoundingBox] including the stroke border.
      * @see BaseShape.boundingBoxAt
      */
-    override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
+    override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         BoundingBox(
             x      = candidateOrigin.x - style.weight / 2f,
             y      = candidateOrigin.y - style.weight / 2f,
@@ -168,7 +168,7 @@ open class Rectangle(
         )
 
     /**
-     * Checks if a point in screen coordinates hits the shape, including its stroke.
+     * Checks if a vector in screen coordinates hits the shape, including its stroke.
      *
      * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
      */
@@ -190,10 +190,10 @@ open class Rectangle(
      * @param mapper The coordinate mapper to use for drawing.
      */
     override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
-        val (x, y) = mapper.worldToScreen(this@Rectangle.origin.x, this@Rectangle.origin.y)
+        val vector = mapper.worldToScreen(this@Rectangle.origin)
         val width  = mapper.worldScalarToScreen(this@Rectangle.width)
         val height = mapper.worldScalarToScreen(this@Rectangle.height)
-        g.rect(x, y, width, height)
+        g.rect(vector.x, vector.y, width, height)
     }
 
     /**
