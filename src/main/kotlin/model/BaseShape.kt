@@ -26,8 +26,6 @@ import processing.core.PApplet
  * @see Point
  *
  * @author  Simon Wessel
- * @version 2.5
- * @since   1.5
  */
 abstract class BaseShape (
     originParam: Point = Point(),
@@ -93,46 +91,11 @@ abstract class BaseShape (
     abstract override fun boundingBoxAt(candidateOrigin: Point): BoundingBox
 
     /**
-     * Calculates the minimal axis-aligned bounding box that encloses the shape.
-     *
-     * @return The [BoundingBox] of the shape.
-     */
-    override fun boundingBox(): BoundingBox = boundingBoxAt(origin)
-
-    /**
-     * Computes the screen bounding box based on the resize mode and scaling factors.
-     *
-     * @return The adjusted [BoundingBox] for the shape.
-     */
-    override fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox {
-        val worldBox = boundingBox() // Get the shape's AABB in world coordinates
-
-        // Transform the origin (top-left) using position scaling
-        val (screenX, screenY) = mapper.worldToScreen(worldBox.x, worldBox.y)
-
-        // Transform the width and height using uniform scalar scaling
-        val screenWidth  = mapper.worldScalarToScreen(worldBox.width)
-        val screenHeight = mapper.worldScalarToScreen(worldBox.height)
-
-        return BoundingBox(screenX, screenY, screenWidth, screenHeight)
-    }
-
-    /**
      * Checks if a point in screen coordinates hits the shape, including its stroke.
      *
      * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
      */
-    override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
-        val b = this.screenBoundingBox(mapper) // Screen bounding box of the fill area
-        // Scale the stroke weight from world units to screen pixels
-        val screenHalfStroke = mapper.worldScalarToScreen(style.weight / 2f)
-
-        // Perform hit test including the stroke
-        return mx >= b.x - screenHalfStroke &&
-               mx <= b.x + b.width + screenHalfStroke &&
-               my >= b.y - screenHalfStroke &&
-               my <= b.y + b.height + screenHalfStroke
-    }
+    abstract override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean
 
     /**
      * Executes the provided drawing block on the given PApplet instance with the current style applied.
@@ -184,9 +147,9 @@ abstract class BaseShape (
      */
     protected fun buildString(columns: List<Triple<String, String, Pair<Int,Int>>>): String =
         Config.PREFIX +
-                columns.joinToString(Config.SEPARATOR) { (k,v,p) ->
-                    if (k.isEmpty()) "".padEnd(p.first)
-                    else              k.padEnd(p.first) + Config.SEPARATOR_KEY_VALUE + v.padStart(p.second)
-                } +
-                Config.SUFFIX
+        columns.joinToString(Config.SEPARATOR) { (k,v,p) ->
+            if (k.isEmpty()) "".padEnd(p.first)
+            else              k.padEnd(p.first) + Config.SEPARATOR_KEY_VALUE + v.padStart(p.second)
+        } +
+        Config.SUFFIX
 }

@@ -2,8 +2,6 @@ package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
-import de.fhkiel.oop.utils.FloatExtensions.validateInRange
-import kotlin.math.hypot
 
 /**
  * Represents a point in 2D space.
@@ -22,12 +20,6 @@ data class Point(
     private var _x: Float = 0f,
     private var _y: Float = 0f
 ) {
-
-    init {
-        _x = _x.validateInRange("x", 0f, Config.MAX_X)
-        _y = _y.validateInRange("y", 0f, Config.MAX_Y)
-    }
-
     /**
      * X-coordinate, always within (0f..[de.fhkiel.oop.config.Config.MAX_X]).
      * @throws IllegalArgumentException if outside the allowed range.
@@ -37,7 +29,7 @@ data class Point(
         get() = _x
         /** Sets the X-coordinate of the point. */
         set(value) {
-            _x = value.validateInRange("x", 0f, Config.MAX_X)
+            _x = value
         }
 
     /**
@@ -49,7 +41,7 @@ data class Point(
         get() = _y
         /** Sets the Y-coordinate of the point. */
         set(value) {
-            _y = value.validateInRange("y", 0f, Config.MAX_Y)
+            _y = value
         }
 
     /**
@@ -67,13 +59,3 @@ data class Point(
         } +
         Config.SUFFIX
 }
-
-/**
- * Computes the Euclidean distance between this point and [other].
- *
- * @param other the point to measure distance to
- *
- * @return the Euclidean distance as a Float
- */
-fun Point.distanceTo(other: Point): Float =
-    hypot(other.x - this.x, other.y - this.y)

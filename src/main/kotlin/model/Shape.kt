@@ -17,8 +17,6 @@ import processing.core.PApplet
  * @see BaseShape
  *
  * @author  Simon Wessel
- * @version 1.0
- * @since   2.5
  */
 sealed interface Shape {
 
@@ -50,25 +48,6 @@ sealed interface Shape {
      * @return a BoundingBox that covers the shape’s full extent at that origin
      */
     fun boundingBoxAt(candidateOrigin: Point): BoundingBox
-
-    /**
-     * Computes the minimal axis‐aligned bounding box enclosing this shape.
-     *
-     * @return the bounding box
-     */
-    fun boundingBox(): BoundingBox
-
-    /**
-     * Computes the screen bounding box of this shape using the provided [CoordinateMapper].
-     *
-     * This method converts the world coordinates of the shape to screen coordinates
-     * and returns the bounding box in screen space.
-     *
-     * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
-     *
-     * @return The bounding box in screen space.
-     */
-    fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox
 
     /**
      * Checks if the given screen coordinates (mx, my) are within the shape.

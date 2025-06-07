@@ -39,8 +39,6 @@ import kotlin.Float
  * @see Config
  *
  * @author  Simon Wessel
- * @version 2.7
- * @since   1.0
  */
 open class Rectangle(
     originParam: Point = Point(),
@@ -152,17 +150,38 @@ open class Rectangle(
     override fun getArea(): Float = width * height
 
     /**
-     * Calculates the minimal axis-aligned bounding box that encloses the rectangle.
+     * {@inheritDoc}
      *
-     * @return The bounding box as [BoundingBox].
+     * For a rectangle, the geometric box is `(width × height)` at [candidateOrigin].
+     * We then expand by half the stroke weight on each side to include the border.
+     *
+     * @param candidateOrigin The top-left corner candidate.
+     * @return A [BoundingBox] including the stroke border.
+     * @see BaseShape.boundingBoxAt
      */
     override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
         BoundingBox(
-            x = candidateOrigin.x,
-            y = candidateOrigin.y,
-            width  = width,
-            height = height
+            x      = candidateOrigin.x - style.weight / 2f,
+            y      = candidateOrigin.y - style.weight / 2f,
+            width  = width + style.weight,
+            height = height + style.weight
         )
+
+    /**
+     * Checks if a point in screen coordinates hits the shape, including its stroke.
+     *
+     * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
+     */
+    override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
+        val worldBox = mapper.worldBoundingBoxToScreen(boundingBoxAt(origin))
+
+        val screenHalfStroke = mapper.worldScalarToScreen(style.weight / 2f)
+
+        return mx >= worldBox.x - screenHalfStroke &&
+                mx <= worldBox.x + worldBox.width + screenHalfStroke &&
+                my >= worldBox.y - screenHalfStroke &&
+                my <= worldBox.y + worldBox.height + screenHalfStroke
+    }
 
     /**
      * Draws the circle on the given [PApplet] using the provided [CoordinateMapper].

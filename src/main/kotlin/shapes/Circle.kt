@@ -119,32 +119,21 @@ class Circle(
     /**
      * {@inheritDoc}
      *
-     * For a circle, the bounding box is a square whose sides are equal to the circle's diameter (2 * [radius]),
-     * centered at the circle's [origin].
+     * For a circle, the geometric box is a square of side `2 * radius`
+     * centered at [candidateOrigin]. We then expand by half the stroke weight
+     * on each side to include the border.
+     *
+     * @param candidateOrigin The hypothetical center point.
+     * @return A [BoundingBox] including the stroke border.
+     * @see BaseShape.boundingBoxAt
      */
     override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
         BoundingBox(
-            x = candidateOrigin.x - radius,
-            y = candidateOrigin.y - radius,
-            width  = radius * 2,
-            height = radius * 2
+            x      = candidateOrigin.x - radius - style.weight / 2f,
+            y      = candidateOrigin.y - radius - style.weight / 2f,
+            width  = radius * 2 + style.weight,
+            height = radius * 2 + style.weight
         )
-
-    /**
-     * Computes the screen bounding box of the circle based on the resize mode.
-     *
-     * @return The bounding box of the circle in screen coordinates.
-     */
-    override fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox {
-        val (screenCenterX, screenCenterY) = mapper.worldToScreen(origin.x, origin.y)
-        val screenRadius = mapper.worldScalarToScreen(radius)
-        return BoundingBox(
-            screenCenterX - screenRadius,
-            screenCenterY - screenRadius,
-            screenRadius * 2,
-            screenRadius * 2
-        )
-    }
 
     /**
      * Tests whether a point in screen coordinates hits the circle, including its stroke.
@@ -153,10 +142,10 @@ class Circle(
      */
     override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
         val (screenCenterX, screenCenterY) = mapper.worldToScreen(origin.x, origin.y)
-        val screenRadius = mapper.worldScalarToScreen(radius)
-        val screenHalfStroke = mapper.worldScalarToScreen(style.weight / 2f)
+        val screenRadius                   = mapper.worldScalarToScreen(radius)
+        val screenHalfStroke               = mapper.worldScalarToScreen(style.weight / 2f)
 
-        val distSq = (mx - screenCenterX).pow(2) + (my - screenCenterY).pow(2)
+        val distSq        = (mx - screenCenterX).pow(2) + (my - screenCenterY).pow(2)
         val outerRadiusSq = (screenRadius + screenHalfStroke).pow(2)
 
         return distSq <= outerRadiusSq
