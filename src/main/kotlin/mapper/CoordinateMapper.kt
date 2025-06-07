@@ -1,5 +1,7 @@
 package de.fhkiel.oop.mapper
 
+import de.fhkiel.oop.model.BoundingBox
+
 /**
  * Strategy interface that converts between **world** coordinates (model space)
  * and **screen** coordinates (pixel space). Implementations must guarantee
@@ -65,4 +67,28 @@ sealed interface CoordinateMapper {
      * @see worldScalarToScreen
      */
     fun screenScalarToWorld(sizePx: Float): Float
+
+    /**
+     * Converts a world‐space [BoundingBox] into screen coordinates.
+     *
+     * @param boundingBox The bounding box in world coordinates.
+     *
+     * @return A new [BoundingBox] in screen coordinates.
+     *
+     * @see screenBoundingBoxToWorld
+     * @see BoundingBox
+     */
+    fun worldBoundingBoxToScreen(boundingBox: BoundingBox): BoundingBox
+
+    /**
+     * Converts a screen‐space [BoundingBox] back into world coordinates.
+     *
+     * @param boundingBox The bounding box in screen coordinates.
+     *
+     * @return A new [BoundingBox] in world coordinates.
+     *
+     * @see worldBoundingBoxToScreen
+     * @see BoundingBox
+     */
+    fun screenBoundingBoxToWorld(boundingBox: BoundingBox): BoundingBox
 }
