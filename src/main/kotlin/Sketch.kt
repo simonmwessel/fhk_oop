@@ -9,6 +9,7 @@ import de.fhkiel.oop.mapper.RelativeScaleMapper
 import de.fhkiel.oop.mapper.UniformScaleMapper
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.ManipulatableShape
+import de.fhkiel.oop.model.Point
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.shapes.Rectangle
@@ -151,6 +152,41 @@ class Sketch() : PApplet() {
             _mapper = v
         }
 
+    /** Backing field for the currently dragged shape. */
+    private var _draggingShape: ManipulatableShape? = null
+
+    /**
+     * The currently dragged shape, if any.
+     * This is used to track which shape is being moved during mouse drag events.
+     */
+    var draggingShape: ManipulatableShape?
+        /** Returns the currently dragged shape, if any. */
+        get() = _draggingShape
+        /** Sets the currently dragged shape. */
+        private set(v) {
+            _draggingShape = v
+            if (v != null) {
+                _dragOffset = Point(mouseX.toFloat() - v.origin.x, mouseY.toFloat() - v.origin.y)
+            }
+        }
+
+    /** Backing field for the current drag offset. */
+    private var _dragOffset: Point = Point(0f, 0f)
+
+    /**
+     * The current drag offset, which is the difference between the mouse position
+     * and the origin of the currently dragged shape.
+     *
+     * This is used to maintain the relative position of the shape during dragging.
+     */
+    var dragOffset: Point
+        /** Returns the current drag offset. */
+        get() = _dragOffset
+        /** Sets the drag offset. */
+        private set(v) {
+            _dragOffset = v
+        }
+
     /**
      * Configures the initial size of the sketch window based on [baseW] and [baseH].
      */
@@ -200,7 +236,13 @@ class Sketch() : PApplet() {
             Config.SKETCH_BACKGROUND_COLOR.blue
         )
 
-        shapes.forEach { it.draw(this, mapper) }
+        shapes.forEach {
+            try {
+                it.draw(this, mapper)
+            } catch (e: Exception) {
+                println("Error drawing shape: ${it.javaClass.simpleName} at ${it.origin} with style ${it.style}:\n${e.message}")
+            }
+        }
 
         drawHint()
     }
@@ -323,6 +365,35 @@ class Sketch() : PApplet() {
         if (!keyPressed || keyCode != SHIFT)
             shapes.filterIsInstance<ManipulatableShape>().forEach { it.isSelected = false }
 
-        hit?.let { it.isSelected = !it.isSelected }
+        hit?.let { ms ->
+            ms.isSelected = !ms.isSelected
+
+            if (ms.isSelected) {
+                draggingShape = ms
+                val (wx, wy) = mapper.screenToWorld(mouseX.toFloat(), mouseY.toFloat())
+                dragOffset = Point(wx - ms.inner.origin.x, wy - ms.inner.origin.y)
+            } else draggingShape = null
+        }
+    }
+
+    override fun mouseDragged() {
+        val (wx, wy) = mapper.screenToWorld(mouseX.toFloat(), mouseY.toFloat())
+        val ms = draggingShape ?: return
+
+        val desired = Point(wx - dragOffset.x, wy - dragOffset.y)
+
+        val clamped = ms.inner.strategies.moveConstraint
+            .clampOrigin(desired, ms.inner)
+
+        try {
+            ms.inner.origin = clamped
+        } catch (e: Exception) {
+            println("Error dragging shape: ${ms.inner.javaClass.simpleName} at $desired:\n${e.message}")
+        }
+    }
+
+    override fun mouseReleased() {
+        draggingShape = null
+        dragOffset = Point(0f, 0f)
     }
 }

@@ -94,8 +94,7 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
      * @param mapper The [CoordinateMapper] for converting world→screen.
      *
      * @see BaseShape.draw
-     * @see BaseShape.boundingBox
-     * @see BaseShape.screenBoundingBox
+     * @see BaseShape.boundingBoxAt
      * @see HandleStrategy
      * @see CoordinateMapper.worldScalarToScreen
      */
@@ -104,9 +103,9 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
 
         if (!isSelected) return
 
-        val screenBox = inner.screenBoundingBox(mapper)
+        val worldBox  = inner.boundingBoxAt(inner.origin)
+        val screenBox = mapper.worldBoundingBoxToScreen(worldBox)
 
-        val worldBox = inner.boundingBox()
         val worldHandlePoints: List<Point> = inner.strategies.handleStrategy.handlePoints(worldBox)
 
         g.pushStyle()
@@ -136,29 +135,15 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
     /**
      * {@inheritDoc}
      *
-     * Delegates to inner.boundingBox, returning the minimal axis‐aligned
-     * bounding box that encloses the wrapped shape, expressed in world‐space.
+     * Delegates to the wrapped shape’s [boundingBoxAt], passing along
+     * the candidate origin.
      *
-     * @return A [BoundingBox] (world‐space).
-     *
-     * @see BaseShape.boundingBox
+     * @param candidateOrigin The hypothetical origin in world coordinates.
+     * @return The wrapped shape’s bounding box at that origin.
+     * @see BaseShape.boundingBoxAt
      */
     override fun boundingBoxAt(candidateOrigin: Point): BoundingBox =
-        inner.boundingBox()
-
-    /**
-     * {@inheritDoc}
-     *
-     * Delegates to inner.screenBoundingBox, returning a [BoundingBox]
-     * in **screen pixels**, computed via [mapper].
-     *
-     * @param mapper The [CoordinateMapper] to convert world↔screen.
-     * @return A [BoundingBox] (screen‐space).
-     *
-     * @see BaseShape.screenBoundingBox
-     */
-    override fun screenBoundingBox(mapper: CoordinateMapper): BoundingBox =
-        inner.screenBoundingBox(mapper)
+        inner.boundingBoxAt(candidateOrigin)
 
     /**
      * {@inheritDoc}

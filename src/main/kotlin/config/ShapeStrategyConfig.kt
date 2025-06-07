@@ -3,6 +3,8 @@ package de.fhkiel.oop.config
 import de.fhkiel.oop.strategy.handle.CornerHandleStrategy
 import de.fhkiel.oop.strategy.handle.EdgeHandleStrategy
 import de.fhkiel.oop.strategy.handle.HandleStrategy
+import de.fhkiel.oop.strategy.move.CanvasBoundsMoveConstraint
+import de.fhkiel.oop.strategy.move.MoveConstraintStrategy
 
 /**
  * Configuration for shape strategies, defining how selection handles are placed
@@ -13,7 +15,8 @@ import de.fhkiel.oop.strategy.handle.HandleStrategy
  * @author Simon Wessel
  */
 data class ShapeStrategyConfig(
-    val handleStrategy: HandleStrategy
+    val handleStrategy: HandleStrategy,
+    val moveConstraint: MoveConstraintStrategy
 ) {
     companion object {
 
@@ -22,7 +25,8 @@ data class ShapeStrategyConfig(
          * Uses [EdgeHandleStrategy] to place handles at edge midpoints.
          */
         val CIRCLE = ShapeStrategyConfig(
-            handleStrategy = EdgeHandleStrategy
+            handleStrategy = EdgeHandleStrategy,
+            moveConstraint = CanvasBoundsMoveConstraint
         )
 
         /**
@@ -30,7 +34,8 @@ data class ShapeStrategyConfig(
          * Uses [CornerHandleStrategy] to place handles at the corners.
          */
         val RECTANGLE = ShapeStrategyConfig(
-            handleStrategy = CornerHandleStrategy
+            handleStrategy = CornerHandleStrategy,
+            moveConstraint = CanvasBoundsMoveConstraint
         )
     }
 }
