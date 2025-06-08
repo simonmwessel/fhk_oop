@@ -152,8 +152,47 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
     override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         inner.boundingBoxAt(candidateOrigin)
 
+    /**
+     * {@inheritDoc}
+     *
+     * Maps the wrapped shape’s bounding box to screen coordinates,
+     * including the stroke width as a margin.
+     *
+     * @param mapper The coordinate mapper to use for conversion.
+     * @param candidateOrigin The top-left corner candidate in world coordinates.
+     *
+     * @return A [BoundingBox] in screen coordinates that includes the stroke margin.
+     */
     override fun screenBoundingBoxAt(mapper: CoordinateMapper, candidateOrigin: Vector2D): BoundingBox =
         inner.screenBoundingBoxAt(mapper, candidateOrigin)
+
+    /**
+     * Returns a list of handle‐sized bounding boxes in screen‐pixels,
+     * useful for hit‐testing drag‐on‐handle events.
+     *
+     * @param mapper CoordinateMapper from world→screen.
+     * @return each box centered on a handle at size 10f world‐units.
+     */
+    fun getHandleScreenBounds(mapper: CoordinateMapper): List<BoundingBox> {
+        val worldBox      = inner.boundingBoxAt(inner.origin)
+        val handleSizeWU  = 10f
+        val sidePx        = mapper.worldScalarToScreen(handleSizeWU)
+        val originScreen  = mapper.worldToScreen(inner.origin)
+
+        return inner.strategies.handleStrategy
+            .handleVectorOrigins(worldBox)
+            .map { worldHandle ->
+                val dxPx = mapper.worldScalarToScreen(worldHandle.x - inner.origin.x)
+                val dyPx = mapper.worldScalarToScreen(worldHandle.y - inner.origin.y)
+                val cx   = originScreen.x + dxPx
+                val cy   = originScreen.y + dyPx
+                BoundingBox(
+                    origin = Vector2D(cx - sidePx/2f, cy - sidePx/2f),
+                    width  = sidePx,
+                    height = sidePx
+                )
+            }
+    }
 
     /**
      * {@inheritDoc}

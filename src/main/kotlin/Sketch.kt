@@ -8,6 +8,7 @@ import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.mapper.RelativeScaleMapper
 import de.fhkiel.oop.mapper.UniformScaleMapper
 import de.fhkiel.oop.model.BaseShape
+import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.ManipulatableShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
@@ -185,6 +186,24 @@ class Sketch() : PApplet() {
         private set(v) {
             _dragOffset = v
         }
+
+    private var _resizingShape: ManipulatableShape? = null
+    private var _resizingHandleIndex: Int = -1
+    private var _initialBoundingBox: BoundingBox? = null
+    private var _initialOriginForResize: Vector2D? = null
+
+    private var resizingShape: ManipulatableShape?
+        get() = _resizingShape
+        set(v) { _resizingShape = v }
+    private var resizingHandleIndex: Int
+        get() = _resizingHandleIndex
+        set(v) { _resizingHandleIndex = v }
+    private var initialBoundingBox: BoundingBox?
+        get() = _initialBoundingBox
+        set(v) { _initialBoundingBox = v }
+    private var initialOriginForResize: Vector2D?
+        get() = _initialOriginForResize
+        set(v) { _initialOriginForResize = v }
 
     /**
      * Configures the initial size of the sketch window based on [baseW] and [baseH].
@@ -435,11 +454,35 @@ class Sketch() : PApplet() {
             println("No shapes to select.")
             return
         }
+
+        val mx = mouseX.toFloat()
+        val my = mouseY.toFloat()
+        // 1) Check if clicked on any handle of a selected shape
+        run {
+            shapes!!
+                .filterIsInstance<ManipulatableShape>()
+                .filter { it.isSelected }
+                .forEach { ms ->
+                    ms.getHandleScreenBounds(mapper).forEachIndexed { idx, box ->
+                        if (mx in box.origin.x..(box.origin.x + box.width) &&
+                            my in box.origin.y..(box.origin.y + box.height)) {
+                            // Begin resize
+                            resizingShape          = ms
+                            resizingHandleIndex    = idx
+                            initialBoundingBox     = ms.inner.boundingBoxAt(ms.inner.origin)
+                            initialOriginForResize = ms.inner.origin.copy()
+                            return@run
+                        }
+                    }
+                }
+        }
+        if (resizingShape != null) return
+
         // Hit detection
         val hit = shapes!!
             .filterIsInstance<ManipulatableShape>()
             .asReversed()
-            .firstOrNull { it.hitTestScreen(this.mapper, mouseX.toFloat(), mouseY.toFloat()) }
+            .firstOrNull { it.hitTestScreen(this.mapper, mx, my) }
 
         // Handle selection toggle
         if (!keyPressed || keyCode != SHIFT)
@@ -450,7 +493,7 @@ class Sketch() : PApplet() {
 
             if (ms.isSelected) {
                 draggingShape = ms
-                val worldMouseVector = mapper.screenToWorld(Vector2D(mouseX.toFloat(), mouseY.toFloat()))
+                val worldMouseVector = mapper.screenToWorld(Vector2D(mx, my))
                 dragOffset = Vector2D(worldMouseVector.x - ms.inner.origin.x, worldMouseVector.y - ms.inner.origin.y)
             } else draggingShape = null
         }
@@ -458,6 +501,19 @@ class Sketch() : PApplet() {
 
     override fun mouseDragged() {
         val worldMouseVector = mapper.screenToWorld(Vector2D(mouseX.toFloat(), mouseY.toFloat()))
+
+        if (resizingShape != null) {
+            val ms = resizingShape!!
+            ms.inner.strategies.resizeStrategy.resize(
+                ms.inner,
+                resizingHandleIndex,
+                initialBoundingBox!!,
+                initialOriginForResize!!,
+                worldMouseVector
+            )
+            return
+        }
+
         val ms = draggingShape ?: return
 
         val desired = Vector2D(worldMouseVector.x - dragOffset.x, worldMouseVector.y - dragOffset.y)
@@ -473,7 +529,13 @@ class Sketch() : PApplet() {
     }
 
     override fun mouseReleased() {
-        draggingShape = null
-        dragOffset = Vector2D(0f, 0f)
+        draggingShape         = null
+        dragOffset            = Vector2D(0f, 0f)
+
+        // Clear resize state
+        resizingShape         = null
+        resizingHandleIndex   = -1
+        initialBoundingBox    = null
+        initialOriginForResize= null
     }
 }
