@@ -40,20 +40,20 @@ object Main {
 
         // Circles
         println(Circle())
-        println(Circle(Vector2D(0f, 0f), 5f))
-        println(Circle.fromArea(Vector2D(0f, 0f), 50f))
+        println(Circle(Vector2D(0f, 0f), 10f))
+        println(Circle.fromArea(Vector2D(0f, 0f), 400f))
         println()
 
         // Rectangles
         println(Rectangle())
-        println(Rectangle(Vector2D(0f, 0f), 5f, 10f))
-        println(Rectangle.fromArea(Vector2D(0f, 0f), 50f, 5f))
+        println(Rectangle(Vector2D(0f, 0f), 10f, 15f))
+        println(Rectangle.fromArea(Vector2D(0f, 0f), 400f, 10f))
         println()
 
         // Squares
         println(Square())
-        println(Square(Vector2D(0f, 0f), 5f))
-        println(Square.fromArea(Vector2D(0f, 0f), 25f))
+        println(Square(Vector2D(0f, 0f), 10f))
+        println(Square.fromArea(Vector2D(0f, 0f), 400f))
         println()
 
         // FormFactory

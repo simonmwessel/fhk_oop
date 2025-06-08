@@ -64,19 +64,31 @@ object Config {
     var DEBUG:                   Boolean = true
 
     /** Maximum X value for random coordinate generation. */
-    const val MAX_X:             Float = 1000f
+    const val MAX_X:             Float = 1800f
 
     /** Maximum Y value for random coordinate generation. */
-    const val MAX_Y:             Float = 1000f
+    const val MAX_Y:             Float = 1200f
+
+    /** Minimum circle radius value for random generation. */
+    const val MIN_CIRCLE_RADIUS: Float = 10f
 
     /** Maximum circle radius value for random generation. */
     val MAX_CIRCLE_RADIUS:       Float = minOf(MAX_X, MAX_Y) / 2
 
+    /** Minimum rectangle width value for random generation. */
+    const val MIN_RECT_WIDTH:    Float = 10f
+
     /** Maximum rectangle width value for random generation. */
     const val MAX_RECT_WIDTH:    Float = MAX_X
 
+    /** Minimum rectangle height value for random generation. */
+    const val MIN_RECT_HEIGHT:   Float = 10f
+
     /** Maximum rectangle width value for random generation. */
     const val MAX_RECT_HEIGHT:   Float = MAX_Y
+
+    /** Minimum square side length value for random generation. */
+    const val MIN_SQUARE_SIDE:   Float = 10f
 
     /** Maximum square side length value for random generation. */
     val MAX_SQUARE_SIDE:         Float = minOf(MAX_X, MAX_Y)

@@ -22,15 +22,15 @@ import kotlin.Float
  * A rectangle defined by its top-left corner, width and height.
  *
  * @property origin The top-left corner of the rectangle.
- * @property width  Width in units ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_WIDTH]).
- * @property height Height in units ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_HEIGHT]).
+ * @property width  Width in units ∈ ([Config.MIN_RECT_WIDTH]..[Config.MAX_RECT_WIDTH]).
+ * @property height Height in units ∈ ([Config.MIN_RECT_HEIGHT]..[Config.MAX_RECT_HEIGHT]).
  *
  * @constructor Creates a [Rectangle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam top-left vector or random if omitted
- * @param widthParam  width or random ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_WIDTH]) if omitted
- * @param heightParam height or random ∈ ([Float.MIN_VALUE]..[Config.MAX_RECT_HEIGHT]) if omitted
+ * @param widthParam  width or random ∈ ([Config.MIN_RECT_WIDTH]..[Config.MAX_RECT_WIDTH]) if omitted
+ * @param heightParam height or random ∈ ([Config.MIN_RECT_HEIGHT]..[Config.MAX_RECT_HEIGHT]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
@@ -42,8 +42,8 @@ import kotlin.Float
  */
 open class Rectangle(
     originParam: Vector2D = Vector2D(),
-    widthParam:  Float = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(),
-    heightParam: Float = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(),
+    widthParam:  Float = (Config.MIN_RECT_WIDTH..Config.MAX_RECT_WIDTH).random(),
+    heightParam: Float = (Config.MIN_RECT_WIDTH..Config.MAX_RECT_HEIGHT).random(),
     styleParam:  Style = Style(),
     strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.RECTANGLE
 ) : BaseShape(originParam, styleParam) {
@@ -55,7 +55,7 @@ open class Rectangle(
      */
     private var _width: Float = widthParam.validateInRange(
         "width",
-        Float.MIN_VALUE,
+        Config.MIN_RECT_WIDTH,
         Config.MAX_RECT_WIDTH
     )
 
@@ -75,7 +75,7 @@ open class Rectangle(
         set(v) {
             _width = v.validateInRange(
                 "width",
-                Float.MIN_VALUE,
+                Config.MIN_RECT_WIDTH,
                 Config.MAX_RECT_WIDTH
             )
         }
@@ -87,7 +87,7 @@ open class Rectangle(
      */
     private var _height: Float = heightParam.validateInRange(
         "height",
-        Float.MIN_VALUE,
+        Config.MIN_RECT_HEIGHT,
         Config.MAX_RECT_HEIGHT
     )
 
@@ -107,7 +107,7 @@ open class Rectangle(
         set(v) {
             _height = v.validateInRange(
                 "height",
-                Float.MIN_VALUE,
+                Config.MIN_RECT_HEIGHT,
                 Config.MAX_RECT_HEIGHT
             )
         }

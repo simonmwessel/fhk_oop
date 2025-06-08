@@ -23,13 +23,13 @@ import kotlin.math.sqrt
  * A circle defined by a center vector and a radius.
  *
  * @property origin The center of the circle.
- * @property radius Radius length in units ∈ ([Float.MIN_VALUE]..[Config.MAX_CIRCLE_RADIUS]).
+ * @property radius Radius length in units ∈ ([Config.MIN_CIRCLE_RADIUS]..[Config.MAX_CIRCLE_RADIUS]).
  *
  * @constructor Creates a [Circle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam center vector or random if omitted
- * @param radiusParam radius or random ∈ ([Float.MIN_VALUE]..[Config.MAX_CIRCLE_RADIUS]) if omitted
+ * @param radiusParam radius or random ∈ ([Config.MIN_CIRCLE_RADIUS]..[Config.MAX_CIRCLE_RADIUS]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
@@ -43,7 +43,7 @@ import kotlin.math.sqrt
  */
 class Circle(
     originParam: Vector2D = Vector2D(),
-    radiusParam: Float = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(),
+    radiusParam: Float = (Config.MIN_CIRCLE_RADIUS..Config.MAX_CIRCLE_RADIUS).random(),
     styleParam:  Style = Style(),
     strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.CIRCLE
 )  : BaseShape(originParam, styleParam) {
@@ -55,7 +55,7 @@ class Circle(
      */
     private var _radius: Float = radiusParam.validateInRange(
         "radius",
-        Float.MIN_VALUE,
+        Config.MIN_CIRCLE_RADIUS,
         Config.MAX_CIRCLE_RADIUS
     )
 
@@ -75,7 +75,7 @@ class Circle(
         set(v) {
             _radius = v.validateInRange(
                 "radius",
-                Float.MIN_VALUE,
+                Config.MIN_CIRCLE_RADIUS,
                 Config.MAX_CIRCLE_RADIUS
             )
         }

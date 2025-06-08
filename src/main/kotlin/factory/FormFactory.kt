@@ -150,7 +150,7 @@ class FormFactory {
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): Circle {
-        val r = (Float.MIN_VALUE..Config.MAX_CIRCLE_RADIUS).random(sizeConfig)
+        val r = (Config.MIN_CIRCLE_RADIUS..Config.MAX_CIRCLE_RADIUS).random(sizeConfig)
         val x = (r..Config.MAX_X - r).random(originConfig)
         val y = (r..Config.MAX_Y - r).random(originConfig)
         return Circle(Vector2D(x, y), r)
@@ -177,8 +177,8 @@ class FormFactory {
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): Rectangle {
-        val w = (Float.MIN_VALUE..Config.MAX_RECT_WIDTH).random(sizeConfig)
-        val h = (Float.MIN_VALUE..Config.MAX_RECT_HEIGHT).random(sizeConfig)
+        val w = (Config.MIN_RECT_WIDTH..Config.MAX_RECT_WIDTH).random(sizeConfig)
+        val h = (Config.MIN_RECT_HEIGHT..Config.MAX_RECT_HEIGHT).random(sizeConfig)
         val x = (Float.MIN_VALUE..Config.MAX_X - w).random(originConfig)
         val y = (Float.MIN_VALUE..Config.MAX_Y - h).random(originConfig)
         return Rectangle(Vector2D(x, y), w, h)
@@ -204,7 +204,7 @@ class FormFactory {
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): Square {
-        val s = (Float.MIN_VALUE..Config.MAX_SQUARE_SIDE).random(sizeConfig)
+        val s = (Config.MIN_SQUARE_SIDE..Config.MAX_SQUARE_SIDE).random(sizeConfig)
         val x = (Float.MIN_VALUE..Config.MAX_X - s).random(originConfig)
         val y = (Float.MIN_VALUE..Config.MAX_Y - s).random(originConfig)
         return Square(Vector2D(x, y), s)

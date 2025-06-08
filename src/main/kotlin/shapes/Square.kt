@@ -1,6 +1,7 @@
 package de.fhkiel.oop.shapes
 
 import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
@@ -14,15 +15,16 @@ import kotlin.math.sqrt
  * A square defined by its top-left corner and side length.
  *
  * @property origin The top-left corner of the square.
- * @property width  Width in units ∈ ([Float.MIN_VALUE]..[Config.MAX_SQUARE_SIDE]).
- * @property height Height in units ∈ ([Float.MIN_VALUE]..[Config.MAX_SQUARE_SIDE]).
+ * @property width  Width in units ∈ ([Config.MIN_SQUARE_SIDE]..[Config.MAX_SQUARE_SIDE]).
+ * @property height Height in units ∈ ([Config.MIN_SQUARE_SIDE]..[Config.MAX_SQUARE_SIDE]).
  *
  * @constructor Creates a [Square] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam     top-left vector or random if omitted
- * @param sideLengthParam side length or random ∈ ([Float.MIN_VALUE]..[Config.MAX_SQUARE_SIDE]) if omitted
+ * @param sideLengthParam side length or random ∈ ([Config.MIN_SQUARE_SIDE]..[Config.MAX_SQUARE_SIDE]) if omitted
  * @param styleParam      Initial style (random colours & weight by default).
+ * @param strategiesParam Shape strategies configuration for the square.
  *
  * @see Shape
  * @see BaseShape
@@ -35,13 +37,15 @@ import kotlin.math.sqrt
  */
 class Square(
     originParam:     Vector2D = Vector2D(),
-    sideLengthParam: Float = (Float.MIN_VALUE..Config.MAX_SQUARE_SIDE).random(),
-    styleParam:      Style = Style()
+    sideLengthParam: Float = (Config.MIN_SQUARE_SIDE..Config.MAX_SQUARE_SIDE).random(),
+    styleParam:      Style = Style(),
+    strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.SQUARE
 ) : Rectangle(
     originParam,
-    sideLengthParam.validateInRange("sideLength", Float.MIN_VALUE, Config.MAX_SQUARE_SIDE),
-    sideLengthParam.validateInRange("sideLength", Float.MIN_VALUE, Config.MAX_SQUARE_SIDE),
-    styleParam
+    sideLengthParam.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE),
+    sideLengthParam.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE),
+    styleParam,
+    strategiesParam
 ) {
 
     /**
@@ -58,7 +62,7 @@ class Square(
          * @throws IllegalArgumentException if the value is outside the allowed range.
          */
         set(v) {
-            val valid = v.validateInRange("sideLength", Float.MIN_VALUE, Config.MAX_SQUARE_SIDE)
+            val valid = v.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE)
             super.width  = valid
             super.height = valid
         }
@@ -77,7 +81,7 @@ class Square(
          * @throws IllegalArgumentException if the value is outside the allowed range.
          */
         set(v) {
-            val valid = v.validateInRange("sideLength", Float.MIN_VALUE, Config.MAX_SQUARE_SIDE)
+            val valid = v.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE)
             super.width  = valid
             super.height = valid
         }
