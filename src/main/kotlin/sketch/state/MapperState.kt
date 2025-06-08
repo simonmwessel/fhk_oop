@@ -1,5 +1,6 @@
 package de.fhkiel.oop.sketch.state
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.mapper.RelativeScaleMapper
 import de.fhkiel.oop.mapper.UniformScaleMapper
@@ -21,13 +22,14 @@ import processing.core.PApplet
  * @author Simon Wessel
  */
 class MapperState(
+    config: AppConfig,
     private val sketch: PApplet,
     baseWidth: Float,
     baseHeight: Float,
     baseMin: Float
 ) {
     private var _mapper: CoordinateMapper =
-        RelativeScaleMapper(sketch, baseWidth, baseHeight, baseMin)
+        RelativeScaleMapper(config, sketch, baseWidth, baseHeight, baseMin)
 
     /**
      * Returns the current coordinate mapper.

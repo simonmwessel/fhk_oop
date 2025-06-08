@@ -1,5 +1,6 @@
 package de.fhkiel.oop.strategy.handle
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 
@@ -29,5 +30,5 @@ fun interface HandleStrategy {
      *
      * @see BoundingBox
      */
-    fun handleVectorOrigins(bbox: BoundingBox): List<Vector2D>
+    fun handleVectorOrigins(config: AppConfig, bbox: BoundingBox): List<Vector2D>
 }

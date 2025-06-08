@@ -1,6 +1,7 @@
 package de.fhkiel.oop.strategy.resize
 
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
@@ -23,6 +24,7 @@ fun interface ResizeStrategy {
      * @param worldMouse         Current mouse position in world coordinates.
      */
     fun resize(
+        config: AppConfig,
         shape: BaseShape,
         handleIndex: Int,
         initialBoundingBox: BoundingBox,

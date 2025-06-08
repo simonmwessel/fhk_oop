@@ -1,5 +1,6 @@
 package de.fhkiel.oop.mapper
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.model.Vector2D
 import processing.core.PApplet
 import kotlin.math.min
@@ -34,6 +35,7 @@ import kotlin.math.min
  * @see UniformScaleMapper
  */
 class RelativeScaleMapper(
+    private val config: AppConfig,
     private val applet: PApplet,
     private val worldW: Float,
     private val worldH: Float,
@@ -86,7 +88,7 @@ class RelativeScaleMapper(
      * @see screenToWorld
      */
     override fun worldToScreen(vector: Vector2D): Vector2D =
-        Vector2D(vector.x * sx, vector.y * sy)
+        Vector2D(config, vector.x * sx, vector.y * sy)
 
     /**
      * {@inheritDoc}
@@ -104,7 +106,7 @@ class RelativeScaleMapper(
      * @see worldToScreen
      */
     override fun screenToWorld(vector: Vector2D): Vector2D =
-        Vector2D(vector.x / sx, vector.y / sy)
+        Vector2D(config, vector.x / sx, vector.y / sy)
 
     /**
      * {@inheritDoc}

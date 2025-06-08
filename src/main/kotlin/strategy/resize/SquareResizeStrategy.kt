@@ -1,10 +1,10 @@
 package de.fhkiel.oop.strategy.resize
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.shapes.Square
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
-import de.fhkiel.oop.config.Config
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -19,6 +19,7 @@ import kotlin.math.max
  */
 object SquareResizeStrategy : ResizeStrategy {
     override fun resize(
+        config: AppConfig,
         shape: BaseShape,
         handleIndex: Int,
         initialBoundingBox: BoundingBox,
@@ -49,7 +50,7 @@ object SquareResizeStrategy : ResizeStrategy {
         val rawSide = max(abs(dx), abs(dy))
 
         // Clamp side to configured min/max
-        val newSide = rawSide.coerceIn(Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE)
+        val newSide = rawSide.coerceIn(config.minSquareSide, config.maxSquareSide)
 
         // Compute new top-left origin
         val newOriginX = if (anchorX <= origX) anchorX else anchorX - newSide
@@ -60,8 +61,8 @@ object SquareResizeStrategy : ResizeStrategy {
         square.height = newSide
 
         // Apply constraints
-        square.origin = shape.strategies.constraints?.fold(Vector2D(newOriginX, newOriginY)) { accOrigin, strategy ->
+        square.origin = shape.strategies.constraints?.fold(Vector2D(config, newOriginX, newOriginY)) { accOrigin, strategy ->
             strategy.clampOrigin(accOrigin, square)
-        } ?: Vector2D(newOriginX, newOriginY)
+        } ?: Vector2D(config, newOriginX, newOriginY)
     }
 }

@@ -1,6 +1,7 @@
 package de.fhkiel.oop.factory
 
-import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.AppConfig
+import de.fhkiel.oop.config.DefaultConfig
 import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.config.GenerationParams
 import de.fhkiel.oop.model.BaseShape
@@ -22,7 +23,7 @@ import kotlin.random.Random
  * Shapes are generated based on [GenerationParams] and specific [DistributionConfig] settings.
  *
  * #### **Bounds Handling** (via [GenerationParams.safe])
- * - `safe = true` (default): Shapes are fully contained within the [Config] canvas.
+ * - `safe = true` (default): Shapes are fully contained within the [de.fhkiel.oop.config.AppConfig] canvas.
  * - `safe = false`: Legacy mode with unrestricted coordinates (shapes might be partially or fully outside canvas).
  *
  * #### **Probability Distributions** (via [GenerationParams.size], [GenerationParams.origin] or direct `sizeConfig`/`originConfig` parameters)
@@ -109,12 +110,14 @@ class FormFactory {
      * @see produceLegacy
      */
     fun produce(
+        config: AppConfig = DefaultConfig,
         generationParams: GenerationParams,
         sizeConfig:       DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig:     DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): List<BaseShape> {
         val raw: List<BaseShape> =
             if (generationParams.safe) produceInBounds(
+                config       = config,
                 count        = generationParams.count,
                 shapeType    = generationParams.shapeType,
                 sizeConfig   = sizeConfig,
@@ -144,16 +147,16 @@ class FormFactory {
      *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
      * @return A [Circle] instance with generated parameters.
      * @see DistributionConfig
-     * @see Config.MAX_CIRCLE_RADIUS
      */
     fun circle(
+        config:       AppConfig          = DefaultConfig,
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): Circle {
-        val r = (Config.MIN_CIRCLE_RADIUS..Config.MAX_CIRCLE_RADIUS).random(sizeConfig)
-        val x = (r..Config.MAX_X - r).random(originConfig)
-        val y = (r..Config.MAX_Y - r).random(originConfig)
-        return Circle(Vector2D(x, y), r)
+        val r = (config.minCircleRadius..config.maxCircleRadius).random(sizeConfig)
+        val x = (r..config.maxX - r).random(originConfig)
+        val y = (r..config.maxY - r).random(originConfig)
+        return Circle(config, Vector2D(config, x, y), r)
     }
 
     /**
@@ -170,18 +173,17 @@ class FormFactory {
      *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
      * @return A [Rectangle] instance with generated parameters.
      * @see DistributionConfig
-     * @see Config.MAX_RECT_WIDTH
-     * @see Config.MAX_RECT_HEIGHT
      */
     fun rectangle(
+        config:       AppConfig          = DefaultConfig,
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): Rectangle {
-        val w = (Config.MIN_RECT_WIDTH..Config.MAX_RECT_WIDTH).random(sizeConfig)
-        val h = (Config.MIN_RECT_HEIGHT..Config.MAX_RECT_HEIGHT).random(sizeConfig)
-        val x = (Float.MIN_VALUE..Config.MAX_X - w).random(originConfig)
-        val y = (Float.MIN_VALUE..Config.MAX_Y - h).random(originConfig)
-        return Rectangle(Vector2D(x, y), w, h)
+        val w = (config.minRectWidth..config.maxRectWidth).random(sizeConfig)
+        val h = (config.minRectHeight..config.maxRectHeight).random(sizeConfig)
+        val x = (Float.MIN_VALUE..config.maxX - w).random(originConfig)
+        val y = (Float.MIN_VALUE..config.maxY - h).random(originConfig)
+        return Rectangle(config, Vector2D(config, x, y), w, h)
     }
 
     /**
@@ -198,16 +200,16 @@ class FormFactory {
      *   Defaults to [DistributionConfig.DEFAULT_ORIGIN].
      * @return A [Square] instance with generated parameters.
      * @see DistributionConfig
-     * @see Config.MAX_SQUARE_SIDE
      */
     fun square(
+        config:       AppConfig          = DefaultConfig,
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
         originConfig: DistributionConfig = DistributionConfig.DEFAULT_ORIGIN
     ): Square {
-        val s = (Config.MIN_SQUARE_SIDE..Config.MAX_SQUARE_SIDE).random(sizeConfig)
-        val x = (Float.MIN_VALUE..Config.MAX_X - s).random(originConfig)
-        val y = (Float.MIN_VALUE..Config.MAX_Y - s).random(originConfig)
-        return Square(Vector2D(x, y), s)
+        val s = (config.minSquareSide..config.maxSquareSide).random(sizeConfig)
+        val x = (Float.MIN_VALUE..config.maxX - s).random(originConfig)
+        val y = (Float.MIN_VALUE..config.maxY - s).random(originConfig)
+        return Square(config, Vector2D(config, x, y), s)
     }
 
     /**
@@ -224,6 +226,7 @@ class FormFactory {
      * @see DistributionConfig
      */
     private fun produceInBounds(
+        config:       AppConfig = DefaultConfig,
         count:        Int,
         shapeType:    ShapeType? = null,
         sizeConfig:   DistributionConfig = DistributionConfig.DEFAULT_SIZE,
@@ -231,20 +234,20 @@ class FormFactory {
     ): List<BaseShape> {
         val actualShapeProducer: () -> BaseShape = when (shapeType) {
             ShapeType.CIRCLE -> {
-                { circle(sizeConfig, originConfig) }
+                { circle(config, sizeConfig, originConfig) }
             }
             ShapeType.RECTANGLE -> {
-                { rectangle(sizeConfig, originConfig) }
+                { rectangle(config, sizeConfig, originConfig) }
             }
             ShapeType.SQUARE -> {
-                { square(sizeConfig, originConfig) }
+                { square(config, sizeConfig, originConfig) }
             }
             else -> { // Random shape if type is null or unknown
                 {
                     when (Random.nextDouble()) {
-                        in 0.0..0.33  -> circle(sizeConfig, originConfig)
-                        in 0.33..0.66 -> rectangle(sizeConfig, originConfig)
-                        else          -> square(sizeConfig, originConfig)
+                        in 0.0..0.33  -> circle(config, sizeConfig, originConfig)
+                        in 0.33..0.66 -> rectangle(config, sizeConfig, originConfig)
+                        else          -> square(config, sizeConfig, originConfig)
                     }
                 }
             }

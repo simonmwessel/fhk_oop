@@ -29,7 +29,7 @@ import processing.core.PApplet
  *
  * @author Simon Wessel
  */
-class InteractiveShape(val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
+class InteractiveShape(val inner: BaseShape) : BaseShape(inner.config, inner.origin, inner.style) {
 
     /**
      * The strategy used to determine where handles should be placed.
@@ -126,7 +126,7 @@ class InteractiveShape(val inner: BaseShape) : BaseShape(inner.origin, inner.sty
         g.noStroke()
         g.fill(0f)
 
-        for (handleOrigin in inner.strategies.handleStrategy.handleVectorOrigins(worldBox)) {
+        for (handleOrigin in inner.strategies.handleStrategy.handleVectorOrigins(config, worldBox)) {
             // Compute the delta from the shape’s origin to the handle in world‐space.
             val dxWorld = handleOrigin.x - shapeOrigin.x
             val dyWorld = handleOrigin.y - shapeOrigin.y
@@ -196,14 +196,14 @@ class InteractiveShape(val inner: BaseShape) : BaseShape(inner.origin, inner.sty
         val originScreen  = mapper.worldToScreen(inner.origin)
 
         return inner.strategies.handleStrategy
-            .handleVectorOrigins(worldBox)
+            .handleVectorOrigins(config, worldBox)
             .map { worldHandle ->
                 val dxPx = mapper.worldScalarToScreen(worldHandle.x - inner.origin.x)
                 val dyPx = mapper.worldScalarToScreen(worldHandle.y - inner.origin.y)
                 val cx   = originScreen.x + dxPx
                 val cy   = originScreen.y + dyPx
                 BoundingBox(
-                    origin = Vector2D(cx - sidePx/2f, cy - sidePx/2f),
+                    origin = Vector2D(inner.config, cx - sidePx/2f, cy - sidePx/2f),
                     width  = sidePx,
                     height = sidePx
                 )

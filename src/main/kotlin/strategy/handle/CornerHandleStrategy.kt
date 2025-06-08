@@ -1,5 +1,6 @@
 package de.fhkiel.oop.strategy.handle
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 
@@ -35,11 +36,11 @@ object CornerHandleStrategy : HandleStrategy {
      *
      * @return A [List] of four [Vector2D]s in the specified order (TL, TR, BL, BR).
      */
-    override fun handleVectorOrigins(bbox: BoundingBox): List<Vector2D> =
+    override fun handleVectorOrigins(config: AppConfig, bbox: BoundingBox): List<Vector2D> =
         listOf(
-            Vector2D(bbox.origin.x, bbox.origin.y),                            // TL
-            Vector2D(bbox.origin.x + bbox.width, bbox.origin.y),               // TR
-            Vector2D(bbox.origin.x, bbox.origin.y + bbox.height),              // BL
-            Vector2D(bbox.origin.x + bbox.width, bbox.origin.y + bbox.height)  // BR
+            Vector2D(config, bbox.origin.x, bbox.origin.y),                            // TL
+            Vector2D(config, bbox.origin.x + bbox.width, bbox.origin.y),               // TR
+            Vector2D(config, bbox.origin.x, bbox.origin.y + bbox.height),              // BL
+            Vector2D(config, bbox.origin.x + bbox.width, bbox.origin.y + bbox.height)  // BR
         )
 }

@@ -1,12 +1,12 @@
 package de.fhkiel.oop.shapes
 
-import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.AppConfig
+import de.fhkiel.oop.config.DefaultConfig
 import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.model.Style
-import de.fhkiel.oop.utils.FloatExtensions.validateInRange
 import de.fhkiel.oop.utils.RandomUtils.random
 import kotlin.Float
 import kotlin.math.sqrt
@@ -15,14 +15,14 @@ import kotlin.math.sqrt
  * A square defined by its top-left corner and side length.
  *
  * @property origin The top-left corner of the square.
- * @property width  Width in units ∈ ([Config.MIN_SQUARE_SIDE]..[Config.MAX_SQUARE_SIDE]).
- * @property height Height in units ∈ ([Config.MIN_SQUARE_SIDE]..[Config.MAX_SQUARE_SIDE]).
+ * @property width  Width in units ∈ ([de.fhkiel.oop.config.DefaultConfig.minSquareSide]..[de.fhkiel.oop.config.DefaultConfig.maxSquareSide]).
+ * @property height Height in units ∈ ([de.fhkiel.oop.config.DefaultConfig.minSquareSide]..[de.fhkiel.oop.config.DefaultConfig.maxSquareSide]).
  *
  * @constructor Creates a [Square] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam     top-left vector or random if omitted
- * @param sideLengthParam side length or random ∈ ([Config.MIN_SQUARE_SIDE]..[Config.MAX_SQUARE_SIDE]) if omitted
+ * @param sideLengthParam side length or random ∈ ([de.fhkiel.oop.config.DefaultConfig.minSquareSide]..[de.fhkiel.oop.config.DefaultConfig.maxSquareSide]) if omitted
  * @param styleParam      Initial style (random colours & weight by default).
  * @param strategiesParam Shape strategies configuration for the square.
  *
@@ -31,19 +31,22 @@ import kotlin.math.sqrt
  * @see Rectangle
  * @see Style
  * @see Vector2D
- * @see Config
+ * @see AppConfig
+ * @see DefaultConfig
  *
  * @author Simon Wessel
  */
 class Square(
-    originParam:     Vector2D = Vector2D(),
-    sideLengthParam: Float = (Config.MIN_SQUARE_SIDE..Config.MAX_SQUARE_SIDE).random(),
-    styleParam:      Style = Style(),
-    strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.SQUARE
+    config: AppConfig = DefaultConfig,
+    originParam:        Vector2D = Vector2D(),
+    sideLengthParam:    Float = (config.minSquareSide..config.maxSquareSide).random(),
+    styleParam:         Style = Style(),
+    strategiesParam:    ShapeStrategyConfig = ShapeStrategyConfig.SQUARE
 ) : Rectangle(
+    config,
     originParam,
-    sideLengthParam.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE),
-    sideLengthParam.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE),
+    sideLengthParam,
+    sideLengthParam,
     styleParam,
     strategiesParam
 ) {
@@ -62,9 +65,8 @@ class Square(
          * @throws IllegalArgumentException if the value is outside the allowed range.
          */
         set(v) {
-            val valid = v.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE)
-            super.width  = valid
-            super.height = valid
+            super.width  = v
+            super.height = v
         }
 
     /**
@@ -81,9 +83,8 @@ class Square(
          * @throws IllegalArgumentException if the value is outside the allowed range.
          */
         set(v) {
-            val valid = v.validateInRange("sideLength", Config.MIN_SQUARE_SIDE, Config.MAX_SQUARE_SIDE)
-            super.width  = valid
-            super.height = valid
+            super.width  = v
+            super.height = v
         }
 
     companion object {
@@ -95,8 +96,8 @@ class Square(
          *
          * @return A new Square object with the specified area.
          */
-        fun fromArea(topLeft: Vector2D, area: Float): Square =
-            Square(topLeft, sqrt(area.toDouble()).toFloat())
+        fun fromArea(topLeft: Vector2D, area: Float, config: AppConfig = DefaultConfig): Square =
+            Square(config, topLeft, sqrt(area.toDouble()).toFloat())
     }
 
     /**

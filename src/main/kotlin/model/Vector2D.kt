@@ -1,13 +1,14 @@
 package de.fhkiel.oop.model
 
-import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.AppConfig
+import de.fhkiel.oop.config.DefaultConfig
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 
 /**
  * Represents a two-dimensional vector in 2D space.
  *
  * Both coordinates default to random values within the canvas bounds
- * defined by [Config.MAX_X] and [Config.MAX_Y].
+ * defined by [de.fhkiel.oop.config.DefaultConfig.maxX] and [de.fhkiel.oop.config.DefaultConfig.maxY].
  *
  * @property _x backing field for the X-coordinate
  * @property _y backing field for the Y-coordinate
@@ -17,11 +18,12 @@ import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
  * @since   1.0
  */
 data class Vector2D(
+    private val _config: AppConfig = DefaultConfig,
     private var _x: Float = 0f,
     private var _y: Float = 0f
 ) {
     /**
-     * X-coordinate, always within (0f..[de.fhkiel.oop.config.Config.MAX_X]).
+     * X-coordinate, always within (0f..[de.fhkiel.oop.config.DefaultConfig.maxX]).
      * @throws IllegalArgumentException if outside the allowed range.
      */
     var x: Float
@@ -33,7 +35,7 @@ data class Vector2D(
         }
 
     /**
-     * Y-coordinate, always within (0f..[de.fhkiel.oop.config.Config.MAX_Y]).
+     * Y-coordinate, always within (0f..[de.fhkiel.oop.config.DefaultConfig.maxY]).
      * @throws IllegalArgumentException if outside the allowed range.
      */
     var y: Float
@@ -50,12 +52,12 @@ data class Vector2D(
      * @return a string representation of the vector in the format "{ X:  x.xx | Y:  y.yy }".
      */
     override fun toString(): String =
-        Config.PREFIX +
+        _config.prefix +
         listOf(
             "X" to x.formatCoordinateValue(),
             "Y" to y.formatCoordinateValue()
-        ).joinToString(Config.SEPARATOR) { (k, v) ->
-            k + Config.SEPARATOR_KEY_VALUE + v
+        ).joinToString(_config.separator) { (k, v) ->
+            k + _config.separatorKeyValue + v
         } +
-        Config.SUFFIX
+        _config.suffix
 }

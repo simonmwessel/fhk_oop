@@ -1,5 +1,6 @@
 package de.fhkiel.oop.model
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.config.DistributionConfig
 import de.fhkiel.oop.factory.FormFactory
 
@@ -10,8 +11,6 @@ import de.fhkiel.oop.factory.FormFactory
  * to the corresponding method in [FormFactory] (e.g., [FormFactory.circle]).
  *
  * @author  Simon Wessel
- * @version 1.1
- * @since   2.7
  *
  * @see FormFactory
  * @see FormFactory.circle
@@ -27,11 +26,12 @@ enum class ShapeType {
      */
     CIRCLE {
         override fun produce(
+            config:       AppConfig,
             factory:      FormFactory,
             sizeConfig:   DistributionConfig,
             originConfig: DistributionConfig
         ): BaseShape =
-            factory.circle(sizeConfig, originConfig)
+            factory.circle(config, sizeConfig, originConfig)
     },
 
     /**
@@ -40,11 +40,12 @@ enum class ShapeType {
      */
     RECTANGLE {
         override fun produce(
+            config:       AppConfig,
             factory:      FormFactory,
             sizeConfig:   DistributionConfig,
             originConfig: DistributionConfig
         ): BaseShape =
-            factory.rectangle(sizeConfig, originConfig)
+            factory.rectangle(config, sizeConfig, originConfig)
     },
 
     /**
@@ -53,11 +54,12 @@ enum class ShapeType {
      */
     SQUARE {
         override fun produce(
+            config:       AppConfig,
             factory:      FormFactory,
             sizeConfig:   DistributionConfig,
             originConfig: DistributionConfig
         ): BaseShape =
-            factory.square(sizeConfig, originConfig)
+            factory.square(config, sizeConfig, originConfig)
     };
 
     /**
@@ -72,6 +74,7 @@ enum class ShapeType {
      * @return The created [BaseShape] instance.
      */
     abstract fun produce(
+        config:       AppConfig,
         factory:      FormFactory,
         sizeConfig:   DistributionConfig,
         originConfig: DistributionConfig

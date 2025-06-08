@@ -1,6 +1,7 @@
 package de.fhkiel.oop.model
 
-import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.AppConfig
+import de.fhkiel.oop.config.DefaultConfig
 import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import processing.core.PApplet
@@ -28,6 +29,7 @@ import processing.core.PApplet
  * @author  Simon Wessel
  */
 abstract class BaseShape (
+    open val config: AppConfig = DefaultConfig,
     originParam: Vector2D = Vector2D(),
     styleParam:  Style = Style()
 ): Shape {
@@ -77,13 +79,13 @@ abstract class BaseShape (
     /**
      * Draws the shape on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * If [Config.DEBUG] is enabled, it also draws the origin and bounding box
+     * If [de.fhkiel.oop.config.DefaultConfig.debug] is enabled, it also draws the origin and bounding box
      *
      * @param g      The PApplet to draw on.
      * @param mapper The coordinate mapper to use for drawing.
      */
     override fun draw(g: PApplet, mapper: CoordinateMapper) {
-        if (Config.DEBUG) {
+        if (config.debug) {
             drawOrigin(g, mapper)
             drawBoundingBox(g, mapper)
             drawBoundingBoxOrigin(g, mapper)
@@ -210,10 +212,10 @@ abstract class BaseShape (
      * @return A single String containing PREFIX + all padded & separated columns + SUFFIX.
      */
     protected fun buildString(columns: List<Triple<String, String, Pair<Int,Int>>>): String =
-        Config.PREFIX +
-        columns.joinToString(Config.SEPARATOR) { (k,v,p) ->
+        config.prefix +
+        columns.joinToString(config.separator) { (k,v,p) ->
             if (k.isEmpty()) "".padEnd(p.first)
-            else              k.padEnd(p.first) + Config.SEPARATOR_KEY_VALUE + v.padStart(p.second)
+            else              k.padEnd(p.first) + config.separatorKeyValue + v.padStart(p.second)
         } +
-        Config.SUFFIX
+        config.suffix
 }

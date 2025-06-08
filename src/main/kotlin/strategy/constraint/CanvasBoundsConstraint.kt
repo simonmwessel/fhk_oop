@@ -1,6 +1,5 @@
 package de.fhkiel.oop.strategy.constraint
 
-import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 
@@ -13,12 +12,13 @@ import de.fhkiel.oop.model.Vector2D
  * expands it by **style.weight/2** to include the stroke border,
  * and then adjusts the origin to ensure:
  *  - `box.x >= 0`, `box.y >= 0`
- *  - `box.x + box.width <= Config.MAX_X`
- *  - `box.y + box.height <= Config.MAX_Y`
+ *  - `box.x + box.width <= config.maxX`
+ *  - `box.y + box.height <= config.maxX`
  *
  * @author
  * @see BaseShape.boundingBoxAt
- * @see Config.MAX_X, Config.MAX_Y
+ * @see de.fhkiel.oop.config.AppConfig.maxX
+ * @see de.fhkiel.oop.config.AppConfig.maxY
  */
 object CanvasBoundsConstraint : ConstraintStrategy {
     override fun clampOrigin(desiredOrigin: Vector2D, shape: BaseShape): Vector2D {
@@ -26,25 +26,26 @@ object CanvasBoundsConstraint : ConstraintStrategy {
         val newBox = shape.boundingBoxAt(desiredOrigin)
         var newX = desiredOrigin.x
         var newY = desiredOrigin.y
+        val config = shape.config
 
-        if (newBox.width > Config.MAX_X) {
-            newX = (Config.MAX_X - newBox.width) / 2f - newBox.origin.x + desiredOrigin.x
+        if (newBox.width > config.maxX) {
+            newX = (config.maxX - newBox.width) / 2f - newBox.origin.x + desiredOrigin.x
         } else {
             if (newBox.origin.x < 0) newX -= newBox.origin.x
-            if (newBox.origin.x + newBox.width > Config.MAX_X) {
-                newX -= (newBox.origin.x + newBox.width - Config.MAX_X)
+            if (newBox.origin.x + newBox.width > config.maxX) {
+                newX -= (newBox.origin.x + newBox.width - config.maxX)
             }
         }
 
-        if (newBox.height > Config.MAX_Y) {
-            newY = (Config.MAX_Y - newBox.height) / 2f - newBox.origin.y + desiredOrigin.y
+        if (newBox.height > config.maxY) {
+            newY = (config.maxY - newBox.height) / 2f - newBox.origin.y + desiredOrigin.y
         } else {
             if (newBox.origin.y < 0) newY -= newBox.origin.y
-            if (newBox.origin.y + newBox.height > Config.MAX_Y) {
-                newY -= (newBox.origin.y + newBox.height - Config.MAX_Y)
+            if (newBox.origin.y + newBox.height > config.maxY) {
+                newY -= (newBox.origin.y + newBox.height - config.maxY)
             }
         }
 
-        return Vector2D(newX, newY)
+        return Vector2D(config, newX, newY)
     }
 }

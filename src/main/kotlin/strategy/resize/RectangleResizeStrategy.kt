@@ -1,10 +1,10 @@
 package de.fhkiel.oop.strategy.resize
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.shapes.Rectangle
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
-import de.fhkiel.oop.config.Config
 
 /**
  * Resize strategy for [Rectangle] shapes.
@@ -17,6 +17,7 @@ import de.fhkiel.oop.config.Config
  */
 object RectangleResizeStrategy : ResizeStrategy {
     override fun resize(
+        config: AppConfig,
         shape: BaseShape,
         handleIndex: Int,
         initialBoundingBox: BoundingBox,
@@ -58,20 +59,21 @@ object RectangleResizeStrategy : ResizeStrategy {
             }
         }
 
+        // TODO: into own constraint strategy?
         // Enforce valid ranges
-        if      (newW < Config.MIN_RECT_WIDTH) newW = Config.MIN_RECT_WIDTH
-        else if (newW > Config.MAX_RECT_WIDTH) newW = Config.MAX_RECT_WIDTH
+        if      (newW < config.minRectWidth) newW = config.minRectWidth
+        else if (newW > config.maxRectWidth) newW = config.maxRectWidth
 
-        if      (newH < Config.MIN_RECT_HEIGHT) newH = Config.MIN_RECT_HEIGHT
-        else if (newH > Config.MAX_RECT_HEIGHT) newH = Config.MAX_RECT_HEIGHT
+        if      (newH < config.minRectHeight) newH = config.minRectHeight
+        else if (newH > config.maxRectHeight) newH = config.maxRectHeight
 
         // Apply changes
-        rect.origin = Vector2D(newX, newY)
+        rect.origin = Vector2D(config, newX, newY)
         rect.width  = newW
         rect.height = newH
 
-        rect.origin = shape.strategies.constraints?.fold(Vector2D(newX, newY)) { accOrigin, strategy ->
+        rect.origin = shape.strategies.constraints?.fold(Vector2D(config, newX, newY)) { accOrigin, strategy ->
             strategy.clampOrigin(accOrigin, rect)
-        } ?: Vector2D(newX, newY)
+        } ?: Vector2D(config, newX, newY)
     }
 }

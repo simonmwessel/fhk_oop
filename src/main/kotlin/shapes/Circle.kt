@@ -1,6 +1,7 @@
 package de.fhkiel.oop.shapes
 
-import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.AppConfig
+import de.fhkiel.oop.config.DefaultConfig
 import de.fhkiel.oop.config.ShapeStrategyConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.model.BaseShape
@@ -12,7 +13,6 @@ import de.fhkiel.oop.utils.FloatExtensions.formatAreaValue
 import de.fhkiel.oop.utils.FloatExtensions.formatAttribute1Value
 import de.fhkiel.oop.utils.FloatExtensions.formatCoordinateValue
 import de.fhkiel.oop.utils.FloatExtensions.formatStrokeWeightValue
-import de.fhkiel.oop.utils.FloatExtensions.validateInRange
 import de.fhkiel.oop.utils.RandomUtils.random
 import processing.core.PApplet
 import kotlin.Float
@@ -23,41 +23,39 @@ import kotlin.math.sqrt
  * A circle defined by a center vector and a radius.
  *
  * @property origin The center of the circle.
- * @property radius Radius length in units ∈ ([Config.MIN_CIRCLE_RADIUS]..[Config.MAX_CIRCLE_RADIUS]).
+ * @property radius Radius length in units ∈ ([de.fhkiel.oop.config.DefaultConfig.minCircleRadius]..[de.fhkiel.oop.config.DefaultConfig.maxCircleRadius]).
  *
  * @constructor Creates a [Circle] with given parameters.
  * Missing values default to random via [ClosedFloatingPointRange.random].
  *
  * @param originParam center vector or random if omitted
- * @param radiusParam radius or random ∈ ([Config.MIN_CIRCLE_RADIUS]..[Config.MAX_CIRCLE_RADIUS]) if omitted
+ * @param radiusParam radius or random ∈ ([de.fhkiel.oop.config.DefaultConfig.minCircleRadius]..[de.fhkiel.oop.config.DefaultConfig.maxCircleRadius]) if omitted
  * @param styleParam  Initial style (random colours & weight by default).
  *
  * @see Style
  * @see Shape
  * @see Vector2D
- * @see Config
+ * @see AppConfig
+ * @see DefaultConfig
  *
  * @author  Simon Wessel
  * @version 2.7
  * @since   1.0
  */
 class Circle(
+    config: AppConfig = DefaultConfig,
     originParam: Vector2D = Vector2D(),
-    radiusParam: Float = (Config.MIN_CIRCLE_RADIUS..Config.MAX_CIRCLE_RADIUS).random(),
+    radiusParam: Float = (config.minCircleRadius..config.maxCircleRadius).random(),
     styleParam:  Style = Style(),
     strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.CIRCLE
-)  : BaseShape(originParam, styleParam) {
+)  : BaseShape(config, originParam, styleParam) {
 
     /**
      * Backing field for radius
      *
      * @throws IllegalArgumentException if outside the allowed range.
      */
-    private var _radius: Float = radiusParam.validateInRange(
-        "radius",
-        Config.MIN_CIRCLE_RADIUS,
-        Config.MAX_CIRCLE_RADIUS
-    )
+    private var _radius: Float = radiusParam
 
     /**
      * The radius of the circle.
@@ -73,11 +71,7 @@ class Circle(
          * @throws IllegalArgumentException if outside the allowed range.
          */
         set(v) {
-            _radius = v.validateInRange(
-                "radius",
-                Config.MIN_CIRCLE_RADIUS,
-                Config.MAX_CIRCLE_RADIUS
-            )
+            _radius = v
         }
 
     private var _strategies: ShapeStrategyConfig = strategiesParam
@@ -105,8 +99,8 @@ class Circle(
          *
          * @return A new Circle object with the specified area.
          */
-        fun fromArea(center: Vector2D, area: Float): Circle =
-            Circle(center, sqrt((area / Math.PI)).toFloat())
+        fun fromArea(center: Vector2D, area: Float, config: AppConfig = DefaultConfig): Circle =
+            Circle(config, center, sqrt((area / Math.PI)).toFloat())
     }
 
     /**
@@ -130,6 +124,7 @@ class Circle(
     override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         BoundingBox(
             origin = Vector2D(
+                config,
                 candidateOrigin.x - radius,
                 candidateOrigin.y - radius),
             width  = radius * 2,
@@ -165,6 +160,7 @@ class Circle(
 
         return BoundingBox(
             origin = Vector2D(
+                config,
                 centrePx.x - radiusPx - marginPx,
                 centrePx.y - radiusPx - marginPx
             ),
@@ -211,18 +207,18 @@ class Circle(
     override fun toString(): String =
         buildString(
             listOf(
-                Triple("Type",   this::class.simpleName!!,         Config.PAD_TYPE   to Config.PAD_TYPE_VAL),
-                Triple("X",      origin.x.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
-                Triple("Y",      origin.y.formatCoordinateValue(), Config.PAD_CORD   to Config.PAD_CORD_VAL),
-                Triple("Radius", radius.formatAttribute1Value(),   Config.PAD_ATTR_1 to Config.PAD_ATTR_1_VAL),
-                Triple("",       "",                               (Config.PAD_ATTR_2 + Config.SEPARATOR_KEY_VALUE.length + Config.PAD_ATTR_2_VAL) to 0),
-                Triple("Area",   getArea().formatAreaValue(),      Config.PAD_AREA   to Config.PAD_AREA_VAL),
+                Triple("Type",   this::class.simpleName!!,         config.padType   to config.padTypeVal),
+                Triple("X",      origin.x.formatCoordinateValue(), config.padCord   to config.padCordVal),
+                Triple("Y",      origin.y.formatCoordinateValue(), config.padCord   to config.padCordVal),
+                Triple("Radius", radius.formatAttribute1Value(),   config.padAttr1  to config.padAttr1Val),
+                Triple("",       "",                               (config.padAttr2 + config.separatorKeyValue.length + config.padAttr2Val) to 0),
+                Triple("Area",   getArea().formatAreaValue(),      config.padArea   to config.padAreaVal),
 
                 Triple("Fill Color",    style.fill.toString(),
-                    Config.PAD_FILL_COLR to Config.PAD_FILL_COLR_VAL),
+                    config.padFillColr to config.padFillColrVal),
                 Triple("Stroke Color",  style.stroke.toString(),
-                    Config.PAD_STRK_COLR to Config.PAD_STRK_COLR_VAL),
+                    config.padStrkColr to config.padStrkColrVal),
                 Triple("Stroke Weight", style.weight.formatStrokeWeightValue(),
-                    Config.PAD_STRK_WGHT to Config.PAD_STRK_WGHT_VAL)
+                    config.padStrkWght to config.padStrkWghtVal),
             ))
 }

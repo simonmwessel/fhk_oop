@@ -1,30 +1,31 @@
 package de.fhkiel.oop.sketch.config
 
-import de.fhkiel.oop.config.Config
+import de.fhkiel.oop.config.AppConfig
+import de.fhkiel.oop.config.DefaultConfig
 import kotlin.math.min
 
 /**
  * Configuration parameters for the Processing sketch canvas.
  *
- * @property baseWidth  Reference width for scaling calculations. Defaults to [Config.MAX_X].
- * @property baseHeight Reference height for scaling calculations. Defaults to [Config.MAX_Y].
+ * @property baseWidth  Reference width for scaling calculations. Defaults to [de.fhkiel.oop.config.DefaultConfig.maxX].
+ * @property baseHeight Reference height for scaling calculations. Defaults to [de.fhkiel.oop.config.DefaultConfig.maxY].
  *
  * @author Simon Wessel
  */
-class SketchConfig {
+class SketchConfig(config: AppConfig = DefaultConfig) {
 
     /**
      * Backing field for the base width.
      *
-     * Defaults to [Config.MAX_X].
+     * Defaults to [de.fhkiel.oop.config.DefaultConfig.maxX].
      */
-    private var _baseWidth: Float = Config.MAX_X
+    private var _baseWidth: Float = config.maxX
 
     /**
      * Returns the base width for scaling calculations.
      *
      * @return the current reference width.
-     * @see Config.MAX_X
+     * @see de.fhkiel.oop.config.DefaultConfig.maxX
      */
     var baseWidth: Float
         get() = _baseWidth
@@ -41,15 +42,15 @@ class SketchConfig {
     /**
      * Backing field for the base height.
      *
-     * Defaults to [Config.MAX_Y].
+     * Defaults to [de.fhkiel.oop.config.DefaultConfig.maxY].
      */
-    private var _baseHeight: Float = Config.MAX_Y
+    private var _baseHeight: Float = config.maxY
 
     /**
      * Returns the base height for scaling calculations.
      *
      * @return the current reference height.
-     * @see Config.MAX_Y
+     * @see de.fhkiel.oop.config.DefaultConfig.maxY
      */
     var baseHeight: Float
         get() = _baseHeight

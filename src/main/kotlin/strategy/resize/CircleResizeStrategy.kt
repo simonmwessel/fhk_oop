@@ -1,10 +1,10 @@
 package de.fhkiel.oop.strategy.resize
 
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.shapes.Circle
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
-import de.fhkiel.oop.config.Config
 import kotlin.math.hypot
 
 /**
@@ -18,6 +18,7 @@ import kotlin.math.hypot
  */
 object CircleResizeStrategy : ResizeStrategy {
     override fun resize(
+        config: AppConfig,
         shape: BaseShape,
         handleIndex: Int,
         initialBoundingBox: BoundingBox,
@@ -30,12 +31,13 @@ object CircleResizeStrategy : ResizeStrategy {
         val dy = worldMouse.y - circle.origin.y
         var newRad = hypot(dx.toDouble(), dy.toDouble()).toFloat()
 
-        if      (newRad < Config.MIN_CIRCLE_RADIUS) newRad = Config.MIN_CIRCLE_RADIUS
-        else if (newRad > Config.MAX_CIRCLE_RADIUS) newRad = Config.MAX_CIRCLE_RADIUS
+        // TODO: into own constraint strategy?
+        if      (newRad < config.minCircleRadius) newRad = config.minCircleRadius
+        else if (newRad > config.maxCircleRadius) newRad = config.maxCircleRadius
 
         circle.radius = newRad
 
-        circle.origin = shape.strategies.constraints?.fold(Vector2D(circle.origin.x, circle.origin.y)) { accOrigin, strategy ->
+        circle.origin = shape.strategies.constraints?.fold(Vector2D(config, circle.origin.x, circle.origin.y)) { accOrigin, strategy ->
             strategy.clampOrigin(accOrigin, circle)
         } ?: circle.origin
     }
