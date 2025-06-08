@@ -56,13 +56,12 @@ class Sketch() : PApplet() {
      * The list of shapes to draw each frame.
      * Must not be empty.
      */
-    private var _shapes: List<BaseShape> = emptyList()
-    var shapes: List<BaseShape>
+    private var _shapes: List<BaseShape>? = emptyList()
+    var shapes: List<BaseShape>?
         /** Returns the list of shapes. */
         get() = _shapes
         /** Sets the list of shapes. */
         set(v) {
-            require(v.isNotEmpty()) { "Shapes list must not be empty" }
             _shapes = v
         }
 
@@ -212,8 +211,10 @@ class Sketch() : PApplet() {
 
         hintStartTime = millis()
 
-        println("\nFollowing shapes were sketched:")
-        for (shape in shapes) println(shape)
+        if (!shapes.isNullOrEmpty()) {
+            println("\nFollowing shapes were sketched:")
+            for (shape in shapes) println(shape)
+        }
     }
 
     /**
@@ -236,7 +237,7 @@ class Sketch() : PApplet() {
             Config.SKETCH_BACKGROUND_COLOR.blue
         )
 
-        shapes.forEach {
+        shapes?.forEach {
             try {
                 it.draw(this, mapper)
             } catch (e: Exception) {
@@ -316,14 +317,14 @@ class Sketch() : PApplet() {
             sizeConfig       = generationParams.size,
             originConfig     = generationParams.origin,
         )
-
-        _shapes += newShapes
+        shapes = if (shapes.isNullOrEmpty()) newShapes
+                 else shapes!!.toMutableList().apply { addAll(newShapes) }
 
         val typeDescription = generationParams.shapeType?.name?.lowercase()?.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase() else it.toString()
         } ?: "random"
 
-        println("\nAdded ${generationParams.count} new ${typeDescription}(s). Total shapes: ${_shapes.size}")
+        println("\nAdded ${generationParams.count} new ${typeDescription}(s). Total shapes: ${_shapes!!.size}")
         newShapes.forEach { println(it) }
     }
 
@@ -336,20 +337,39 @@ class Sketch() : PApplet() {
      * - 'c' or 'C': Adds a new Circle.
      */
     override fun keyPressed() {
-        when (key.lowercaseChar()) {
-            'm' -> {
-                mapper = when (mapper) {
-                    is RelativeScaleMapper -> UniformScaleMapper(this, baseW, baseH)
-                    is UniformScaleMapper  -> RelativeScaleMapper(this, baseW, baseH, baseMin)
-                }
+        if (keyCode.toChar() == DELETE) {
+            if (shapes.isNullOrEmpty()) {
+                println("No shapes to delete.")
+                return
             }
-            's' -> addShapes(GenerationParams.SQUARE)
-            'r' -> addShapes(GenerationParams.RECTANGLE)
-            'c' -> addShapes(GenerationParams.CIRCLE)
-            'd' -> Config.DEBUG = !Config.DEBUG
-            'h' -> {
-                hintStartTime = millis()
-                hintDuration = 10_000
+            val toRemove = shapes!!
+                .filterIsInstance<ManipulatableShape>()
+                .filter { it.isSelected }
+
+            if (toRemove.isNotEmpty()) {
+                shapes = shapes!!.toMutableList().apply { removeAll(toRemove) }
+
+                if (draggingShape != null && toRemove.contains(draggingShape)) draggingShape = null
+
+                println("Deleted ${toRemove.size} shape(s). Remaining: ${shapes!!.size}")
+            }
+            return
+        } else {
+            when (key.lowercaseChar()) {
+                'm' -> {
+                    mapper = when (mapper) {
+                        is RelativeScaleMapper -> UniformScaleMapper(this, baseW, baseH)
+                        is UniformScaleMapper  -> RelativeScaleMapper(this, baseW, baseH, baseMin)
+                    }
+                }
+                's' -> addShapes(GenerationParams.SQUARE)
+                'r' -> addShapes(GenerationParams.RECTANGLE)
+                'c' -> addShapes(GenerationParams.CIRCLE)
+                'd' -> Config.DEBUG = !Config.DEBUG
+                'h' -> {
+                    hintStartTime = millis()
+                    hintDuration = 10_000
+                }
             }
         }
     }
@@ -363,15 +383,19 @@ class Sketch() : PApplet() {
      * Uses hit detection based on the current [CoordinateMapper] to determine which shape was clicked.
      */
     override fun mousePressed() {
+        if (shapes.isNullOrEmpty()) {
+            println("No shapes to select.")
+            return
+        }
         // Hit detection
-        val hit = shapes
+        val hit = shapes!!
             .filterIsInstance<ManipulatableShape>()
             .asReversed()
             .firstOrNull { it.hitTestScreen(this.mapper, mouseX.toFloat(), mouseY.toFloat()) }
 
         // Handle selection toggle
         if (!keyPressed || keyCode != SHIFT)
-            shapes.filterIsInstance<ManipulatableShape>().forEach { it.isSelected = false }
+            shapes!!.filterIsInstance<ManipulatableShape>().forEach { it.isSelected = false }
 
         hit?.let { ms ->
             ms.isSelected = !ms.isSelected
