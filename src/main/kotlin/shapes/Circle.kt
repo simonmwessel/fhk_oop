@@ -129,11 +129,49 @@ class Circle(
      */
     override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         BoundingBox(
-            x      = candidateOrigin.x - radius - style.weight / 2f,
-            y      = candidateOrigin.y - radius - style.weight / 2f,
-            width  = radius * 2 + style.weight,
-            height = radius * 2 + style.weight
+            origin = Vector2D(
+                candidateOrigin.x - radius,
+                candidateOrigin.y - radius),
+            width  = radius * 2,
+            height = radius * 2
         )
+
+    /**
+     * {@inheritDoc}
+     *
+     * Maps the circle's bounding box to screen coordinates.
+     * The bounding box is centered at the screen position of the circle's origin,
+     * with a width and height of `2 * radius + stroke weight`.
+     * The stroke weight is added as a margin on each side to include the border.
+     *
+     * @param mapper The coordinate mapper to use for conversion.
+     * @param candidateOrigin The hypothetical center vector in world coordinates.
+     *
+     * @return A [BoundingBox] in screen coordinates that includes the stroke margin.
+     *
+     * @see BaseShape.screenBoundingBoxAt
+     * @see CoordinateMapper.worldToScreen
+     * @see CoordinateMapper.worldScalarToScreen
+     * @see BoundingBox
+     * @see Vector2D
+     */
+    override fun screenBoundingBoxAt(
+        mapper: CoordinateMapper,
+        candidateOrigin: Vector2D
+    ): BoundingBox {
+        val centrePx = mapper.worldToScreen(candidateOrigin)
+        val radiusPx = mapper.worldScalarToScreen(radius)
+        val marginPx = mapper.worldScalarToScreen(style.weight / 2f)
+
+        return BoundingBox(
+            origin = Vector2D(
+                centrePx.x - radiusPx - marginPx,
+                centrePx.y - radiusPx - marginPx
+            ),
+            width  = radiusPx * 2f + marginPx * 2f,
+            height = radiusPx * 2f + marginPx * 2f
+        )
+    }
 
     /**
      * Tests whether a vector in screen coordinates hits the circle, including its stroke.
@@ -142,8 +180,8 @@ class Circle(
      */
     override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
         val screenCenterVector = mapper.worldToScreen(origin)
-        val screenRadius                   = mapper.worldScalarToScreen(radius)
-        val screenHalfStroke               = mapper.worldScalarToScreen(style.weight / 2f)
+        val screenRadius       = mapper.worldScalarToScreen(radius)
+        val screenHalfStroke   = mapper.worldScalarToScreen(style.weight / 2f)
 
         val distSq        = (mx - screenCenterVector.x).pow(2) + (my - screenCenterVector.y).pow(2)
         val outerRadiusSq = (screenRadius + screenHalfStroke).pow(2)
@@ -157,12 +195,12 @@ class Circle(
      * @param g      The PApplet to draw on.
      * @param mapper The coordinate mapper to use for drawing.
      */
-    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
-        super.draw(g, mapper)
-
+    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g, mapper) {
         val vector = mapper.worldToScreen(this@Circle.origin)
         val radius = mapper.worldScalarToScreen(this@Circle.radius)
         ellipse(vector.x, vector.y, radius * 2, radius * 2)
+
+        super.draw(g, mapper)
     }
 
     /**

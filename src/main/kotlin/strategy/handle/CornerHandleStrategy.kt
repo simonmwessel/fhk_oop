@@ -35,11 +35,11 @@ object CornerHandleStrategy : HandleStrategy {
      *
      * @return A [List] of four [Vector2D]s in the specified order (TL, TR, BL, BR).
      */
-    override fun handleVectors(bbox: BoundingBox): List<Vector2D> =
+    override fun handleVectorOrigins(bbox: BoundingBox): List<Vector2D> =
         listOf(
-            Vector2D(bbox.x, bbox.y),               // TL
-            Vector2D(bbox.x + bbox.width, bbox.y),               // TR
-            Vector2D(bbox.x, bbox.y + bbox.height), // BL
-            Vector2D(bbox.x + bbox.width, bbox.y + bbox.height)  // BR
+            Vector2D(bbox.origin.x, bbox.origin.y),                            // TL
+            Vector2D(bbox.origin.x + bbox.width, bbox.origin.y),               // TR
+            Vector2D(bbox.origin.x, bbox.origin.y + bbox.height),              // BL
+            Vector2D(bbox.origin.x + bbox.width, bbox.origin.y + bbox.height)  // BR
         )
 }

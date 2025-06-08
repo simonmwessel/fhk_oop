@@ -22,19 +22,29 @@ import de.fhkiel.oop.model.Vector2D
  */
 object CanvasBoundsMoveConstraint : MoveConstraintStrategy {
     override fun clampOrigin(desiredOrigin: Vector2D, shape: BaseShape): Vector2D {
+        // TODO: Bounding box mapping fix to clamp correct with relative mapping
         val newBox = shape.boundingBoxAt(desiredOrigin)
+        var newX = desiredOrigin.x
+        var newY = desiredOrigin.y
 
-        val dx = when {
-            newBox.x < 0f                           -> -newBox.x
-            newBox.x + newBox.width > Config.MAX_X  -> Config.MAX_X - (newBox.x + newBox.width)
-            else                                    -> 0f
-        }
-        val dy = when {
-            newBox.y < 0f                           -> -newBox.y
-            newBox.y + newBox.height > Config.MAX_Y -> Config.MAX_Y - (newBox.y + newBox.height)
-            else                                    -> 0f
+        if (newBox.width > Config.MAX_X) {
+            newX = (Config.MAX_X - newBox.width) / 2f - newBox.origin.x + desiredOrigin.x
+        } else {
+            if (newBox.origin.x < 0) newX -= newBox.origin.x
+            if (newBox.origin.x + newBox.width > Config.MAX_X) {
+                newX -= (newBox.origin.x + newBox.width - Config.MAX_X)
+            }
         }
 
-        return Vector2D(desiredOrigin.x + dx, desiredOrigin.y + dy)
+        if (newBox.height > Config.MAX_Y) {
+            newY = (Config.MAX_Y - newBox.height) / 2f - newBox.origin.y + desiredOrigin.y
+        } else {
+            if (newBox.origin.y < 0) newY -= newBox.origin.y
+            if (newBox.origin.y + newBox.height > Config.MAX_Y) {
+                newY -= (newBox.origin.y + newBox.height - Config.MAX_Y)
+            }
+        }
+
+        return Vector2D(newX, newY)
     }
 }

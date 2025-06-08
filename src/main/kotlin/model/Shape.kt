@@ -49,6 +49,8 @@ sealed interface Shape {
      */
     fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox
 
+    fun screenBoundingBoxAt(mapper: CoordinateMapper, candidateOrigin: Vector2D = origin): BoundingBox
+
     /**
      * Checks if the given screen coordinates (mx, my) are within the shape.
      *

@@ -1,6 +1,5 @@
 package de.fhkiel.oop.mapper
 
-import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Vector2D
 
 /**
@@ -52,44 +51,20 @@ sealed interface CoordinateMapper {
      * Maps a scalar distance (in world units) into screen‐space length (in pixels),
      * ensuring that distances scale uniformly (no axis distortion).
      *
-     * @param dist Distance in world units.
+     * @param scalar Distance in world units.
      * @return Corresponding length in pixels.
      *
      * @see screenScalarToWorld
      */
-    fun worldScalarToScreen(dist: Float): Float
+    fun worldScalarToScreen(scalar: Float): Float
 
     /**
      * Maps a scalar distance (in pixels) back into world‐space.
      *
-     * @param sizePx Length in pixels.
+     * @param scalar Length in pixels.
      * @return Corresponding distance in world units.
      *
      * @see worldScalarToScreen
      */
-    fun screenScalarToWorld(sizePx: Float): Float
-
-    /**
-     * Converts a world‐space [BoundingBox] into screen coordinates.
-     *
-     * @param boundingBox The bounding box in world coordinates.
-     *
-     * @return A new [BoundingBox] in screen coordinates.
-     *
-     * @see screenBoundingBoxToWorld
-     * @see BoundingBox
-     */
-    fun worldBoundingBoxToScreen(boundingBox: BoundingBox): BoundingBox
-
-    /**
-     * Converts a screen‐space [BoundingBox] back into world coordinates.
-     *
-     * @param boundingBox The bounding box in screen coordinates.
-     *
-     * @return A new [BoundingBox] in world coordinates.
-     *
-     * @see worldBoundingBoxToScreen
-     * @see BoundingBox
-     */
-    fun screenBoundingBoxToWorld(boundingBox: BoundingBox): BoundingBox
+    fun screenScalarToWorld(scalar: Float): Float
 }

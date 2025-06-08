@@ -262,12 +262,15 @@ class Sketch() : PApplet() {
             is UniformScaleMapper  -> "Uniform Scale"
         }
 
+        val debugMode = if (Config.DEBUG) "on" else "off"
+
         val lines = listOf(
             "Press 'M' to toggle resize mode",
             "(current: $resizeMode)",
             "Press 'S' to add a square",
             "Press 'R' to add a rectangle",
-            "Press 'C' to add a circle"
+            "Press 'C' to add a circle",
+            "Press 'D' to toggle debug mode (current: $debugMode)"
         )
 
         textSize(16f)
@@ -343,6 +346,11 @@ class Sketch() : PApplet() {
             's' -> addShapes(GenerationParams.SQUARE)
             'r' -> addShapes(GenerationParams.RECTANGLE)
             'c' -> addShapes(GenerationParams.CIRCLE)
+            'd' -> Config.DEBUG = !Config.DEBUG
+            'h' -> {
+                hintStartTime = millis()
+                hintDuration = 10_000
+            }
         }
     }
 

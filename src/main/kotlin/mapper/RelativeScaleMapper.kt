@@ -1,6 +1,5 @@
 package de.fhkiel.oop.mapper
 
-import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Vector2D
 import processing.core.PApplet
 import kotlin.math.min
@@ -111,87 +110,27 @@ class RelativeScaleMapper(
      * {@inheritDoc}
      *
      * Uses the **uniform** scale factor `us` to map a world‐space length to pixels:
-     * ```
-     * lengthPx = dist * us
-     * ```
+     *
      * Ensures that a 1:1 world‐unit remains 1:1 in pixel length when used
      * for strokes or square handles, regardless of window aspect ratio.
      *
-     * @param dist Distance in world units.
+     * @param scalar Distance in world units.
+     *
      * @return Equivalent length in pixels.
      *
      * @see screenScalarToWorld
      */
-    override fun worldScalarToScreen(dist: Float): Float {
-        return dist * us
-    }
+    override fun worldScalarToScreen(scalar: Float): Float = scalar * us
 
     /**
      * {@inheritDoc}
      *
-     * Inverts the uniform length mapping:
-     * ```
-     * sizeWorld = sizePx / us
-     * ```
+     * Inverts the uniform length mapping
      *
-     * @param sizePx Length in pixels.
+     * @param scalar Length in pixels.
      * @return Equivalent distance in world units.
      *
      * @see worldScalarToScreen
      */
-    override fun screenScalarToWorld(sizePx: Float): Float {
-        return sizePx / us
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Converts a world‐space [BoundingBox] into screen coordinates by applying
-     * the independent axis mappings:
-     * ```
-     * screenBox.x = worldBox.x * sx
-     * screenBox.y = worldBox.y * sy
-     * screenBox.width = worldBox.width * sx
-     * screenBox.height = worldBox.height * sy
-     * ```
-     *
-     * @param boundingBox The bounding box in world coordinates.
-     * @return A new [BoundingBox] in screen coordinates.
-     *
-     * @see screenBoundingBoxToWorld
-     * @see BoundingBox
-     */
-    override fun worldBoundingBoxToScreen(boundingBox: BoundingBox): BoundingBox =
-        BoundingBox(
-            x      = boundingBox.x * sx,
-            y      = boundingBox.y * sy,
-            width  = boundingBox.width * sx,
-            height = boundingBox.height * sy
-        )
-
-    /**
-     * {@inheritDoc}
-     *
-     * Converts a screen‐space [BoundingBox] back into world coordinates by
-     * inverting the independent axis mappings:
-     * ```
-     * worldBox.x = screenBox.x / sx
-     * worldBox.y = screenBox.y / sy
-     * worldBox.width = screenBox.width / sx
-     * worldBox.height = screenBox.height / sy
-     * ```
-     *
-     * @param boundingBox The bounding box in screen coordinates.
-     * @return A new [BoundingBox] in world coordinates.
-     *
-     * @see worldBoundingBoxToScreen
-     * @see BoundingBox
-     */
-    override fun screenBoundingBoxToWorld(boundingBox: BoundingBox): BoundingBox =
-        BoundingBox(
-            x      = boundingBox.x / sx,
-            y      = boundingBox.y / sy,
-            width  = boundingBox.width / sx,
-            height = boundingBox.height / sy
-        )
+    override fun screenScalarToWorld(scalar: Float): Float = scalar / us
 }

@@ -34,14 +34,14 @@ object EdgeHandleStrategy : HandleStrategy {
      * @param bbox The axis‐aligned bounding box of a shape (in world units).
      * @return A [List] of four [Vector2D]s (N, S, W, E).
      */
-    override fun handleVectors(bbox: BoundingBox): List<Vector2D> {
-        val cx = bbox.x + bbox.width  / 2f
-        val cy = bbox.y + bbox.height / 2f
+    override fun handleVectorOrigins(bbox: BoundingBox): List<Vector2D> {
+        val cx = bbox.origin.x + bbox.width  / 2f
+        val cy = bbox.origin.y + bbox.height / 2f
         return listOf(
-            Vector2D(cx, bbox.y),               // N
-            Vector2D(cx, bbox.y + bbox.height), // S
-            Vector2D(bbox.x, cy),               // W
-            Vector2D(bbox.x + bbox.width, cy)   // E
+            Vector2D(cx, bbox.origin.y),               // N
+            Vector2D(cx, bbox.origin.y + bbox.height), // S
+            Vector2D(bbox.origin.x, cy),               // W
+            Vector2D(bbox.origin.x + bbox.width, cy)   // E
         )
     }
 }

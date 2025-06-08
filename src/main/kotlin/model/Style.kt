@@ -17,9 +17,7 @@ import de.fhkiel.oop.utils.RandomUtils.randomColor
  * @see de.fhkiel.oop.utils.RandomUtils.randomColor
  * @see Config
  *
- * @author  Simon Wessel
- * @version 1.1
- * @since   2.5
+ * @author Simon Wessel
  */
 data class Style(
     /**

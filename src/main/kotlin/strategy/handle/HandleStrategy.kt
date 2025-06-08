@@ -29,5 +29,5 @@ fun interface HandleStrategy {
      *
      * @see BoundingBox
      */
-    fun handleVectors(bbox: BoundingBox): List<Vector2D>
+    fun handleVectorOrigins(bbox: BoundingBox): List<Vector2D>
 }

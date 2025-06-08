@@ -161,11 +161,46 @@ open class Rectangle(
      */
     override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         BoundingBox(
-            x      = candidateOrigin.x - style.weight / 2f,
-            y      = candidateOrigin.y - style.weight / 2f,
-            width  = width + style.weight,
-            height = height + style.weight
+            origin = candidateOrigin,
+            width  = width,
+            height = height
         )
+
+    /**
+     * {@inheritDoc}
+     *
+     * Maps the rectangle's bounding box to screen coordinates,
+     * including the stroke width as a margin.
+     *
+     * @param mapper The coordinate mapper to use for conversion.
+     * @param candidateOrigin The top-left corner candidate in world coordinates.
+     *
+     * @return A [BoundingBox] in screen coordinates that includes the stroke margin.
+     *
+     * @see BaseShape.screenBoundingBoxAt
+     * @see CoordinateMapper.worldToScreen
+     * @see CoordinateMapper.worldScalarToScreen
+     * @see BoundingBox
+     * @see Vector2D
+     */
+    override fun screenBoundingBoxAt(
+        mapper: CoordinateMapper,
+        candidateOrigin: Vector2D
+    ): BoundingBox {
+        val worldBox = boundingBoxAt(candidateOrigin)
+        val originPx = mapper.worldToScreen(worldBox.origin)
+        val wPx      = mapper.worldScalarToScreen(worldBox.width)
+        val hPx      = mapper.worldScalarToScreen(worldBox.height)
+
+        val strokePx = mapper.worldScalarToScreen(style.weight)
+        val marginPx = strokePx / 2f
+
+        return BoundingBox(
+            origin = Vector2D(originPx.x - marginPx, originPx.y - marginPx),
+            width  = wPx     + strokePx,
+            height = hPx     + strokePx
+        )
+    }
 
     /**
      * Checks if a vector in screen coordinates hits the shape, including its stroke.
@@ -173,14 +208,13 @@ open class Rectangle(
      * @return `true` if the mouse coordinates hit the shape (fill or stroke), `false` otherwise.
      */
     override fun hitTestScreen(mapper: CoordinateMapper, mx: Float, my: Float): Boolean {
-        val worldBox = mapper.worldBoundingBoxToScreen(boundingBoxAt(origin))
-
+        val worldBox         = screenBoundingBoxAt(mapper, origin)
         val screenHalfStroke = mapper.worldScalarToScreen(style.weight / 2f)
 
-        return mx >= worldBox.x - screenHalfStroke &&
-                mx <= worldBox.x + worldBox.width + screenHalfStroke &&
-                my >= worldBox.y - screenHalfStroke &&
-                my <= worldBox.y + worldBox.height + screenHalfStroke
+        return mx >= worldBox.origin.x - screenHalfStroke &&
+               mx <= worldBox.origin.x + worldBox.width + screenHalfStroke &&
+               my >= worldBox.origin.y - screenHalfStroke &&
+               my <= worldBox.origin.y + worldBox.height + screenHalfStroke
     }
 
     /**
@@ -189,13 +223,13 @@ open class Rectangle(
      * @param g      The PApplet to draw on.
      * @param mapper The coordinate mapper to use for drawing.
      */
-    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
-        super.draw(g, mapper)
-
+    override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g, mapper) {
         val vector = mapper.worldToScreen(this@Rectangle.origin)
         val width  = mapper.worldScalarToScreen(this@Rectangle.width)
         val height = mapper.worldScalarToScreen(this@Rectangle.height)
         g.rect(vector.x, vector.y, width, height)
+
+        super.draw(g, mapper)
     }
 
     /**

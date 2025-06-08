@@ -100,35 +100,42 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
      */
     override fun draw(g: PApplet, mapper: CoordinateMapper) {
         inner.draw(g, mapper)
-
         if (!isSelected) return
 
-        val worldBox  = inner.boundingBoxAt(inner.origin)
-        val screenBox = mapper.worldBoundingBoxToScreen(worldBox)
-
-        val worldHandleVectors: List<Vector2D> = inner.strategies.handleStrategy.handleVectors(worldBox)
+        val shapeOrigin  = inner.origin
+        val worldBox     = inner.boundingBoxAt(shapeOrigin)
+        val handleSidePx = mapper.worldScalarToScreen(10f)
 
         g.pushStyle()
         g.noStroke()
         g.fill(0f)
 
-        val handleSidePx = mapper.worldScalarToScreen(10f)
+        for (handleOrigin in inner.strategies.handleStrategy.handleVectorOrigins(worldBox)) {
+            // Compute the delta from the shape’s origin to the handle in world‐space.
+            val dxWorld = handleOrigin.x - shapeOrigin.x
+            val dyWorld = handleOrigin.y - shapeOrigin.y
 
-        for (worldPt in worldHandleVectors) {
-            val dxWorld = worldPt.x - worldBox.x
-            val dyWorld = worldPt.y - worldBox.y
+            // Convert those world‐space deltas into screen‐space lengths.
+            // Uses uniform scaling (so handles stay square).
+            val dxScreen = mapper.worldScalarToScreen(dxWorld)
+            val dyScreen = mapper.worldScalarToScreen(dyWorld)
 
-            val sx = screenBox.x + mapper.worldScalarToScreen(dxWorld)
-            val sy = screenBox.y + mapper.worldScalarToScreen(dyWorld)
+            // Map the shape’s origin itself into screen‐space.
+            val screenOrigin = mapper.worldToScreen(shapeOrigin)
 
+            // Compute the final screen‐position of the handle by
+            // offsetting from the shape‐origin in pixels.
+            val screenX = screenOrigin.x + dxScreen
+            val screenY = screenOrigin.y + dyScreen
+
+            // Draw a centered square of size handleSidePx at that position.
             g.rect(
-                sx - handleSidePx / 2f,
-                sy - handleSidePx / 2f,
+                screenX - handleSidePx / 2f,
+                screenY - handleSidePx / 2f,
                 handleSidePx,
                 handleSidePx
             )
         }
-
         g.popStyle()
     }
 
@@ -144,6 +151,9 @@ class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.s
      */
     override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox =
         inner.boundingBoxAt(candidateOrigin)
+
+    override fun screenBoundingBoxAt(mapper: CoordinateMapper, candidateOrigin: Vector2D): BoundingBox =
+        inner.screenBoundingBoxAt(mapper, candidateOrigin)
 
     /**
      * {@inheritDoc}

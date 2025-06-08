@@ -1,6 +1,5 @@
 package de.fhkiel.oop.mapper
 
-import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.model.Vector2D
 import processing.core.PApplet
 import kotlin.math.min
@@ -110,12 +109,12 @@ class UniformScaleMapper(
      * lengthPx = dist * f
      * ```
      *
-     * @param dist Distance in world units.
+     * @param scalar Distance in world units.
      * @return Equivalent length in pixels.
      *
      * @see screenScalarToWorld
      */
-    override fun worldScalarToScreen(dist: Float): Float = dist * f
+    override fun worldScalarToScreen(scalar: Float): Float = scalar * f
 
     /**
      * {@inheritDoc}
@@ -125,46 +124,10 @@ class UniformScaleMapper(
      * sizeWorld = sizePx / f
      * ```
      *
-     * @param sizePx Length in pixels.
+     * @param scalar Length in pixels.
      * @return Equivalent distance in world units.
      *
      * @see worldScalarToScreen
      */
-    override fun screenScalarToWorld(sizePx: Float): Float = sizePx / f
-
-    /**
-     * {@inheritDoc}
-     *
-     * Converts a world‐space [BoundingBox] into screen coordinates,
-     * applying the uniform scale and offsets.
-     *
-     * @param boundingBox The bounding box in world coordinates.
-     * @return A new [BoundingBox] in screen coordinates.
-     *
-     * @see screenBoundingBoxToWorld
-     */
-    override fun worldBoundingBoxToScreen(boundingBox: BoundingBox): BoundingBox =
-        BoundingBox(
-            x      = boundingBox.x * f + offX,
-            y      = boundingBox.y * f + offY,
-            width  = boundingBox.width * f,
-            height = boundingBox.height * f)
-
-    /**
-     * {@inheritDoc}
-     *
-     * Converts a screen‐space [BoundingBox] back into world coordinates,
-     * reversing the uniform scale and offsets.
-     *
-     * @param boundingBox The bounding box in screen coordinates.
-     * @return A new [BoundingBox] in world coordinates.
-     *
-     * @see worldBoundingBoxToScreen
-     */
-    override fun screenBoundingBoxToWorld(boundingBox: BoundingBox): BoundingBox =
-        BoundingBox(
-            x      = (boundingBox.x - offX) / f,
-            y      = (boundingBox.y - offY) / f,
-            width  = boundingBox.width / f,
-            height = boundingBox.height / f)
+    override fun screenScalarToWorld(scalar: Float): Float = scalar / f
 }

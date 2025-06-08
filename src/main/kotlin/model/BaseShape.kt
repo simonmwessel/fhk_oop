@@ -86,6 +86,7 @@ abstract class BaseShape (
         if (Config.DEBUG) {
             drawOrigin(g, mapper)
             drawBoundingBox(g, mapper)
+            drawBoundingBoxOrigin(g, mapper)
         }
     }
 
@@ -97,17 +98,12 @@ abstract class BaseShape (
      * @param g      The PApplet to draw on.
      * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
      */
-    private fun drawOrigin(g: PApplet, mapper: CoordinateMapper) {
-        val width = 2f
-        val screenOrigin = mapper.worldToScreen(origin)
-
-        g.pushStyle()
-        g.noFill()
-        g.stroke(0f)
-        g.strokeWeight(1f)
-        g.ellipse(screenOrigin.x - width / 2f,screenOrigin.y - width / 2f, width, width)
-        g.popStyle()
-    }
+    private fun drawOrigin(g: PApplet, mapper: CoordinateMapper) =
+        g.apply {
+            pushStyle(); noStroke(); fill(0xFFFF0000.toInt())
+            mapper.worldToScreen(origin).let { ellipse(it.x, it.y, 4f, 4f) }
+            g.popStyle()
+        }
 
     /**
      * Draws the bounding box of the shape on the given PApplet.
@@ -117,23 +113,46 @@ abstract class BaseShape (
      * @param g      The PApplet to draw on.
      * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
      */
-    private fun drawBoundingBox(g: PApplet, mapper: CoordinateMapper) {
-        val worldBox  = boundingBoxAt(origin)
-        val screenBox = mapper.worldBoundingBoxToScreen(worldBox)
+    private fun drawBoundingBox(g: PApplet, m: CoordinateMapper) =
+        g.apply {
+            pushStyle(); noFill(); stroke(0f); strokeWeight(1f)
+            screenBoundingBoxAt(m).let { rect(it.origin.x, it.origin.y, it.width, it.height) }
+            popStyle()
+        }
 
-        g.pushStyle()
-        g.noFill()
-        g.stroke(0f)
-        g.strokeWeight(1f)
-        g.rect(screenBox.origin.x, screenBox.origin.y, screenBox.width, screenBox.height)
-        g.popStyle()
-    }
+    /**
+     * Draws the bounding box origin on the given PApplet.
+     *
+     * This method visualizes the origin of the bounding box as a small circle
+     * at the center of the bounding box.
+     *
+     * @param g The PApplet to draw on.
+     * @param m The coordinate mapper to convert world coordinates to screen coordinates.
+     */
+    private fun drawBoundingBoxOrigin(g: PApplet, m: CoordinateMapper) =
+        g.apply {
+            pushStyle(); noStroke(); fill(0xFFFF0000.toInt())
+            screenBoundingBoxAt(m).let { ellipse(it.origin.x + it.width / 2, it.origin.y + it.height / 2, 4f, 4f) }
+            popStyle()
+        }
 
     /**
      * Returns a BoundingBox that represents the full occupied area
      * of this shape if its origin were [candidateOrigin].
      */
     abstract override fun boundingBoxAt(candidateOrigin: Vector2D): BoundingBox
+    // TODO: Include stroke width in the world bounding box calculation
+
+    /**
+     * Returns a BoundingBox that represents the full occupied area
+     * of this shape if its origin were [candidateOrigin], in screen coordinates.
+     *
+     * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
+     * @param candidateOrigin The hypothetical origin in world coordinates.
+     * @return A BoundingBox that covers the shape’s full extent at that origin, in screen coordinates.
+     */
+    abstract override fun screenBoundingBoxAt(mapper: CoordinateMapper, candidateOrigin: Vector2D): BoundingBox
+    // TODO: Exclude stroke width in the screen bounding box calculation when included in the world bounding box
 
     /**
      * Checks if a vector in screen coordinates hits the shape, including its stroke.
@@ -151,12 +170,12 @@ abstract class BaseShape (
      * @param g     The PApplet instance to draw on
      * @param block A block of drawing operations in the context of `g`
      */
-    protected inline fun withStyle(g: PApplet, block: PApplet.() -> Unit) {
+    protected inline fun withStyle(g: PApplet, mapper: CoordinateMapper, block: PApplet.() -> Unit) {
         g.run {
             pushStyle()
             fill(style.fill.red, style.fill.green, style.fill.blue, style.fill.alpha)
             stroke(style.stroke.red, style.stroke.green, style.stroke.blue, style.stroke.alpha)
-            strokeWeight(style.weight)
+            g.strokeWeight(mapper.worldScalarToScreen(style.weight))
             block()
             popStyle()
         }
