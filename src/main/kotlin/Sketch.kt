@@ -329,14 +329,42 @@ class Sketch() : PApplet() {
     }
 
     /**
-     * Toggles the [CoordinateMapper] when the user presses 'M' or 'm',
-     * and restarts the hint timer.
-     * Adds a new shape based on key press:
-     * - 's' or 'S': Adds a new Square.
-     * - 'r' or 'R': Adds a new Rectangle.
-     * - 'c' or 'C': Adds a new Circle.
+     * Handles key presses for various actions:
+     *
+     * - 'M' / 'm': Toggle between [RelativeScaleMapper] and [UniformScaleMapper].
+     *   @see de.fhkiel.oop.mapper.RelativeScaleMapper
+     *   @see de.fhkiel.oop.mapper.UniformScaleMapper
+     *
+     * - 'Q' / 'q': Add a new [Square] via [FormFactory.produce].
+     *   @see de.fhkiel.oop.shapes.Square
+     *   @see de.fhkiel.oop.config.GenerationParams.SQUARE
+     *
+     * - 'V' / 'v': Add a new [Rectangle] via [FormFactory.produce].
+     *   @see de.fhkiel.oop.shapes.Rectangle
+     *   @see de.fhkiel.oop.config.GenerationParams.RECTANGLE
+     *
+     * - 'K' / 'k': Add a new [Circle] via [FormFactory.produce].
+     *   @see de.fhkiel.oop.shapes.Circle
+     *   @see de.fhkiel.oop.config.GenerationParams.CIRCLE
+     *
+     * - 'R', 'G', 'B' (case‐sensitive): Adjust the **fill** color components of **all selected** shapes.
+     *   Uppercase increases by 5 units; lowercase decreases by 5 units.
+     *   Channels are clamped to [0..255].
+     *   @see de.fhkiel.oop.model.Style
+     *   @see de.fhkiel.oop.utils.Color
+     *
+     * - '0'..'9': Set the **stroke weight** (in pixels) of **all selected** shapes.
+     *   Values below [Config.MIN_STRK_WEIGHT] (.5f) will be clamped to it.
+     *   @see de.fhkiel.oop.config.Config.MIN_STRK_WEIGHT
+     *
+     * - 'D' / 'd': Toggle [Config.DEBUG].
+     *   @see de.fhkiel.oop.config.Config
+     *
+     * - 'H' / 'h': Show the hint box for a longer duration.
+     *   @see drawHint
      */
     override fun keyPressed() {
+        // Convert key to uppercase for consistent handling
         if (keyCode.toChar() == DELETE) {
             if (shapes.isNullOrEmpty()) {
                 println("No shapes to delete.")
@@ -354,22 +382,42 @@ class Sketch() : PApplet() {
                 println("Deleted ${toRemove.size} shape(s). Remaining: ${shapes!!.size}")
             }
             return
-        } else {
-            when (key.lowercaseChar()) {
-                'm' -> {
-                    mapper = when (mapper) {
-                        is RelativeScaleMapper -> UniformScaleMapper(this, baseW, baseH)
-                        is UniformScaleMapper  -> RelativeScaleMapper(this, baseW, baseH, baseMin)
-                    }
-                }
-                's' -> addShapes(GenerationParams.SQUARE)
-                'r' -> addShapes(GenerationParams.RECTANGLE)
-                'c' -> addShapes(GenerationParams.CIRCLE)
-                'd' -> Config.DEBUG = !Config.DEBUG
-                'h' -> {
-                    hintStartTime = millis()
-                    hintDuration = 10_000
-                }
+        }
+
+        val selected = shapes
+            ?.filterIsInstance<ManipulatableShape>()
+            ?.filter { it.isSelected }
+            .orEmpty()
+
+        // Color adjustments using Color.increment*/decrement*
+        when (key) {
+            'R' -> selected.forEach { it.inner.style.fill = it.inner.style.fill.incrementRed() }
+            'r' -> selected.forEach { it.inner.style.fill = it.inner.style.fill.decrementRed() }
+            'G' -> selected.forEach { it.inner.style.fill = it.inner.style.fill.incrementGreen() }
+            'g' -> selected.forEach { it.inner.style.fill = it.inner.style.fill.decrementGreen() }
+            'B' -> selected.forEach { it.inner.style.fill = it.inner.style.fill.incrementBlue() }
+            'b' -> selected.forEach { it.inner.style.fill = it.inner.style.fill.decrementBlue() }
+        }
+
+        // Stroke weight adjustment
+        if (key in '0'..'9') {
+            val weightPx = key.digitToInt().toFloat().coerceAtLeast(Config.MIN_STRK_WEIGHT)
+            selected.forEach { it.inner.style.weight = weightPx }
+            return
+        }
+
+        // Other shortcuts
+        when (key.lowercaseChar()) {
+            'm' -> mapper =
+                if (mapper is RelativeScaleMapper) UniformScaleMapper(this, baseW, baseH)
+                else RelativeScaleMapper(this, baseW, baseH, baseMin)
+            'q' -> addShapes(GenerationParams.SQUARE)
+            'v' -> addShapes(GenerationParams.RECTANGLE)
+            'k' -> addShapes(GenerationParams.CIRCLE)
+            'd' -> Config.DEBUG = !Config.DEBUG
+            'h' -> {
+                hintStartTime = millis()
+                hintDuration  = 10_000
             }
         }
     }
