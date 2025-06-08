@@ -29,7 +29,7 @@ import processing.core.PApplet
  *
  * @author Simon Wessel
  */
-class ManipulatableShape(val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
+class InteractiveShape(val inner: BaseShape) : BaseShape(inner.origin, inner.style) {
 
     /**
      * The strategy used to determine where handles should be placed.

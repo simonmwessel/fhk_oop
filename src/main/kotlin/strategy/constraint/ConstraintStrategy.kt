@@ -1,9 +1,9 @@
-package de.fhkiel.oop.strategy.move
+package de.fhkiel.oop.strategy.constraint
 
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 
-interface MoveConstraintStrategy {
+interface ConstraintStrategy {
     /**
      * Decides *where* a shape is allowed to move. Given a raw target origin,
      * the strategy returns a possibly adjusted origin so that the shape’s

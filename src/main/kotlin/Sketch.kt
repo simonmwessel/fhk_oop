@@ -9,7 +9,7 @@ import de.fhkiel.oop.mapper.RelativeScaleMapper
 import de.fhkiel.oop.mapper.UniformScaleMapper
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.BoundingBox
-import de.fhkiel.oop.model.ManipulatableShape
+import de.fhkiel.oop.model.InteractiveShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.Shape
 import de.fhkiel.oop.shapes.Circle
@@ -153,13 +153,13 @@ class Sketch() : PApplet() {
         }
 
     /** Backing field for the currently dragged shape. */
-    private var _draggingShape: ManipulatableShape? = null
+    private var _draggingShape: InteractiveShape? = null
 
     /**
      * The currently dragged shape, if any.
      * This is used to track which shape is being moved during mouse drag events.
      */
-    var draggingShape: ManipulatableShape?
+    var draggingShape: InteractiveShape?
         /** Returns the currently dragged shape, if any. */
         get() = _draggingShape
         /** Sets the currently dragged shape. */
@@ -187,12 +187,12 @@ class Sketch() : PApplet() {
             _dragOffset = v
         }
 
-    private var _resizingShape: ManipulatableShape? = null
+    private var _resizingShape: InteractiveShape? = null
     private var _resizingHandleIndex: Int = -1
     private var _initialBoundingBox: BoundingBox? = null
     private var _initialOriginForResize: Vector2D? = null
 
-    private var resizingShape: ManipulatableShape?
+    private var resizingShape: InteractiveShape?
         get() = _resizingShape
         set(v) { _resizingShape = v }
     private var resizingHandleIndex: Int
@@ -390,7 +390,7 @@ class Sketch() : PApplet() {
                 return
             }
             val toRemove = shapes!!
-                .filterIsInstance<ManipulatableShape>()
+                .filterIsInstance<InteractiveShape>()
                 .filter { it.isSelected }
 
             if (toRemove.isNotEmpty()) {
@@ -404,7 +404,7 @@ class Sketch() : PApplet() {
         }
 
         val selected = shapes
-            ?.filterIsInstance<ManipulatableShape>()
+            ?.filterIsInstance<InteractiveShape>()
             ?.filter { it.isSelected }
             .orEmpty()
 
@@ -460,7 +460,7 @@ class Sketch() : PApplet() {
         // 1) Check if clicked on any handle of a selected shape
         run {
             shapes!!
-                .filterIsInstance<ManipulatableShape>()
+                .filterIsInstance<InteractiveShape>()
                 .filter { it.isSelected }
                 .forEach { ms ->
                     ms.getHandleScreenBounds(mapper).forEachIndexed { idx, box ->
@@ -480,13 +480,13 @@ class Sketch() : PApplet() {
 
         // Hit detection
         val hit = shapes!!
-            .filterIsInstance<ManipulatableShape>()
+            .filterIsInstance<InteractiveShape>()
             .asReversed()
             .firstOrNull { it.hitTestScreen(this.mapper, mx, my) }
 
         // Handle selection toggle
         if (!keyPressed || keyCode != SHIFT)
-            shapes!!.filterIsInstance<ManipulatableShape>().forEach { it.isSelected = false }
+            shapes!!.filterIsInstance<InteractiveShape>().forEach { it.isSelected = false }
 
         hit?.let { ms ->
             ms.isSelected = !ms.isSelected
@@ -518,8 +518,9 @@ class Sketch() : PApplet() {
 
         val desired = Vector2D(worldMouseVector.x - dragOffset.x, worldMouseVector.y - dragOffset.y)
 
-        val clamped = ms.inner.strategies.moveConstraint
-            .clampOrigin(desired, ms.inner)
+        val clamped = ms.inner.strategies.constraints?.fold(desired) { accOrigin, strategy ->
+            strategy.clampOrigin(accOrigin, ms.inner)
+        } ?: desired
 
         try {
             ms.inner.origin = clamped

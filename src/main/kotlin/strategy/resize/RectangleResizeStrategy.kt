@@ -5,7 +5,6 @@ import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.config.Config
-import de.fhkiel.oop.strategy.move.CanvasBoundsMoveConstraint
 
 /**
  * Resize strategy for [Rectangle] shapes.
@@ -71,7 +70,8 @@ object RectangleResizeStrategy : ResizeStrategy {
         rect.width  = newW
         rect.height = newH
 
-        rect.origin = CanvasBoundsMoveConstraint
-            .clampOrigin(rect.origin, rect)
+        rect.origin = shape.strategies.constraints?.fold(Vector2D(newX, newY)) { accOrigin, strategy ->
+            strategy.clampOrigin(accOrigin, rect)
+        } ?: Vector2D(newX, newY)
     }
 }

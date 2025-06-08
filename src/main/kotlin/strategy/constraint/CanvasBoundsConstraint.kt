@@ -1,11 +1,11 @@
-package de.fhkiel.oop.strategy.move
+package de.fhkiel.oop.strategy.constraint
 
 import de.fhkiel.oop.config.Config
 import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 
 /**
- * A [MoveConstraintStrategy] that clamps a shape’s origin so that its
+ * A [ConstraintStrategy] that clamps a shape’s origin so that its
  * world‐space bounding box (including half the stroke border on each side)
  * never exceeds the canvas limits: `[0..MAX_X] × [0..MAX_Y]`.
  *
@@ -20,9 +20,9 @@ import de.fhkiel.oop.model.Vector2D
  * @see BaseShape.boundingBoxAt
  * @see Config.MAX_X, Config.MAX_Y
  */
-object CanvasBoundsMoveConstraint : MoveConstraintStrategy {
+object CanvasBoundsConstraint : ConstraintStrategy {
     override fun clampOrigin(desiredOrigin: Vector2D, shape: BaseShape): Vector2D {
-        // TODO: Bounding box mapping fix to clamp correct with relative mapping
+        // TODO: Bounding box mapping fix for correct clamping with relative mapper
         val newBox = shape.boundingBoxAt(desiredOrigin)
         var newX = desiredOrigin.x
         var newY = desiredOrigin.y

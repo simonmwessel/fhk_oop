@@ -5,10 +5,8 @@ import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.config.Config
-import de.fhkiel.oop.strategy.move.CanvasBoundsMoveConstraint
 import kotlin.math.abs
 import kotlin.math.max
-
 
 /**
  * Resize strategy for [Square] shapes.
@@ -61,8 +59,9 @@ object SquareResizeStrategy : ResizeStrategy {
         square.width  = newSide
         square.height = newSide
 
-        val clampedOrigin = CanvasBoundsMoveConstraint
-            .clampOrigin(Vector2D(newOriginX, newOriginY), square)
-        square.origin = clampedOrigin
+        // Apply constraints
+        square.origin = shape.strategies.constraints?.fold(Vector2D(newOriginX, newOriginY)) { accOrigin, strategy ->
+            strategy.clampOrigin(accOrigin, square)
+        } ?: Vector2D(newOriginX, newOriginY)
     }
 }

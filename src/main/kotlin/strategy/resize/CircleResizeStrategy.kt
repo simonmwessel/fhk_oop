@@ -5,7 +5,6 @@ import de.fhkiel.oop.model.BaseShape
 import de.fhkiel.oop.model.Vector2D
 import de.fhkiel.oop.model.BoundingBox
 import de.fhkiel.oop.config.Config
-import de.fhkiel.oop.strategy.move.CanvasBoundsMoveConstraint
 import kotlin.math.hypot
 
 /**
@@ -36,7 +35,8 @@ object CircleResizeStrategy : ResizeStrategy {
 
         circle.radius = newRad
 
-        circle.origin = CanvasBoundsMoveConstraint
-            .clampOrigin(circle.origin, circle)
+        circle.origin = shape.strategies.constraints?.fold(Vector2D(circle.origin.x, circle.origin.y)) { accOrigin, strategy ->
+            strategy.clampOrigin(accOrigin, circle)
+        } ?: circle.origin
     }
 }
