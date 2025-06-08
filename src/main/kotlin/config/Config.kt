@@ -61,7 +61,7 @@ import java.util.Locale
 object Config {
 
     /** Enable debug mode for additional logging and checks. */
-    var DEBUG:                   Boolean = true
+    var DEBUG:                 Boolean = false
 
     /** Maximum X value for random coordinate generation. */
     const val MAX_X:             Float = 1800f

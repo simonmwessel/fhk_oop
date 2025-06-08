@@ -112,7 +112,7 @@ class Sketch() : PApplet() {
      * Duration (in milliseconds) that the hint box remains visible.
      * Must be >= 0.
      */
-    private var _hintDuration: Int = 5_000
+    private var _hintDuration: Int = 15_000
     var hintDuration: Int
         /** Returns the hint duration. */
         get() = _hintDuration
@@ -265,6 +265,7 @@ class Sketch() : PApplet() {
         }
 
         drawHint()
+        drawStatusBar()
     }
 
     /**
@@ -277,42 +278,118 @@ class Sketch() : PApplet() {
 
         pushStyle()
 
+        val pad = 8f
+        val startX = pad
+        val startY = pad
+
+        // Determine current modes
         val resizeMode = when (mapper) {
             is RelativeScaleMapper -> "Relative"
             is UniformScaleMapper  -> "Uniform Scale"
         }
-
         val debugMode = if (Config.DEBUG) "on" else "off"
 
-        val lines = listOf(
-            "Press 'M' to toggle resize mode",
-            "(current: $resizeMode)",
-            "Press 'S' to add a square",
-            "Press 'R' to add a rectangle",
-            "Press 'C' to add a circle",
-            "Press 'D' to toggle debug mode (current: $debugMode)"
+        // Hint entries: key to action description
+        val entries = listOf(
+            "M" to "Toggle resize mode (current: $resizeMode)",
+            "S" to "Add square",
+            "V" to "Add rectangle",
+            "K" to "Add circle",
+            "R" to "Increase red",
+            "r" to "Decrease red",
+            "G" to "Increase green",
+            "g" to "Decrease green",
+            "B" to "Increase blue",
+            "b" to "Decrease blue",
+            "0-9" to "Set stroke weight",
+            "D" to "Toggle debug (current: $debugMode)",
+            "H" to "Show hint longer",
+            "DEL" to "Delete selected shapes"
         )
 
         textSize(16f)
-        textAlign(CENTER, TOP)
+        textAlign(LEFT, TOP)
         val lineHeight = textAscent() + textDescent()
-        val padding = 8f
-        val maxWidth = lines.maxOf { textWidth(it) }
 
-        val boxWidth = maxWidth + padding * 2
-        val boxHeight = lines.size * lineHeight + padding * 2
-        val boxX = width / 2f - boxWidth / 2f
-        val boxY = 10f
+        // Measure maximum widths for keys and descriptions
+        val keyWidth = entries.maxOf { textWidth(it.first) }
+        val descWidth = entries.maxOf { textWidth(it.second) }
+        val boxWidth = keyWidth + pad + descWidth + pad * 2
+        val boxHeight = entries.size * lineHeight + pad * 2
 
         noStroke()
-        fill(255f, 255f, 255f, 180f)
-        rect(boxX, boxY, boxWidth, boxHeight)
-
+        fill(255f, 255f, 255f, 200f)
+        rect(startX, startY, boxWidth, boxHeight)
         fill(0f)
-        lines.forEachIndexed { index, line ->
-            text(line, width / 2f, boxY + padding + index * lineHeight)
+        entries.forEachIndexed { i, (key, desc) ->
+            val yPos = startY + pad + i * lineHeight
+            text(key, startX + pad, yPos)
+            text(desc, startX + pad + keyWidth + pad, yPos)
         }
 
+        popStyle()
+    }
+
+    /**
+     * Renders a status bar at the bottom showing properties of the single selected shape.
+     * If zero or multiple shapes are selected, the bar is not shown.
+     */
+    private fun drawStatusBar() {
+        if (shapes.isNullOrEmpty()) return
+        // Find selected shapes
+        val selected = shapes!!.filterIsInstance<InteractiveShape>().filter { it.isSelected }
+        if (selected.size != 1) return
+
+        val shape    = selected.first()
+        val worldBox = shape.boundingBoxAt(shape.origin)
+
+        // Prepare formatted strings
+        val widthText   = String.format("W: %.2f", worldBox.width)
+        val heightText  = String.format("H: %.2f", worldBox.height)
+        val originXText = String.format("X: %.2f", shape.inner.origin.x)
+        val originYText = String.format("Y: %.2f", shape.inner.origin.y)
+        val fill        = shape.inner.style.fill
+        // Cast float channels to Int for integer formatting
+        val rText = String.format("R: %3d", fill.red.toInt())
+        val gText = String.format("G: %3d", fill.green.toInt())
+        val bText = String.format("B: %3d", fill.blue.toInt())
+        val aText = String.format("A: %3d", fill.alpha.toInt())
+
+        // Fixed-column layout parameters
+        val pad       = 8f
+        val charCount = 12
+        val spacing   = pad * 2
+
+        pushStyle()
+        textFont(createFont("Monospaced", 14f), 14f)
+        textAlign(LEFT, CENTER)
+        textSize(14f)
+
+        // Calculate column width based on a sample of monospaced chars
+        val sample      = "0".repeat(charCount)
+        val columnWidth = textWidth(sample)
+
+        val barHeight = textAscent() + textDescent() + pad * 2
+        val barY      = height - barHeight
+
+        noStroke()
+        fill(0f, 0f, 0f, 150f)
+        rect(0f, barY, width.toFloat(), barHeight)
+
+        fill(255f)
+        var xPos = pad
+        val yPos = barY + barHeight / 2
+        val columns = listOf(
+            widthText, heightText,
+            originXText, originYText,
+            rText, gText, bText, aText
+        )
+        for (txt in columns) {
+            val padded = if (txt.length <= charCount) txt.padEnd(charCount)
+            else txt.take(charCount)
+            text(padded, xPos, yPos)
+            xPos += columnWidth + spacing
+        }
         popStyle()
     }
 
@@ -436,7 +513,7 @@ class Sketch() : PApplet() {
             'd' -> Config.DEBUG = !Config.DEBUG
             'h' -> {
                 hintStartTime = millis()
-                hintDuration  = 10_000
+                hintDuration  = 15_000
             }
         }
     }

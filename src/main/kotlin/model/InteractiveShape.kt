@@ -58,7 +58,23 @@ class InteractiveShape(val inner: BaseShape) : BaseShape(inner.origin, inner.sty
      * Whether this shape is currently selected.
      * If `true`, handles will be drawn during the next `draw(...)` call.
      */
-    var isSelected: Boolean = false
+    private var _isSelected: Boolean = false
+
+    /**
+     * Flag indicating whether the shape is selected.
+     * If `true`, handles will be drawn during the next `draw(...)` call.
+     */
+    var isSelected: Boolean
+        /**
+         * Gets the selection state.
+         *
+         * @return `true` if the shape is selected, `false` otherwise.
+         */
+        get() = _isSelected
+        /** Sets the selection state. */
+        set(value) {
+            _isSelected = value
+        }
 
     /**
      * {@inheritDoc}
