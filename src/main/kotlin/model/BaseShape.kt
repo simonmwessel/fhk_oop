@@ -77,12 +77,57 @@ abstract class BaseShape (
     /**
      * Draws the shape on the given [PApplet] using the provided [CoordinateMapper].
      *
-     * This method should be implemented by subclasses to define how the shape is rendered.
+     * If [Config.DEBUG] is enabled, it also draws the origin and bounding box
      *
      * @param g      The PApplet to draw on.
      * @param mapper The coordinate mapper to use for drawing.
      */
-    abstract override fun draw(g: PApplet, mapper: CoordinateMapper)
+    override fun draw(g: PApplet, mapper: CoordinateMapper) {
+        if (Config.DEBUG) {
+            drawOrigin(g, mapper)
+            drawBoundingBox(g, mapper)
+        }
+    }
+
+    /**
+     * Draws the origin of the shape on the given PApplet.
+     *
+     * This method visualizes the origin as a small circle at the shape's origin point.
+     *
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
+     */
+    private fun drawOrigin(g: PApplet, mapper: CoordinateMapper) {
+        val width = 2f
+        val screenOrigin = mapper.worldToScreen(origin)
+
+        g.pushStyle()
+        g.noFill()
+        g.stroke(0f)
+        g.strokeWeight(1f)
+        g.ellipse(screenOrigin.x - width / 2f,screenOrigin.y - width / 2f, width, width)
+        g.popStyle()
+    }
+
+    /**
+     * Draws the bounding box of the shape on the given PApplet.
+     *
+     * This method visualizes the bounding box as a rectangle around the shape's occupied area.
+     *
+     * @param g      The PApplet to draw on.
+     * @param mapper The coordinate mapper to convert world coordinates to screen coordinates.
+     */
+    private fun drawBoundingBox(g: PApplet, mapper: CoordinateMapper) {
+        val worldBox  = boundingBoxAt(origin)
+        val screenBox = mapper.worldBoundingBoxToScreen(worldBox)
+
+        g.pushStyle()
+        g.noFill()
+        g.stroke(0f)
+        g.strokeWeight(1f)
+        g.rect(screenBox.origin.x, screenBox.origin.y, screenBox.width, screenBox.height)
+        g.popStyle()
+    }
 
     /**
      * Returns a BoundingBox that represents the full occupied area

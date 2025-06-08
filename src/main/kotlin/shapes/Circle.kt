@@ -158,6 +158,8 @@ class Circle(
      * @param mapper The coordinate mapper to use for drawing.
      */
     override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
+        super.draw(g, mapper)
+
         val vector = mapper.worldToScreen(this@Circle.origin)
         val radius = mapper.worldScalarToScreen(this@Circle.radius)
         ellipse(vector.x, vector.y, radius * 2, radius * 2)

@@ -190,6 +190,8 @@ open class Rectangle(
      * @param mapper The coordinate mapper to use for drawing.
      */
     override fun draw(g: PApplet, mapper: CoordinateMapper) = withStyle(g) {
+        super.draw(g, mapper)
+
         val vector = mapper.worldToScreen(this@Rectangle.origin)
         val width  = mapper.worldScalarToScreen(this@Rectangle.width)
         val height = mapper.worldScalarToScreen(this@Rectangle.height)
