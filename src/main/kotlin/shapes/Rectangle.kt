@@ -44,7 +44,7 @@ open class Rectangle(
     config:      AppConfig = DefaultConfig,
     originParam: Vector2D  = Vector2D(),
     widthParam:  Float = (config.minRectWidth..config.maxRectWidth).random(),
-    heightParam: Float = (config.minRectWidth..config.maxRectWidth).random(),
+    heightParam: Float = (config.minRectHeight..config.maxRectHeight).random(),
     styleParam:  Style = Style(),
     strategiesParam: ShapeStrategyConfig = ShapeStrategyConfig.RECTANGLE
 ) : BaseShape(config, originParam, styleParam) {
