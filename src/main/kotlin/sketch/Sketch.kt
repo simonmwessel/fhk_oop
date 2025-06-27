@@ -13,6 +13,10 @@ import de.fhkiel.oop.sketch.config.SketchConfig
 import de.fhkiel.oop.sketch.state.InteractionState
 import de.fhkiel.oop.sketch.state.MapperState
 import de.fhkiel.oop.sketch.state.ShapeState
+import de.fhkiel.oop.sketch.state.IOState
+import de.fhkiel.oop.sketch.state.FileAction
+import de.fhkiel.oop.io.DrawingIO
+import de.fhkiel.oop.io.DrawingParseException
 import processing.core.PApplet
 
 /**
@@ -63,6 +67,9 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
     /** State holder for user interactions, including dragging and resizing of shapes. */
     private val interactionState = InteractionState()
 
+    /** State holder for pending save/load interactions. */
+    private val ioState = IOState()
+
     /** State holder for the coordinate mapper strategy, initialized with current sketch dimensions. */
     private val mapperState = MapperState(
         config,
@@ -71,6 +78,21 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
         sketchConfig.baseHeight,
         sketchConfig.baseMin
     )
+
+    /**
+     * Reads a single character from the console. Tries to avoid the need for
+     * pressing ENTER by using [System.console] when available. If that fails,
+     * falls back to [readln] and returns the first character of the line.
+     */
+    private fun readCharBlocking(): Char {
+        val console = System.console()
+        if (console != null) {
+            val r = console.reader().read()
+            if (r != -1) return r.toChar()
+        }
+        val line = readln()
+        return if (line.isNotEmpty()) line[0] else '\n'
+    }
 
     /**
      * Configures the initial size of the sketch window based on [sketchConfig].
@@ -161,6 +183,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
             "V" to "Add rectangle",
             "K" to "Add circle",
             "A" to "Select all shapes",
+            "!" to "Save or load drawing",
             "R" to "Increase red",
             "r" to "Decrease red",
             "G" to "Increase green",
@@ -326,6 +349,11 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
      *   @see drawHint
      */
     override fun keyPressed() {
+        if (ioState.waitingForInput) {
+            println("Awaiting console input. Please finish entering the filename.")
+            return
+        }
+
         // Convert key to uppercase for consistent handling
         if (keyCode.toChar() == DELETE) {
             if (shapeState.shapes.isNullOrEmpty()) {
@@ -387,6 +415,40 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
                 hintConfig.startTime = millis()
                 hintConfig.duration  = 15_000
             }
+        }
+
+        if (key == '!') {
+            if (ioState.waitingForInput) return
+
+            ioState.waitingForInput = true
+            print("Load or save? (l/s): ")
+            var act = readCharBlocking().lowercaseChar()
+            while (act != 'l' && act != 's') {
+                print("\u0008")
+                act = readCharBlocking().lowercaseChar()
+            }
+            ioState.pendingAction = if (act == 'l') FileAction.LOAD else FileAction.SAVE
+
+            print("Filename: ")
+            val filename = readln().trim()
+
+            when (ioState.pendingAction) {
+                FileAction.SAVE -> DrawingIO.save(shapeState.shapes.orEmpty(), filename)
+                FileAction.LOAD -> try {
+                    val loaded = DrawingIO.load(filename, config)
+                    if (loaded.isNotEmpty()) shapeState.shapes = loaded
+                } catch (e: DrawingParseException) {
+                    ioState.waitingForInput = false
+                    ioState.pendingAction = FileAction.NONE
+                    throw e
+                }
+
+                FileAction.NONE -> TODO()
+            }
+
+            ioState.waitingForInput = false
+            ioState.pendingAction = FileAction.NONE
+            return
         }
     }
 
