@@ -160,6 +160,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
             "S" to "Add square",
             "V" to "Add rectangle",
             "K" to "Add circle",
+            "A" to "Select all shapes",
             "R" to "Increase red",
             "r" to "Decrease red",
             "G" to "Increase green",
@@ -380,6 +381,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
             'q' -> addShapes(GenerationParams.Companion.SQUARE)
             'v' -> addShapes(GenerationParams.Companion.RECTANGLE)
             'k' -> addShapes(GenerationParams.Companion.CIRCLE)
+            'a' -> shapeState.shapes?.filterIsInstance<InteractiveShape>()?.forEach { it.isSelected = true }
             'd' -> config.debug = !config.debug
             'h' -> {
                 hintConfig.startTime = millis()
