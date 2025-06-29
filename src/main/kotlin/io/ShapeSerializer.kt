@@ -26,6 +26,9 @@ object ShapeSerializer {
 
     /**
      * Serialises a [BaseShape] to a pipe separated string.
+     *
+     * @param shape The shape to serialise.
+     * @param config The configuration to use for serialisation.
      */
     fun serialize(shape: BaseShape, config: AppConfig = PlainConfig): String =
         (if (shape is InteractiveShape) "i" else "n") +
@@ -36,6 +39,10 @@ object ShapeSerializer {
     /**
      * Recreates a [BaseShape] from a previously serialised string.
      *
+     * @param line The string to parse, which should be in the format `"i|Circle|x|y|radius|fillColor|strokeColor|strokeWeight"`
+     * @param parseConfig The configuration to use for parsing the string.
+     * @param shapeConfig The configuration to use for the shape's attributes.
+     *
      * @throws IllegalArgumentException if the string cannot be parsed.
      */
     fun deserialize(
@@ -44,12 +51,16 @@ object ShapeSerializer {
         shapeConfig: AppConfig = parseConfig,
     ): BaseShape {
         val parts = line.split(parseConfig.separator)
-        require(parts.size >= 2) { "Malformed line: '$line'" }
+        require(parts.size >= 2) {
+            "Malformed line: expected at least 2 parts but got ${parts.size} - line: '$line'"
+        }
         val interactive = parts[0].lowercase() == "i"
 
         return when (parts.getOrNull(1) ?: "") {
             Circle::class.simpleName -> {
-                require(parts.size == 10) { "Invalid circle line" }
+                require(parts.size == 10) {
+                    "Invalid circle line: expected 10 parts but got ${parts.size} - line: '$line'"
+                }
                 val shape = Circle(
                     shapeConfig,
                     Vector2D(shapeConfig, parts[2].toLocalFloat(parseConfig.locale), parts[3].toLocalFloat(parseConfig.locale)),
@@ -65,7 +76,9 @@ object ShapeSerializer {
             }
 
             Square::class.simpleName -> {
-                require(parts.size == 10) { "Invalid square line" }
+                require(parts.size == 10) {
+                    "Invalid square line: expected 10 parts but got ${parts.size} - line: '$line'"
+                }
                 val shape = Square(
                     shapeConfig,
                     Vector2D(shapeConfig, parts[2].toLocalFloat(parseConfig.locale), parts[3].toLocalFloat(parseConfig.locale)),
@@ -81,7 +94,9 @@ object ShapeSerializer {
             }
 
             Rectangle::class.simpleName -> {
-                require(parts.size == 10) { "Invalid rectangle line" }
+                require(parts.size == 10) {
+                    "Invalid rectangle line: expected 10 parts but got ${parts.size} - line: '$line'"
+                }
                 val shape = Rectangle(
                     shapeConfig,
                     Vector2D(shapeConfig, parts[2].toLocalFloat(parseConfig.locale), parts[3].toLocalFloat(parseConfig.locale)),
@@ -97,7 +112,9 @@ object ShapeSerializer {
                 if (interactive) InteractiveShape(shape) else shape
             }
 
-            else -> throw IllegalArgumentException("Unknown shape type in line: $line")
+            else -> throw IllegalArgumentException(
+                "Unknown shape type '${parts.getOrNull(1) ?: ""}' in line: $line"
+            )
         }
     }
 }

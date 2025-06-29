@@ -56,9 +56,9 @@ object DrawingIO {
      * @param filename the name of the file to load from
      * @param config the configuration to use for deserialization
      * @return a list of shapes loaded from the file
-     * @throws DrawingParseException if the file cannot be parsed
+     * @throws SketchParseException if the file cannot be parsed
      */
-    @Throws(DrawingParseException::class)
+    @Throws(SketchParseException::class)
     fun load(filename: String, config: AppConfig = DefaultConfig): List<BaseShape> {
         val shapes = mutableListOf<BaseShape>()
         try {
@@ -71,7 +71,7 @@ object DrawingIO {
                             shapes.add(parsed)
                         } catch (e: IllegalArgumentException) {
                             val msg = e.message ?: "Invalid line"
-                            throw DrawingParseException("Line ${idx + 1}: $msg")
+                            throw SketchParseException("Line ${idx + 1}: $msg")
                         }
                     }
                 }

@@ -16,7 +16,7 @@ import de.fhkiel.oop.sketch.state.ShapeState
 import de.fhkiel.oop.sketch.state.IOState
 import de.fhkiel.oop.sketch.state.FileAction
 import de.fhkiel.oop.io.DrawingIO
-import de.fhkiel.oop.io.DrawingParseException
+import de.fhkiel.oop.io.SketchParseException
 import processing.core.PApplet
 
 /**
@@ -437,7 +437,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
                 FileAction.LOAD -> try {
                     val loaded = DrawingIO.load(filename, config)
                     if (loaded.isNotEmpty()) shapeState.shapes = loaded
-                } catch (e: DrawingParseException) {
+                } catch (e: SketchParseException) {
                     ioState.waitingForInput = false
                     ioState.pendingAction = FileAction.NONE
                     throw e
