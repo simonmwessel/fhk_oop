@@ -1,5 +1,7 @@
 package de.fhkiel.oop.config
 
+import java.util.Locale
+
 /**
  * Minimal [AppConfig] implementation used for compact string serialization.
  *
@@ -29,4 +31,6 @@ object PlainConfig : DelegatingAppConfig(DefaultConfig) {
     override val padStrkColrVal: Int = 0
     override val padStrkWght: Int = 0
     override val padStrkWghtVal: Int = 0
+
+    override val locale: Locale = Locale.GERMANY
 }

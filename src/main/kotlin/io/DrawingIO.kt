@@ -2,6 +2,7 @@ package de.fhkiel.oop.io
 
 import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.config.DefaultConfig
+import de.fhkiel.oop.config.PlainConfig
 import de.fhkiel.oop.model.BaseShape
 import java.io.*
 import java.nio.file.Files
@@ -63,13 +64,14 @@ object DrawingIO {
         try {
             val path = sketchDir.resolve(filename)
             BufferedReader(FileReader(path.toFile())).useLines { lines ->
-                lines.forEach { line ->
+                lines.forEachIndexed { idx, line ->
                     if (line.isNotBlank()) {
                         try {
-                            val parsed = ShapeSerializer.deserialize(line, config)
+                            val parsed = ShapeSerializer.deserialize(line, PlainConfig, config)
                             shapes.add(parsed)
                         } catch (e: IllegalArgumentException) {
-                            throw DrawingParseException(e.message ?: "Invalid line: $line")
+                            val msg = e.message ?: "Invalid line"
+                            throw DrawingParseException("Line ${idx + 1}: $msg")
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package de.fhkiel.oop.model
 
 import de.fhkiel.oop.config.ShapeStrategyConfig
+import de.fhkiel.oop.config.AppConfig
 import de.fhkiel.oop.mapper.CoordinateMapper
 import de.fhkiel.oop.strategy.handle.HandleStrategy
 import processing.core.PApplet
@@ -227,14 +228,9 @@ class InteractiveShape(val inner: BaseShape) : BaseShape(inner.config, inner.ori
         inner.hitTestScreen(mapper, mx, my)
 
     /**
-     * {@inheritDoc}
-     *
-     * Delegates to inner.toString, returning the string representation
-     * (including shape type, origin, size attributes, and style).
-     *
-     * @return A [String] describing the wrapped shape.
-     *
-     * @see BaseShape.toString
+     * Returns a configured string representation of the wrapped shape by
+     * delegating to [inner].
      */
-    override fun toString(): String = inner.toString()
+    override fun toConfiguredString(config: AppConfig, includeLabels: Boolean): String =
+        inner.toConfiguredString(config, includeLabels)
 }

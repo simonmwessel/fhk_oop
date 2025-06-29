@@ -200,25 +200,29 @@ class Circle(
     }
 
     /**
-     * Returns a string representation of the Circle
-     *
-     * @return A string representation of the Circle.
+     * Returns a string representation of the circle using the provided
+     * [AppConfig]. The default configuration is the circle's own [config].
      */
-    override fun toString(): String =
+    override fun toConfiguredString(config: AppConfig, includeLabels: Boolean): String =
         buildString(
             listOf(
-                Triple("Type",   this::class.simpleName!!,         config.padType   to config.padTypeVal),
-                Triple("X",      origin.x.formatCoordinateValue(), config.padCord   to config.padCordVal),
-                Triple("Y",      origin.y.formatCoordinateValue(), config.padCord   to config.padCordVal),
-                Triple("Radius", radius.formatAttribute1Value(),   config.padAttr1  to config.padAttr1Val),
-                Triple("",       "",                               (config.padAttr2 + config.separatorKeyValue.length + config.padAttr2Val) to 0),
-                Triple("Area",   getArea().formatAreaValue(),      config.padArea   to config.padAreaVal),
+                Triple("Type",   this::class.simpleName!!,                 config.padType   to config.padTypeVal),
+                Triple("X",      origin.x.formatCoordinateValue(config), config.padCord   to config.padCordVal),
+                Triple("Y",      origin.y.formatCoordinateValue(config), config.padCord   to config.padCordVal),
+                Triple("Radius", radius.formatAttribute1Value(config),   config.padAttr1  to config.padAttr1Val),
+                Triple("",       "",                                       (config.padAttr2 + config.separatorKeyValue.length + config.padAttr2Val) to 0),
+                Triple("Area",   getArea().formatAreaValue(config),      config.padArea   to config.padAreaVal),
 
                 Triple("Fill Color",    style.fill.toString(),
                     config.padFillColr to config.padFillColrVal),
                 Triple("Stroke Color",  style.stroke.toString(),
                     config.padStrkColr to config.padStrkColrVal),
-                Triple("Stroke Weight", style.weight.formatStrokeWeightValue(),
+                Triple("Stroke Weight", style.weight.formatStrokeWeightValue(config),
                     config.padStrkWght to config.padStrkWghtVal),
-            ))
+            ), config, includeLabels)
+
+    /**
+     * Returns the default string representation of the circle.
+     */
+    override fun toString(): String = toConfiguredString(this.config)
 }

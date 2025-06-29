@@ -70,7 +70,7 @@ object FloatExtensions {
      */
     @JvmStatic
     fun Float.format(width: Int, precision: Int, locale: Locale): String =
-        String.format(locale, "%${width}.${precision}f", this)
+        String.format(locale, "%${width.coerceAtLeast(1)}.${precision}f", this)
 
     /**
      * Formats this [Float] as a coordinate value, using

@@ -10,6 +10,7 @@ import de.fhkiel.oop.shapes.Square
 import de.fhkiel.oop.model.Style
 import de.fhkiel.oop.model.InteractiveShape
 import de.fhkiel.oop.utils.Color
+import de.fhkiel.oop.utils.StringExtensions.toLocalFloat
 
 /**
  * Utility for converting [BaseShape] instances to a compact String format and
@@ -26,104 +27,71 @@ object ShapeSerializer {
     /**
      * Serialises a [BaseShape] to a pipe separated string.
      */
-    fun serialize(shape: BaseShape, config: AppConfig = PlainConfig): String {
-        val isInteractive = shape is InteractiveShape
-        val base = if (isInteractive) shape.inner else shape
-        val tokens = when (base) {
-            is Circle -> listOf(    // TODO: Rebuild toString to accept config and use base toString
-                if (isInteractive) "i" else "n",
-                "circle",
-                base.origin.x.toString(),
-                base.origin.y.toString(),
-                base.radius.toString(),
-                base.style.fill.toString(),
-                base.style.stroke.toString(),
-                base.style.weight.toString()
-            )
-
-            is Square -> listOf(    // TODO: Rebuild toString to accept config and use base toString
-                if (isInteractive) "i" else "n",
-                "square",
-                base.origin.x.toString(),
-                base.origin.y.toString(),
-                base.width.toString(),
-                base.style.fill.toString(),
-                base.style.stroke.toString(),
-                base.style.weight.toString()
-            )
-
-            is Rectangle -> listOf( // TODO: Rebuild toString to accept config and use base toString
-                if (isInteractive) "i" else "n",
-                "rectangle",
-                base.origin.x.toString(),
-                base.origin.y.toString(),
-                base.width.toString(),
-                base.height.toString(),
-                base.style.fill.toString(),
-                base.style.stroke.toString(),
-                base.style.weight.toString()
-            )
-
-            else -> throw IllegalArgumentException("Unsupported shape type: ${base.javaClass.simpleName}")
-        }
-        return tokens.joinToString("|")
-    }
+    fun serialize(shape: BaseShape, config: AppConfig = PlainConfig): String =
+        (if (shape is InteractiveShape) "i" else "n") +
+        config.separator +
+        (if (shape is InteractiveShape) shape.inner.toConfiguredString(config, false)
+        else                            shape.toConfiguredString(config, false))
 
     /**
      * Recreates a [BaseShape] from a previously serialised string.
      *
      * @throws IllegalArgumentException if the string cannot be parsed.
      */
-    fun deserialize(line: String, config: AppConfig = PlainConfig): BaseShape {
-        // Split on a literal pipe. Using Char version avoids regex overhead.
-        val parts = line.split('|')
+    fun deserialize(
+        line: String,
+        parseConfig: AppConfig = PlainConfig,
+        shapeConfig: AppConfig = parseConfig,
+    ): BaseShape {
+        val parts = line.split(parseConfig.separator)
         require(parts.size >= 2) { "Malformed line: '$line'" }
         val interactive = parts[0].lowercase() == "i"
-        return when (parts.getOrNull(1)?.lowercase()) {
-            "circle" -> {
-                require(parts.size == 8) { "Invalid circle line" }      // TODO: Check via Reflection?
+
+        return when (parts.getOrNull(1) ?: "") {
+            Circle::class.simpleName -> {
+                require(parts.size == 10) { "Invalid circle line" }
                 val shape = Circle(
-                    config,
-                    Vector2D(config, parts[2].toFloat(), parts[3].toFloat()),
-                    parts[4].toFloat(),
+                    shapeConfig,
+                    Vector2D(shapeConfig, parts[2].toLocalFloat(parseConfig.locale), parts[3].toLocalFloat(parseConfig.locale)),
+                    parts[4].toLocalFloat(parseConfig.locale),
                     Style(
-                        config,
-                        Color.fromHex(parts[5]),
-                        Color.fromHex(parts[6]),
-                        parts[7].toFloat()
-                    )
-                )
-                if (interactive) InteractiveShape(shape) else shape
-            }
-
-            "square" -> {
-                require(parts.size == 8) { "Invalid square line" }      // TODO: Check via Reflection?
-                val shape = Square(
-                    config,
-                    Vector2D(config, parts[2].toFloat(), parts[3].toFloat()),
-                    parts[4].toFloat(),
-                    Style(
-                        config,
-                        Color.fromHex(parts[5]),
-                        Color.fromHex(parts[6]),
-                        parts[7].toFloat()
-                    )
-                )
-                if (interactive) InteractiveShape(shape) else shape
-            }
-
-            "rectangle" -> {
-                require(parts.size == 9) { "Invalid rectangle line" }   // TODO: Check via Reflection?
-                val shape = Rectangle(
-                    config,
-                    Vector2D(config, parts[2].toFloat(), parts[3].toFloat()),
-                    parts[4].toFloat(),
-                    parts[5].toFloat(),
-                    Style(
-                        config,
-                        Color.fromHex(parts[6]),
+                        shapeConfig,
                         Color.fromHex(parts[7]),
-                        parts[8].toFloat()
+                        Color.fromHex(parts[8]),
+                        parts[9].toLocalFloat(parseConfig.locale)
+                    )
+                )
+                if (interactive) InteractiveShape(shape) else shape
+            }
+
+            Square::class.simpleName -> {
+                require(parts.size == 10) { "Invalid square line" }
+                val shape = Square(
+                    shapeConfig,
+                    Vector2D(shapeConfig, parts[2].toLocalFloat(parseConfig.locale), parts[3].toLocalFloat(parseConfig.locale)),
+                    parts[4].toLocalFloat(parseConfig.locale),
+                    Style(
+                        shapeConfig,
+                        Color.fromHex(parts[7]),
+                        Color.fromHex(parts[8]),
+                        parts[9].toLocalFloat(parseConfig.locale)
+                    )
+                )
+                if (interactive) InteractiveShape(shape) else shape
+            }
+
+            Rectangle::class.simpleName -> {
+                require(parts.size == 10) { "Invalid rectangle line" }
+                val shape = Rectangle(
+                    shapeConfig,
+                    Vector2D(shapeConfig, parts[2].toLocalFloat(parseConfig.locale), parts[3].toLocalFloat(parseConfig.locale)),
+                    parts[4].toLocalFloat(parseConfig.locale),
+                    parts[5].toLocalFloat(parseConfig.locale),
+                    Style(
+                        shapeConfig,
+                        Color.fromHex(parts[7]),
+                        Color.fromHex(parts[8]),
+                        parts[9].toLocalFloat(parseConfig.locale)
                     )
                 )
                 if (interactive) InteractiveShape(shape) else shape

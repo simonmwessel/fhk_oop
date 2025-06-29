@@ -16,9 +16,9 @@ object DefaultConfig : AppConfig {
     override var debug: Boolean = false
 
     /** @property maxX Maximum X value for random coordinate generation. */
-    override val maxX: Float = 1800f
+    override val maxX: Float = 1500f
     /** @property maxY Maximum Y value for random coordinate generation. */
-    override val maxY: Float = 1200f
+    override val maxY: Float = 1000f
 
     /** @property minCircleRadius Minimum circle radius value for random generation. */
     override val minCircleRadius: Float = 10f

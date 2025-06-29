@@ -101,11 +101,14 @@ class Square(
     }
 
     /**
-     * Returns a string representation of the rectangle
-     *
-     * @return A string representation of the rectangle.
+     * Returns a string representation of the square using the provided
+     * [AppConfig]. The default configuration is the square's own [config].
      */
-    override fun toString(): String =
-        // Needs to be overridden to print the correct type ("Square" instead of "Rectangle")
-        super.toString()
+    override fun toConfiguredString(config: AppConfig, includeLabels: Boolean): String =
+        super.toConfiguredString(config, includeLabels)
+
+    /**
+     * Returns the default string representation of the square.
+     */
+    override fun toString(): String = toConfiguredString(this.config)
 }

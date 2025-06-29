@@ -184,11 +184,20 @@ abstract class BaseShape (
     }
 
     /**
-     * Abstract method to calculate the perimeter of the shape.
+     * Returns a formatted string representation of the shape using the
+     * provided [AppConfig].
      *
-     * @return The perimeter of the shape.
+     * Subclasses have to implement this method to describe their specific
+     * attributes. By default it should use the shape's own [config] when the
+     * parameter is omitted.
      */
-    abstract override fun toString(): String
+    abstract fun toConfiguredString(config: AppConfig, includeLabels: Boolean = true): String
+
+    /**
+     * Returns the string representation of the shape using its current
+     * configuration.
+     */
+    override fun toString(): String = toConfiguredString(this.config)
 
     /**
      * Builds a complete, formatted line by combining a list of columns with configured
@@ -211,11 +220,18 @@ abstract class BaseShape (
      *
      * @return A single String containing PREFIX + all padded & separated columns + SUFFIX.
      */
-    protected fun buildString(columns: List<Triple<String, String, Pair<Int,Int>>>): String =
+    protected fun buildString(
+        columns: List<Triple<String, String, Pair<Int,Int>>>,
+        config: AppConfig,
+        includeLabels: Boolean = true
+    ): String =
         config.prefix +
         columns.joinToString(config.separator) { (k,v,p) ->
-            if (k.isEmpty()) "".padEnd(p.first)
-            else              k.padEnd(p.first) + config.separatorKeyValue + v.padStart(p.second)
+            when {
+                !includeLabels -> v.padStart(p.second)
+                k.isEmpty()    -> "".padEnd(p.first)
+                else           -> k.padEnd(p.first) + config.separatorKeyValue + v.padStart(p.second)
+            }
         } +
         config.suffix
 }
