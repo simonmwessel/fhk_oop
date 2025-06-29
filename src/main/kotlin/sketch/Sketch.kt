@@ -429,13 +429,40 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
             }
             ioState.pendingAction = if (act == 'l') FileAction.LOAD else FileAction.SAVE
 
+            if (ioState.pendingAction == FileAction.LOAD) {
+                val sketches = DrawingIO.listSketches()
+                if (sketches.isEmpty()) {
+                    println("Available sketches: <none>")
+                } else {
+                    println("Available sketches:")
+                    sketches.forEach { println("- $it") }
+                }
+            }
+
             print("Filename: ")
-            val filename = readln().trim()
+            val filenameInput = readln().trim()
 
             when (ioState.pendingAction) {
-                FileAction.SAVE -> DrawingIO.save(shapeState.shapes.orEmpty(), filename)
+                FileAction.SAVE -> {
+                    if (DrawingIO.fileExists(filenameInput)) {
+                        print("File exists. Overwrite? (y/n): ")
+                        var ch = readCharBlocking().lowercaseChar()
+                        while (ch != 'y' && ch != 'n') {
+                            print("\u0008")
+                            ch = readCharBlocking().lowercaseChar()
+                        }
+                        if (ch != 'y') {
+                            println("Save cancelled.")
+                            ioState.waitingForInput = false
+                            ioState.pendingAction = FileAction.NONE
+                            return
+                        }
+                    }
+                    DrawingIO.save(shapeState.shapes.orEmpty(), filenameInput)
+                }
+
                 FileAction.LOAD -> try {
-                    val loaded = DrawingIO.load(filename, config)
+                    val loaded = DrawingIO.load(filenameInput, config)
                     if (loaded.isNotEmpty()) shapeState.shapes = loaded
                 } catch (e: SketchParseException) {
                     ioState.waitingForInput = false
