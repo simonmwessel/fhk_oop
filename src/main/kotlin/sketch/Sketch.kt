@@ -504,7 +504,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
                         throw e
                     }
 
-                    FileAction.NONE -> TODO()
+                    FileAction.NONE -> {}
                 }
 
                 ioState.waitingForInput = false
