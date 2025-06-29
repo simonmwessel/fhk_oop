@@ -16,6 +16,7 @@ import de.fhkiel.oop.sketch.state.ShapeState
 import de.fhkiel.oop.sketch.state.IOState
 import de.fhkiel.oop.sketch.state.FileAction
 import de.fhkiel.oop.io.DrawingIO
+import de.fhkiel.oop.io.FilenameValidator
 import de.fhkiel.oop.io.SketchParseException
 import processing.core.PApplet
 
@@ -95,6 +96,24 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
     }
 
     /**
+     * Reads a file name from the console without echoing the characters and
+     * sanitises the result on the fly.  On consoles that do not support
+     * non-echoing input we fall back to a simple line read (characters will be
+     * visible then, but they are still filtered afterwards).
+     */
+    private fun readSafeFilenameBlocking(): String {
+        val console = System.console()
+
+        val raw = if (console != null) {
+            console.readPassword().concatToString()
+        } else {
+            readln()
+        }
+
+        return FilenameValidator.sanitize(raw)
+    }
+
+    /**
      * Configures the initial size of the sketch window based on [sketchConfig].
      */
     override fun settings() = size(sketchConfig.baseWidth.toInt(), sketchConfig.baseHeight.toInt())
@@ -155,6 +174,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
 
         drawHint()
         drawStatusBar()
+        drawConsoleOverlay()
     }
 
     /**
@@ -216,6 +236,21 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
             text(desc, startX + pad + keyWidth + pad, yPos)
         }
 
+        popStyle()
+    }
+
+    private fun drawConsoleOverlay() {
+        if (!ioState.waitingForInput) return
+
+        pushStyle()
+        fill(0f, 0f, 0f, 200f)
+        noStroke()
+        rect(0f, 0f, width.toFloat(), height.toFloat())
+
+        textAlign(CENTER, CENTER)
+        textSize(24f)
+        fill(255f)
+        text("Please continue in the console", width / 2f, height / 2f)
         popStyle()
     }
 
@@ -349,10 +384,7 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
      *   @see drawHint
      */
     override fun keyPressed() {
-        if (ioState.waitingForInput) {
-            println("Awaiting console input. Please finish entering the filename.")
-            return
-        }
+        if (ioState.waitingForInput) return
 
         // Convert key to uppercase for consistent handling
         if (keyCode.toChar() == DELETE) {
@@ -421,60 +453,64 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
             if (ioState.waitingForInput) return
 
             ioState.waitingForInput = true
-            print("Load or save? (l/s): ")
-            var act = readCharBlocking().lowercaseChar()
-            while (act != 'l' && act != 's') {
-                print("\u0008")
-                act = readCharBlocking().lowercaseChar()
-            }
-            ioState.pendingAction = if (act == 'l') FileAction.LOAD else FileAction.SAVE
 
-            if (ioState.pendingAction == FileAction.LOAD) {
-                val sketches = DrawingIO.listSketches()
-                if (sketches.isEmpty()) {
-                    println("Available sketches: <none>")
-                } else {
-                    println("Available sketches:")
-                    sketches.forEach { println("- $it") }
+            Thread {
+                kotlin.io.print("Load or save? (l/s): ")
+                var act = readCharBlocking().lowercaseChar()
+                while (act != 'l' && act != 's') {
+                    kotlin.io.print("\u0008")
+                    act = readCharBlocking().lowercaseChar()
                 }
-            }
+                ioState.pendingAction = if (act == 'l') FileAction.LOAD else FileAction.SAVE
 
-            print("Filename: ")
-            val filenameInput = readln().trim()
-
-            when (ioState.pendingAction) {
-                FileAction.SAVE -> {
-                    if (DrawingIO.fileExists(filenameInput)) {
-                        print("File exists. Overwrite? (y/n): ")
-                        var ch = readCharBlocking().lowercaseChar()
-                        while (ch != 'y' && ch != 'n') {
-                            print("\u0008")
-                            ch = readCharBlocking().lowercaseChar()
-                        }
-                        if (ch != 'y') {
-                            println("Save cancelled.")
-                            ioState.waitingForInput = false
-                            ioState.pendingAction = FileAction.NONE
-                            return
-                        }
+                if (ioState.pendingAction == FileAction.LOAD) {
+                    val sketches = DrawingIO.listSketches()
+                    if (sketches.isEmpty()) {
+                        kotlin.io.println("Available sketches: <none>")
+                    } else {
+                        kotlin.io.println("Available sketches:")
+                        sketches.forEach { kotlin.io.println("- $it") }
                     }
-                    DrawingIO.save(shapeState.shapes.orEmpty(), filenameInput)
                 }
 
-                FileAction.LOAD -> try {
-                    val loaded = DrawingIO.load(filenameInput, config)
-                    if (loaded.isNotEmpty()) shapeState.shapes = loaded
-                } catch (e: SketchParseException) {
-                    ioState.waitingForInput = false
-                    ioState.pendingAction = FileAction.NONE
-                    throw e
+                kotlin.io.print("Filename: ")
+                val filenameInput = readSafeFilenameBlocking().trim()
+
+                when (ioState.pendingAction) {
+                    FileAction.SAVE -> {
+                        if (DrawingIO.fileExists(filenameInput)) {
+                            kotlin.io.print("File exists. Overwrite? (y/n): ")
+                            var ch = readCharBlocking().lowercaseChar()
+                            while (ch != 'y' && ch != 'n') {
+                                kotlin.io.print("\u0008")
+                                ch = readCharBlocking().lowercaseChar()
+                            }
+                            if (ch != 'y') {
+                                kotlin.io.println("Save cancelled.")
+                                ioState.waitingForInput = false
+                                ioState.pendingAction = FileAction.NONE
+                                return@Thread
+                            }
+                        }
+                        DrawingIO.save(shapeState.shapes.orEmpty(), filenameInput)
+                    }
+
+                    FileAction.LOAD -> try {
+                        val loaded = DrawingIO.load(filenameInput, config)
+                        if (loaded.isNotEmpty()) shapeState.shapes = loaded
+                    } catch (e: SketchParseException) {
+                        ioState.waitingForInput = false
+                        ioState.pendingAction = FileAction.NONE
+                        throw e
+                    }
+
+                    FileAction.NONE -> TODO()
                 }
 
-                FileAction.NONE -> TODO()
-            }
+                ioState.waitingForInput = false
+                ioState.pendingAction = FileAction.NONE
+            }.start()
 
-            ioState.waitingForInput = false
-            ioState.pendingAction = FileAction.NONE
             return
         }
     }
@@ -488,6 +524,8 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
      * Uses hit detection based on the current [de.fhkiel.oop.mapper.CoordinateMapper] to determine which shape was clicked.
      */
     override fun mousePressed() {
+        if (ioState.waitingForInput) return
+
         if (shapeState.shapes.isNullOrEmpty()) {
             println("No shapes to select.")
             return
@@ -541,6 +579,8 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
     }
 
     override fun mouseDragged() {
+        if (ioState.waitingForInput) return
+
         val worldMouseVector = mapperState.mapper.screenToWorld(Vector2D(config, mouseX.toFloat(), mouseY.toFloat()))
 
         if (interactionState.resizingShape != null) {
@@ -576,6 +616,8 @@ class Sketch(private val config: AppConfig = DefaultConfig) : PApplet() {
     }
 
     override fun mouseReleased() {
+        if (ioState.waitingForInput) return
+
         interactionState.draggingShape         = null
         interactionState.dragOffset            = Vector2D(config, 0f, 0f)
 
